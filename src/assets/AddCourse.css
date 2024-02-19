@@ -1,0 +1,58 @@
+.btn1 {
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #6E2A26;
+    border: 1px solid transparent;
+    padding: 6px 12px;
+    border-radius: 4px;
+    box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+    line-height: 1.5;
+    margin-left: 10px;
+  }
+  
+  .btn1:hover {
+    color: #6E2A26;
+    background-color: #ffffff;
+    border-color: #6E2A26;
+    border-radius: 4px;
+    box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  .popup-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    padding: 22px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    width: 32%;
+    height: 62%;
+    overflow: auto;
+  }
+
+  .form-control.short {
+    width: 30%;
+  }
+
+  .form-select.short {
+    width: 35%;
+  }
+
+  .form-group label {
+    display: block;
+    text-align: left;
+  }
+  .form-group input,
+  .form-group select {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+
+  .form-group select,option {
+    width: 30%;
+    text-align: left;
+  }

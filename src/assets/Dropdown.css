@@ -1,0 +1,20 @@
+.dropdown-container {
+    display: flex;
+    
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  
+
+  .labelsearch {
+    font-weight: bold;
+  }
+  
+  select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 200px;
+    font-size: 16px;
+  }

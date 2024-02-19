@@ -1,0 +1,29 @@
+.schedule-table {
+  width: 70%;
+  margin: 10px auto;
+
+}
+
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid #ddd;
+  padding: 5px; 
+  font-size: 12px; 
+  text-align: center;
+}
+
+.schedule-table th {
+  background-color: #f2f2f2;
+  
+}
+
+.schedule-table td {
+  height: 50px;
+  vertical-align: middle;
+}
+
+@media screen and (max-width: 600px) {
+  .small-table .schedule-table {
+    width: 100%;
+  }
+}
