@@ -1,49 +1,60 @@
 import React, { useState } from "react";
-// import "../assets/AddTeacher.css";
 
-const AddTeacher = ({ handleChange, handleAddData, form }) => {
+const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
+  
   const [isPopup, setPopup] = useState(false);
+  const [isChecked, setChecked] = useState(false);
 
   const togglePopup = () => {
     setPopup(!isPopup);
   };
 
+  const handleCheckboxChange = () => {
+    setChecked(!isChecked);
+  };
+
   return (
-    <div className="form-group col-xl-5 p-3">
+    <div className="form-group">
       <div className="form-inline">
         <button className="btn1" onClick={togglePopup}>
-          เพิ่มอาจารย์
+          +เลือก
         </button>
 
         {isPopup && (
           <div className="popup-overlay">
             <div className="popup">
               <div className="close"><button className="btn-close" onClick={togglePopup}></button></div>
-              
-              <h1>เพิ่มอาจารย์</h1>
-              <form className="row">
-              <div className="form-group">
-                <label htmlFor="firstname">ชื่อ</label>
+
+              <h3>เพิ่มรายวิชาเข้าตาราง</h3>
+
+              <form>
+
+              <div className="form-group mt-2 ">
+                <label htmlFor="code">test</label>
                 <input
                   className="form-control"
-                  onChange={(e) => handleChange(e)}
                   type="text"
-                  name="firstname"
-                //   value={form.code || ""}
+                />
+              </div>
+
+              <div className="form-group mt-2 ">
+                <label htmlFor="code">test</label>
+                <input
+                  className="form-control"
+                  type="text"
                 />
               </div>
 
               <div className="form-group mt-2">
-                <label htmlFor="lastname">นามสกุล</label>
-                <input
-                  className="form-control"
-                  onChange={(e) => handleChange(e)}
-                  type="text"
-                  name="lastname"
-                //   value={form.grade || ""}
-
-                />
-              </div>
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={handleCheckboxChange}
+                    />
+                    <span>เช็คสถานะ</span>
+                  </label>
+                </div>
 
               <div className="form-group mt-2 d-flex justify-content-end">
                   <button
@@ -51,7 +62,7 @@ const AddTeacher = ({ handleChange, handleAddData, form }) => {
                     className="btn1"
                     id="submit"
                     onClick={() => {
-                      togglePopup(); // Close the popup after clicking "บันทึก"
+                      togglePopup();
                     }}
                   >
                     บันทึก
@@ -66,4 +77,4 @@ const AddTeacher = ({ handleChange, handleAddData, form }) => {
   );
 };
 
-export default AddTeacher;
+export default AddCourseToTable;

@@ -80,19 +80,19 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 </select>
               </div>
 
-              <div className="form-group mt-2">
-                  <button
-                    type="button"
-                    className="btn1"
-                    id="submit"
-                    onClick={() => {
-                      handleAddData();
-                      togglePopup(); // Close the popup after clicking "บันทึก"
-                    }}
-                  >
-                    บันทึก
-                  </button>
-                </div>
+              <div className="form-group mt-2 d-flex justify-content-end"> {/* Use Bootstrap grid classes */}
+                <button
+                  type="button"
+                  className="btn1"
+                  id="submit"
+                  onClick={() => {
+                    handleAddData();
+                    togglePopup(); // Close the popup after clicking "บันทึก"
+                  }}
+                >
+                  บันทึก
+                </button>
+              </div>
               </form>
             </div>
           </div>

@@ -25,7 +25,7 @@ const Upload = ({ handleChange, handleAddData, form }) => {
                 <div className="form-group mt-2">
                   <input class="form-control" type="file" accept=".xlsx, .xls" id="formFile"/>
                 </div>
-                <div className="form-group mt-2">
+                <div className="form-group mt-2 d-flex justify-content-end">
                   <button
                     type="button"
                     className="btn1 mt-3 "

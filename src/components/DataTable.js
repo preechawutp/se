@@ -1,5 +1,6 @@
 // DataTable.js
-import React from "react";
+import React, { useState } from "react";
+import AddCourseToTable from "./AddCourseToTable";
 
 const DataTable = ({
   data,
@@ -110,15 +111,12 @@ const DataTable = ({
               )}
             </td>
             <td>
-            <button className="btn1" >
-            <i class="fa-solid fa-plus"></i> เลือก
-            </button>
-            <button
-                    className="btn1"
-                    onClick={() => handleDelete(item.id)}
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
+              <div className="d-flex align-items-center">
+                <AddCourseToTable />
+                <button className="btn1" onClick={() => handleDelete(item.id)}>
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
               {/* {editId === item.id ? (
                 <>
                   <button className="btn btn-success" onClick={handleSave}>

@@ -17,6 +17,7 @@ import AddTeacher from "./AddTeacher";
 import Upload from "./Upload";
 import "../App.css"
 import LoginForm from './LoginForm';
+import AddCourseToTable from "./AddCourseToTable";
 
 
 
@@ -110,6 +111,7 @@ const Main = () => {
   return (
     
     <div>
+
       <Navbar/>
       <div className="container-sm mt-5">
         <h2>รายวิชา</h2>
@@ -131,7 +133,7 @@ const Main = () => {
             <Upload handleChange={handleChange} />
           </div>
         </div>
-
+       
         <DataTable
           data={filteredData}
           editId={editId}
