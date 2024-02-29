@@ -6,6 +6,7 @@ import LoginForm from './components/LoginForm';
 import ScheduleTable from './components/ScheduleTable';
 import ShowCourse  from './components/ShowCourse ';
 import Result from './components/Result';
+import TeacherTable from './components/Teachertable';
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/table" element={<ScheduleTable />} />
         <Route path="/course" element={<ShowCourse  />} />
         <Route path="/result" element={<Result />} />
+        <Route path="/teacher" element={<TeacherTable />} />
       </Routes>
     </Router>
 

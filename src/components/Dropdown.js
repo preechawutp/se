@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import fetchTeachers from './fetchTeachers';
+import fetchTeachers from './FetchTeachers';
 import '../assets/Dropdown.css'; // Import CSS file
 
 function Dropdown() {

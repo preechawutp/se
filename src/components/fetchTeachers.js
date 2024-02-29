@@ -2,7 +2,7 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
 
-const fetchTeachers = async () => {
+const FetchTeachers = async () => {
   const teachersCollection = collection(db, 'teacher');
   const teachersSnapshot = await getDocs(teachersCollection);
   const teachers = [];
@@ -12,4 +12,4 @@ const fetchTeachers = async () => {
   return teachers;
 };
 
-export default fetchTeachers;
+export default FetchTeachers;

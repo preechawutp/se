@@ -116,7 +116,7 @@ const Main = () => {
       <Navbar/>
       <div className="container-sm mt-5">
         <h2>รายวิชา</h2>
-        <Confirm/>
+        {/* <Confirm/> */}
         {/* <button className="btn1">Logout</button> */}
         <div className="d-flex justify-content-between" style={{ width: '100%' }}>
           <div className="input-group mb-3 mt-3" style={{ width: '40%' }}>

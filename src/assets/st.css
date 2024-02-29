@@ -23,7 +23,7 @@
 }
 
 @media screen and (max-width: 600px) {
-  .small-table .schedule-table {
+  .schedule-table {
     width: 100%;
   }
 }

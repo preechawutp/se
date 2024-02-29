@@ -6,14 +6,24 @@ const SelectedCoursePopup = ({ selectedCourses, onClose, handleDeleteCourse }) =
     <div className="popup-overlay">
       <div className="popup">
         <h2>รายวิชาที่เลือก</h2>
-        <ul>
-          {selectedCourses.map((course, index) => (
-            <li key={index}>
-              {course.name}{" "}
-              <button onClick={() => handleDeleteCourse(course.id)}>ลบ</button>
-            </li>
-          ))}
-        </ul>
+        <table>
+          <thead>
+            <tr>
+              <th>รายวิชา</th>
+              <th>ดำเนินการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {selectedCourses.map((course, index) => (
+              <tr key={index}>
+                <td>{course.name}</td>
+                <td>
+                  <button onClick={() => handleDeleteCourse(course.id)}>ลบ</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <button onClick={onClose}>ปิด</button>
       </div>
     </div>

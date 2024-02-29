@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import fetchTeachers from './fetchTeachers';
+import fetchTeachers from './FetchTeachers';
 
-import "../assets/AddCourse.css";
 
-const AddCourse = ({ handleChange, handleAddData, form }) => {
+const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
 
   const [isPopup, setPopup] = useState(false);
 
@@ -177,6 +176,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                     className="btn1"
                     id="submit"
                     onClick={() => {
+                      handleAddData();
                       togglePopup(); // Close the popup after clicking "บันทึก"
                     }}
                   >
@@ -192,4 +192,4 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
   );
 };
 
-export default AddCourse;
+export default AddCourseToTable;
