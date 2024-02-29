@@ -170,7 +170,7 @@ const Main = () => {
           <div className="d-flex" style={{ width: '40%', justifyContent: 'flex-end' }}>
             <AddCourse handleChange={handleChange} handleAddData={handleAddData} form={form} />
             <AddTeacher />
-            <Upload handleChange={handleChange} />
+            <Upload handleChange={handleChange} handleAddData={handleAddData} form={form} />
             <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse}/>
           </div>
         </div>

@@ -5,35 +5,44 @@ import { db } from "../firebase";
 
 const Upload = ({ handleChange, handleAddData, form }) => {
   const [isPopup, setPopup] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const togglePopup = () => {
     setPopup(!isPopup);
   };
 
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const data = event.target.result;
-      if (data) {
-        const workbook = XLSX.read(data, { type: "binary" });
-        const sheet_name_list = workbook.SheetNames;
-        const xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
 
-        // ส่งข้อมูลไป Firebase Firestore
-        xlData.forEach(async (item) => {
-          try {
-            await addDoc(collection(db, "course"), item);
-            console.log("Document successfully written!");
-          } catch (error) {
-            console.error("Error writing document: ", error);
-          }
-        });
-      } else {
-        console.error("No data found!");
-      }
-    };
-    reader.readAsBinaryString(file);
+  const handleUpload = async () => {
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const data = event.target.result;
+        if (data) {
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheet_name_list = workbook.SheetNames;
+          const xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+
+          // Send data to Firebase Firestore
+          xlData.forEach(async (item) => {
+            try {
+              await addDoc(collection(db, "course"), item);
+              console.log("Document successfully written!");
+            } catch (error) {
+              console.error("Error writing document: ", error);
+            }
+          });
+
+          // Trigger handleAddData after uploading the file
+          handleAddData();
+        } else {
+          console.error("No data found!");
+        }
+      };
+      reader.readAsBinaryString(selectedFile);
+    }
   };
 
   return (
@@ -54,11 +63,11 @@ const Upload = ({ handleChange, handleAddData, form }) => {
               <form className="row">
                 <div className="form-group mt-2">
                   <input
-                    class="form-control"
+                    className="form-control"
                     type="file"
                     accept=".xlsx, .xls"
                     id="formFile"
-                    
+                    onChange={handleFileChange}
                   />
                 </div>
                 <div className="form-group mt-2 d-flex justify-content-end">
@@ -66,10 +75,7 @@ const Upload = ({ handleChange, handleAddData, form }) => {
                     type="button"
                     id="submit"
                     className="btn1 mt-3 "
-                    onClick={() => {
-                      handleUpload();
-                      togglePopup(); // Close the popup after clicking "บันทึก"
-                    }}
+                    onClick={handleUpload}
                   >
                     อัปโหลด
                   </button>
@@ -83,4 +89,4 @@ const Upload = ({ handleChange, handleAddData, form }) => {
   );
 };
 
-export default Upload;
+export default Upload;  
