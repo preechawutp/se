@@ -58,6 +58,13 @@
   padding: 10px 16px;
 }
 
+.data-table td,
+.data-table th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .navbar-menu a:hover {
   background-color: #f5f5f5;
   border-radius: 10px;
