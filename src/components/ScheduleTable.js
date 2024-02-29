@@ -4,7 +4,10 @@ import Navbar from "./Navbar";
 import Dropdown from './Dropdown';
 
 
-const ScheduleTable = () => {
+const ScheduleTable = ({ 
+  data,
+  handleDeleteSelectedCourse,
+ }) => {
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
     const startHour = Math.floor(index / 2) + 7;
     const startMinute = index % 2 === 0 ? '00' : '30';
@@ -50,29 +53,41 @@ const ScheduleTable = () => {
           </tbody>
         </table>
       </div>
-      <table className="table table-hover">
-      <thead >
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">รหัสวิชา</th>
-          <th scope="col">หลักสูตร</th>
-          <th scope="col">ชื่อวิชา</th>
-          <th scope="col">หน่วยกิต</th>
-          <th scope="col">ประเภท</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr scope="row">
-          <td>1</td>
-          <td>03603111</td>
-          <td>65</td>
-          <td>Programming Fundamentals I</td>
-          <td>3	</td>
-          <td> บรรยาย</td>
-        </tr>					
-      </tbody>
-      </table>
+      <h1>วิชาที่เลือก</h1>
+            {Array.isArray(data) && data.length > 0 ? (
+              <table className="table table-borderless mt-5">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">รหัสวิชา</th>
+                    <th scope="col">หลักสูตร</th>
+                    <th scope="col" style={{ width : '20%'}}>ชื่อวิชา</th>
+                    <th scope="col">หน่วยกิต</th>
+                    <th scope="col">ประเภท</th>
+                    <th scope="col">ลบ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((item, index) => (
+                    <tr key={index}>
+                      <th scope="row">{index + 1}</th>
+                      <td>{item.code}</td>
+                      <td>{item.grade}</td>
+                      <td>{item.name}</td>
+                      <td>{item.credit}</td>
+                      <td>{item.type}</td>
+                      <td>
+                        <button className="btn1" onClick={() => handleDeleteSelectedCourse(item.id)}>
+                          <i className="fa-solid fa-trash"></i> ลบ
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              ) : (
+                <p>ไม่มีข้อมูล</p>
+              )}
       </div>
       </div>
   );
