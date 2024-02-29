@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import fetchTeachers from './fetchTeachers';
 
 import "../assets/AddCourse.css";
 
@@ -12,11 +13,26 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
 
   const options = ["1", "2", "3", "4", "5"];
 
+  const [teachers, setTeachers] = useState([]);
+  const [selectedTeacher, setSelectedTeacher] = useState('');
+
+  useEffect(() => {
+    const getTeachers = async () => {
+      const teachersData = await fetchTeachers();
+      setTeachers(teachersData);
+    };
+    getTeachers();
+  }, []);
+
+  const handleTeacherChange = (e) => {
+    setSelectedTeacher(e.target.value);
+  };
+
   return (
     <div className="form-group">
       <div className="form-inline">
         <button className="btn1" onClick={togglePopup}>
-        <i class="fa-solid fa-plus"></i> เลือก
+          <i class="fa-solid fa-plus"></i> เลือก
         </button>
 
         {isPopup && (
@@ -42,7 +58,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                     className="form-select"
                     onChange={(e) => handleChange(e)}
                     name="type"
-                    style={{ width: "150px" }} 
+                    style={{ width: "150px" }}
                   >
                     <option value="-">- กรุณาเลือก -</option>
                     <option value="MON">MON</option>
@@ -53,7 +69,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                     <option value="SAT">SAT</option>
                     <option value="SUN">SUN</option>
                   </select>
-                  
+
                 </div>
 
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center gap-2">
@@ -78,11 +94,17 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                   <label htmlFor="teacher">อาจารย์</label>
                   <select
                     className="form-select"
-                    onChange={(e) => handleChange(e)}
+                    value={selectedTeacher}
+                    onChange={handleTeacherChange}
                     name="teacher"
-                    style={{ width: "150px" }} 
+                    style={{ width: "150px" }}
                   >
-                    <option value="-">- กรุณาเลือก -</option>
+                    <option value="">- กรุณาเลือก -</option>
+                    {teachers.map((teacher, index) => (
+                      <option key={index} value={teacher.firstname + ' ' + teacher.lastname}>
+                        {teacher.firstname + ' ' + teacher.lastname}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
