@@ -1,98 +1,157 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import "../assets/DataTable.css"; // เชื่อมต่อไฟล์ CSS
 import AddCourseToTable from "./AddCourseToTable";
-import SelectedCoursePopup from "./SelectedCoursePopup";
 
 const DataTable = ({
   data,
   editId,
   form,
+  courseForm,
+  handleAddData,
   handleChange,
   handleSave,
   handleEdit,
   handleDelete,
-  setEditId,
+  handleAddCourse,
+  setEditId, // เพิ่ม setEditId เข้ามา
   setForm,
+  handleCourseChange,
 }) => {
-  const [selectedCourses, setSelectedCourses] = useState([]);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  useEffect(() => {
-    const storedSelectedCourses = JSON.parse(localStorage.getItem("selectedCourses"));
-    if (storedSelectedCourses) {
-      setSelectedCourses(storedSelectedCourses);
-    }
-  }, []);
-
-  const handleSelectCourse = (course) => {
-    const updatedSelectedCourses = [...selectedCourses, course];
-    setSelectedCourses(updatedSelectedCourses);
-    localStorage.setItem("selectedCourses", JSON.stringify(updatedSelectedCourses));
-    setIsPopupOpen(false);
-  };
-
-  const handleDeleteCourse = (courseId) => {
-    const updatedSelectedCourses = selectedCourses.filter(
-      (course) => course.id !== courseId
-    );
-    setSelectedCourses(updatedSelectedCourses);
-    localStorage.setItem("selectedCourses", JSON.stringify(updatedSelectedCourses));
-  };
-
-  const handleClosePopup = () => {
-    setIsPopupOpen(false);
-  };
-
   return (
-    <div className={`data-table ${isPopupOpen ? 'contracted' : ''}`}>
-      <table className="table table-hover">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">รหัสวิชา</th>
-            <th scope="col">หลักสูตร</th>
-            <th scope="col">ชื่อวิชา</th>
-            <th scope="col">หน่วยกิต</th>
-            <th scope="col">ประเภท</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <th scope="row">{index + 1}</th>
-              <td>{item.code}</td>
-              <td>{item.grade}</td>
-              <td>{item.name}</td>
-              <td>{item.credit}</td>
-              <td>{item.type}</td>
-              <td>
-                <div className="d-flex align-items-center">
+    <table className="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">รหัสวิชา</th>
+          <th scope="col">หลักสูตร</th>
+          <th scope="col">ชื่อวิชา</th>
+          <th scope="col">หน่วยกิต</th>
+          <th scope="col">ประเภท</th>
+          <th scope="col">การจัดการ</th>
+          <th scope="col">เลือก</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item, index) => (
+          <tr key={index}>
+            <th scope="row">{index + 1}</th>
+            <td>
+              {editId === item.id ? (
+                <>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="number"
+                    name="code"
+                    value={form.code !== undefined ? form.code : item.code}
+                    placeholder="code"
+                  />
+                </>
+              ) : (
+                item.code
+              )}
+            </td>
+            <td>
+              {editId === item.id ? (
+                <>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="number"
+                    name="grade"
+                    value={form.grade !== undefined ? form.grade : item.grade}
+                    placeholder="grade"
+                  />
+                </>
+              ) : (
+                item.grade
+              )}
+            </td>
+            <td>
+              {editId === item.id ? (
+                <>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="text"
+                    name="name"
+                    value={form.name !== undefined ? form.name : item.name}
+                    placeholder="name"
+                  />
+                </>
+              ) : (
+                item.name
+              )}
+            </td>
+            <td>
+              {editId === item.id ? (
+                <>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="number"
+                    name="credit"
+                    value={form.credit !== undefined ? form.credit : item.credit}
+                    placeholder="credit"
+                  />
+                </>
+              ) : (
+                item.credit
+              )}
+            </td>
+            <td>
+              {editId === item.id ? (
+                <>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="text"
+                    name="type"
+                    value={form.type !== undefined ? form.type : item.type}
+                    placeholder="type"
+                  />
+                </>
+              ) : (
+                item.type
+              )}
+            </td>
+            <td>
+              {editId === item.id ? (
+                <>
+                  <button className="btn1" onClick={() => handleSave()}>
+                    <i className="fa-solid fa-floppy-disk"></i> บันทึก
+                  </button>
                   <button
                     className="btn1"
-                    onClick={() => handleSelectCourse(item)}
+                    onClick={() => {
+                      setEditId(false);
+                      setForm({});
+                    }}
                   >
-                    เลือก
+                    <i className="fa-solid fa-ban"></i> ยกเลิก
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button className="btn1" onClick={() => handleEdit(item.id)}>
+                    <i className="fa-solid fa-pencil"></i> แก้ไข
                   </button>
                   <button className="btn1" onClick={() => handleDelete(item.id)}>
-                    <i className="fa-solid fa-trash"></i>
+                    <i className="fa-solid fa-trash"></i> ลบ
                   </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <AddCourseToTable />
-
-      <button className="btn1" onClick={() => setIsPopupOpen(true)}>ดูรายวิชาที่เลือก</button>
-      {isPopupOpen && (
-        <SelectedCoursePopup
-          selectedCourses={selectedCourses}
-          handleDeleteCourse={handleDeleteCourse}
-          onClose={handleClosePopup}
-        />
-      )}
-    </div>
+                </>
+              )}
+            </td>
+            <td>
+              <div className="d-flex align-items-center">
+                <AddCourseToTable handleCourseChange={handleCourseChange} handleAddCourse={handleAddCourse} courseForm={courseForm} item_id={item.id} />
+                
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 

@@ -20,8 +20,6 @@ const App = () => {
         <Route path="/teacher" element={<TeacherTable />} />
       </Routes>
     </Router>
-
-    
   );
 };
 

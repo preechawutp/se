@@ -1,8 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import fetchTeachers from './FetchTeachers';
+import { db } from '../firebase';
+import "../assets/AddCourse.css";
+import {
+  collection,
+  onSnapshot,
+} from 'firebase/firestore';
 
+const AddCourseTotable = ({ 
+  handleCourseChange, 
+  handleAddCourse,
+  courseForm,
+  item_id,
+}) => {
+  const teacherRef = collection(db, "teacher");
+  const [teachers, setTeacher] = useState([]);
+  useEffect(() => {
+    const unsubscribe = onSnapshot(teacherRef, (snapshot) => {
+      const newData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTeacher(newData);
+    });
 
-const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const [isPopup, setPopup] = useState(false);
 
@@ -12,26 +36,11 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
 
   const options = ["1", "2", "3", "4", "5"];
 
-  const [teachers, setTeachers] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState('');
-
-  useEffect(() => {
-    const getTeachers = async () => {
-      const teachersData = await fetchTeachers();
-      setTeachers(teachersData);
-    };
-    getTeachers();
-  }, []);
-
-  const handleTeacherChange = (e) => {
-    setSelectedTeacher(e.target.value);
-  };
-
   return (
     <div className="form-group">
       <div className="form-inline">
         <button className="btn1" onClick={togglePopup}>
-          <i class="fa-solid fa-plus"></i> เลือก
+          + เลือก
         </button>
 
         {isPopup && (
@@ -41,23 +50,13 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
 
               <h1>เพิ่มรายวิชาเข้าตาราง</h1>
               <form>
-                <div className="form-group mt-3">
-                  <label htmlFor="code">รหัสวิชา</label>
-                  <input
-                    className="form-control"
-                    onChange={(e) => handleChange(e)}
-                    type="number"
-                    name="code"
-                  />
-                </div>
-
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center">
                   <label htmlFor="day">วันที่ต้องการสอน</label>
                   <select
                     className="form-select"
-                    onChange={(e) => handleChange(e)}
-                    name="type"
-                    style={{ width: "150px" }}
+                    onChange={(e) => handleCourseChange(e)}
+                    name="day"
+                    style={{ width: "150px" }} 
                   >
                     <option value="-">- กรุณาเลือก -</option>
                     <option value="MON">MON</option>
@@ -68,22 +67,23 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
                     <option value="SAT">SAT</option>
                     <option value="SUN">SUN</option>
                   </select>
-
+                  
                 </div>
 
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center gap-2">
                   <label htmlFor="TimeStart">เวลา</label>
                   <input
                     className="form-control"
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleCourseChange(e)}
                     type="time"
                     name="TimeStart"
+                    
                   />
 
                   <label htmlFor="TimeStop">ถึง</label>
                   <input
                     className="form-control"
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleCourseChange(e)}
                     type="time"
                     name="TimeStop"
                   />
@@ -93,16 +93,12 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
                   <label htmlFor="teacher">อาจารย์</label>
                   <select
                     className="form-select"
-                    value={selectedTeacher}
-                    onChange={handleTeacherChange}
+                    onChange={(e) => handleCourseChange(e)}
                     name="teacher"
-                    style={{ width: "150px" }}
+                    style={{ width: "150px" }} 
                   >
-                    <option value="">- กรุณาเลือก -</option>
-                    {teachers.map((teacher, index) => (
-                      <option key={index} value={teacher.firstname + ' ' + teacher.lastname}>
-                        {teacher.firstname + ' ' + teacher.lastname}
-                      </option>
+                    {teachers.map((item, index) => (
+                      <option value={item}> {item.firstname} {item.lastname} </option>
                     ))}
                   </select>
                 </div>
@@ -111,9 +107,10 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
                   <label htmlFor="sec">หมู่เรียน</label>
                   <input
                     className="form-control"
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleCourseChange(e)}
                     type="number"
                     name="sec"
+                    value={courseForm.sec || ""}
                     style={{ width: "150px" }} // Adjust the width as needed
                   />
                 </div>
@@ -122,7 +119,7 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
                   <label htmlFor="room">ห้อง</label>
                   <input
                     className="form-control"
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleCourseChange(e)}
                     type="number"
                     name="room"
                     style={{ width: "150px" }}
@@ -133,27 +130,28 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
                   <label htmlFor="major">สาขา</label>
                   <select
                     className="form-select"
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleCourseChange(e)}
                     name="major"
                     style={{ width: "150px" }}
                   >
-                    <option value="-">- กรุณาเลือก -</option>
+                    <option value="T12">- T12 -</option>
+
                   </select>
                 </div>
 
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center">
-                  <label htmlFor="stu">จำนวนนิสิต</label>
+                  <label htmlFor="student">จำนวนนิสิต</label>
                   <input
                     className="form-control"
-                    onChange={(e) => handleChange(e)}
+                    onChange={(e) => handleCourseChange(e)}
                     type="number"
-                    name="stu"
+                    name="student"
                     style={{ width: "150px" }}
                   />
                 </div>
 
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center">
-                  <label htmlFor="grade">ชั้นปี</label>
+                  <label htmlFor="grade_level">ชั้นปี</label>
                   <div className="d-flex">
                     {options.map((option, index) => (
                       <div key={index} className="form-check" style={{ marginRight: '16px' }}>
@@ -161,9 +159,9 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
                           className="form-check-input"
                           type="checkbox"
                           id={`option${index}`}
-                          name="grade"
+                          name="grade_level"
                           value={option}
-                          onChange={(e) => handleChange(e)}
+                          onChange={(e) => handleCourseChange(e)}
                         />
                         <label htmlFor={`option${index}`} className="form-check-label">{option}</label>
                       </div>
@@ -176,7 +174,7 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
                     className="btn1"
                     id="submit"
                     onClick={() => {
-                      handleAddData();
+                      handleAddCourse(item_id);
                       togglePopup(); // Close the popup after clicking "บันทึก"
                     }}
                   >
@@ -192,4 +190,4 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
   );
 };
 
-export default AddCourseToTable;
+export default AddCourseTotable;

@@ -10,7 +10,7 @@ const ShowCourse  = () => {
                 <h1 className="hh1">หลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์</h1>
                 <h2 className="hh2">ภาษาไทย : หลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์</h2>
                 <h2 className="hh2">ภาษาอังกฤษ : Bachelor of Engineering Program in Computer Engineering</h2>
-                <table className="table table-hover">
+                <table className="table table-hover mt-4">
                     <thead>
                         <tr>
                             <th scope="col">สาขาวิชา</th>

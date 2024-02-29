@@ -92,7 +92,7 @@ const AddTeacher = () => {
   };
 
   return (
-    <div className="form-group col-xl-5 p-3">
+    <div className="form-group">
       <div className="form-inline">
         <button className="btn1" onClick={togglePopup}>
           เพิ่มอาจารย์

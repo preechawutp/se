@@ -19,9 +19,8 @@ const TeacherTable = () => {
   }, []);
 
   const filteredTeachers = teachers.filter(teacher => {
-    return teacher.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-           teacher.lastname.toLowerCase().includes(searchQuery.toLowerCase());
-    // Add more conditions for other fields if needed
+    return (teacher.firstname && teacher.firstname.toLowerCase().includes(searchQuery.toLowerCase())) ||
+           (teacher.lastname && teacher.lastname.toLowerCase().includes(searchQuery.toLowerCase()));
   });
 
   return (

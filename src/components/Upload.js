@@ -37,7 +37,7 @@ const Upload = ({ handleChange, handleAddData, form }) => {
   };
 
   return (
-    <div className="form-group col-xl-5 p-3">
+    <div className="form-group">
       <div className="form-inline">
         <button className="btn1" onClick={togglePopup}>
           อัปโหลด
@@ -58,7 +58,7 @@ const Upload = ({ handleChange, handleAddData, form }) => {
                     type="file"
                     accept=".xlsx, .xls"
                     id="formFile"
-                    onChange={handleUpload}
+                    
                   />
                 </div>
                 <div className="form-group mt-2 d-flex justify-content-end">
@@ -67,6 +67,7 @@ const Upload = ({ handleChange, handleAddData, form }) => {
                     id="submit"
                     className="btn1 mt-3 "
                     onClick={() => {
+                      handleUpload();
                       togglePopup(); // Close the popup after clicking "บันทึก"
                     }}
                   >

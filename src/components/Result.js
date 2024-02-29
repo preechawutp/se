@@ -16,10 +16,10 @@ const Result = () => {
             <table className="table table-hover mt-3">
                 <thead class="thead-light">
                     <tr>
-                    <th scope="col" style={{ width: "5%" }} >ลำดับที่</th>
+                    <th scope="col">ลำดับที่</th>
                     <th scope="col">รหัสวิชา</th>
                     <th scope="col">ชื่อวิชา</th>
-                    <th scope="col" style={{ width: "5%" }}>หน่วยกิต</th>
+                    <th scope="col">หน่วยกิต</th>
                     </tr>
                 </thead>
                 <tbody>
