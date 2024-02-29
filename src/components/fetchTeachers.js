@@ -8,7 +8,7 @@ const FetchTeachers = async () => {
   const teachers = [];
   teachersSnapshot.forEach((doc) => {
     teachers.push(doc.data());
-  });
+  }); //te
   return teachers;
 };
 
