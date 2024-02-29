@@ -38,7 +38,7 @@ const Course = ({
                     <th scope="col">#</th>
                     <th scope="col">รหัสวิชา</th>
                     <th scope="col">หลักสูตร</th>
-                    <th scope="col">ชื่อวิชา</th>
+                    <th scope="col" style={{ width : '20%'}}>ชื่อวิชา</th>
                     <th scope="col">หน่วยกิต</th>
                     <th scope="col">ประเภท</th>
                     <th scope="col">ลบ</th>

@@ -118,18 +118,22 @@ const DataTable = ({
             <td>
               {editId === item.id ? (
                 <>
-                  <button className="btn1" onClick={() => handleSave()}>
-                    <i className="fa-solid fa-floppy-disk"></i> บันทึก
-                  </button>
-                  <button
-                    className="btn1"
-                    onClick={() => {
-                      setEditId(false);
-                      setForm({});
-                    }}
-                  >
-                    <i className="fa-solid fa-ban"></i> ยกเลิก
-                  </button>
+                  <div className="form-group d-flex justify-content-between">
+                    <div className="d-inline-flex">
+                      <button className="btn1 " onClick={() => handleSave()}>
+                        <i className="fa-solid fa-floppy-disk"></i> บันทึก
+                      </button>
+                      <button
+                        className="btn1"
+                        onClick={() => {
+                          setEditId(false);
+                          setForm({});
+                        }}
+                      >
+                        <i className="fa-solid fa-ban"></i> ยกเลิก
+                      </button>
+                    </div>
+                  </div>
                 </>
               ) : (
                 <>

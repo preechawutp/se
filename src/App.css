@@ -61,6 +61,7 @@
 .data-table td,
 .data-table th {
   overflow: hidden;
+  display: inline-block;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
