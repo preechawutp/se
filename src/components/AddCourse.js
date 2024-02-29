@@ -56,31 +56,31 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 />
               </div>
 
-              <div className="form-group mt-2">
+              <div className="form-group mt-3 d-flex justify-content-between align-items-center">
                 <label htmlFor="credit">หน่วยกิต</label>
                 <input
-                  className="form-control"
+                  className="form-control "
                   onChange={(e) => handleChange(e)}
                   type="number"
                   name="credit"
                   value={form.credit || ""}
+                  style={{ width: "30%" }} 
                 required/>
-              </div>
 
-              <div className="form-group">
                 <label htmlFor="type">ประเภท</label>
                 <select
                   className="form-select"
                   onChange={(e) => handleChange(e)}
                   name="type"
                   value={form.type || ""}
+                  style={{ width: "30%" }} 
                 >
                   <option value="บรรยาย">บรรยาย</option>
                   <option value="ปฎิบัติ">ปฎิบัติ</option>
                 </select>
               </div>
 
-              <div className="form-group mt-2 d-flex justify-content-end"> {/* Use Bootstrap grid classes */}
+              <div className="form-group mt-3 d-flex justify-content-end"> 
                 <button
                   type="button"
                   className="btn1"

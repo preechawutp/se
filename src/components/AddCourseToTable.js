@@ -1,23 +1,22 @@
 import React, { useState } from "react";
 
-const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
-  
+import "../assets/AddCourse.css";
+
+const AddCourse = ({ handleChange, handleAddData, form }) => {
+
   const [isPopup, setPopup] = useState(false);
-  const [isChecked, setChecked] = useState(false);
 
   const togglePopup = () => {
     setPopup(!isPopup);
   };
 
-  const handleCheckboxChange = () => {
-    setChecked(!isChecked);
-  };
+  const options = ["1", "2", "3", "4", "5"];
 
   return (
     <div className="form-group">
       <div className="form-inline">
         <button className="btn1" onClick={togglePopup}>
-          +เลือก
+        <i class="fa-solid fa-plus"></i> เลือก
         </button>
 
         {isPopup && (
@@ -25,44 +24,138 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
             <div className="popup">
               <div className="close"><button className="btn-close" onClick={togglePopup}></button></div>
 
-              <h3>เพิ่มรายวิชาเข้าตาราง</h3>
-
+              <h1>เพิ่มรายวิชาเข้าตาราง</h1>
               <form>
-
-              <div className="form-group mt-2 ">
-                <label htmlFor="code">test</label>
-                <input
-                  className="form-control"
-                  type="text"
-                />
-              </div>
-
-              <div className="form-group mt-2 ">
-                <label htmlFor="code">test</label>
-                <input
-                  className="form-control"
-                  type="text"
-                />
-              </div>
-
-              <div className="form-group mt-2">
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={handleCheckboxChange}
-                    />
-                    <span>เช็คสถานะ</span>
-                  </label>
+                <div className="form-group mt-3">
+                  <label htmlFor="code">รหัสวิชา</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="number"
+                    name="code"
+                  />
                 </div>
 
-              <div className="form-group mt-2 d-flex justify-content-end">
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="day">วันที่ต้องการสอน</label>
+                  <select
+                    className="form-select"
+                    onChange={(e) => handleChange(e)}
+                    name="type"
+                    style={{ width: "150px" }} 
+                  >
+                    <option value="-">- กรุณาเลือก -</option>
+                    <option value="MON">MON</option>
+                    <option value="TUE">TUE</option>
+                    <option value="WED">WED</option>
+                    <option value="THU">THU</option>
+                    <option value="FRI">FRI</option>
+                    <option value="SAT">SAT</option>
+                    <option value="SUN">SUN</option>
+                  </select>
+                  
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center gap-2">
+                  <label htmlFor="TimeStart">เวลา</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="time"
+                    name="TimeStart"
+                  />
+
+                  <label htmlFor="TimeStop">ถึง</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="time"
+                    name="TimeStop"
+                  />
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="teacher">อาจารย์</label>
+                  <select
+                    className="form-select"
+                    onChange={(e) => handleChange(e)}
+                    name="teacher"
+                    style={{ width: "150px" }} 
+                  >
+                    <option value="-">- กรุณาเลือก -</option>
+                  </select>
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="sec">หมู่เรียน</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="number"
+                    name="sec"
+                    style={{ width: "150px" }} // Adjust the width as needed
+                  />
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="room">ห้อง</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="number"
+                    name="room"
+                    style={{ width: "150px" }}
+                  />
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="major">สาขา</label>
+                  <select
+                    className="form-select"
+                    onChange={(e) => handleChange(e)}
+                    name="major"
+                    style={{ width: "150px" }}
+                  >
+                    <option value="-">- กรุณาเลือก -</option>
+                  </select>
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="stu">จำนวนนิสิต</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleChange(e)}
+                    type="number"
+                    name="stu"
+                    style={{ width: "150px" }}
+                  />
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="grade">ชั้นปี</label>
+                  <div className="d-flex">
+                    {options.map((option, index) => (
+                      <div key={index} className="form-check" style={{ marginRight: '16px' }}>
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`option${index}`}
+                          name="grade"
+                          value={option}
+                          onChange={(e) => handleChange(e)}
+                        />
+                        <label htmlFor={`option${index}`} className="form-check-label">{option}</label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-group mt-2 d-flex justify-content-end">
                   <button
                     type="button"
                     className="btn1"
                     id="submit"
                     onClick={() => {
-                      togglePopup();
+                      togglePopup(); // Close the popup after clicking "บันทึก"
                     }}
                   >
                     บันทึก
@@ -77,4 +170,4 @@ const AddCourseToTable = ({ handleChange, handleAddData, form }) => {
   );
 };
 
-export default AddCourseToTable;
+export default AddCourse;

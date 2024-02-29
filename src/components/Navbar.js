@@ -14,7 +14,7 @@ function Mainnav() {
           <li><a href="/"><i class="fa-solid fa-book"></i> รายวิชา</a></li>
           <li><a href="/table"><i class="fa-solid fa-table"></i> ตารางสอน</a></li>
           <li><a href="/course"><i class="fa-solid fa-bookmark"></i> หลักสูตร</a></li>
-          <li><a href="#"><i class="fa-solid fa-square-poll-vertical"></i> ผลการจัดตาราง</a></li>
+          <li><a href="/result"><i class="fa-solid fa-square-poll-vertical"></i> ผลการจัดตาราง</a></li>
         </ul>
     </nav>
     </>
