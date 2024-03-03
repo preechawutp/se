@@ -22,6 +22,7 @@ import Upload from './Upload';
 import Course from './Course';
 import '../App.css';
 
+
 const Main = () => {
   const [form, setForm] = useState({});
   const [courseForm, setCourseForm] = useState({});
@@ -29,6 +30,7 @@ const Main = () => {
   const [editId, setEditId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCourses, setSelectedCourses] = useState([]);
+  const [tableData, setTableData] = useState([]);
 
   const roitaiRef = collection(db, 'course');
   const selectedCourseRef = collection(db, 'selected_course');
@@ -89,29 +91,38 @@ const Main = () => {
   };
 
   // เพิ่มวิชาที่เลือก
+  // เพิ่มวิชาที่เลือก
   const handleAddCourse = async (id) => {
-    const isSelected = await checkCourseSelected(id);
-    if (!isSelected) {
-      const selectedItem = data.find((item) => item.id === id);
-      const { id: itemId, ...newItem } = selectedItem;
-      if (!newItem) return;
-      let object = {};
-      for (let [key, value] of Object.entries(courseForm)) {
-        object[key] = value;
-      }
-      // เพิ่ม refId เข้าไปใน object
-      object.refId = id;
-      object.code = newItem.code;
-      object.credit = newItem.credit;
-      object.grade = newItem.grade;
-      object.name = newItem.name;
-      object.type = newItem.type;
-      // object ที่ได้จะมีค่าจาก form และ refId
-      const courseItem = object;
-      const docRef = await addDoc(selectedCourseRef, courseItem);
-    } else {
-      console.log('Course already selected');
+    const selectedItem = data.find((item) => item.id === id);
+    if (!selectedItem) return; // หยุดการทำงานของฟังก์ชันหากไม่พบรายวิชา
+
+    const { id: itemId, ...newItem } = selectedItem; // ละเว้น id ของรายวิชาจาก object ที่จะเพิ่ม
+    if (!newItem) return; // หยุดการทำงานของฟังก์ชันหากไม่มีข้อมูลใหม่
+
+    let object = {};
+    for (let [key, value] of Object.entries(courseForm)) {
+      object[key] = value; // คัดลอกข้อมูลจากฟอร์ม
     }
+
+    // เพิ่มข้อมูลรายวิชาลงใน object
+    object.refId = id;
+    object.code = newItem.code;
+    object.credit = newItem.credit;
+    object.grade = newItem.grade;
+    object.name = newItem.name;
+    object.type = newItem.type;
+    
+    // ตรวจสอบว่ามีวิชาที่มี sec ซ้ำกันในฐานข้อมูลหรือไม่
+    const q = query(selectedCourseRef, where('sec', '==', object.sec));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      console.log('This section has already been added.');
+      return; // หยุดการทำงานของฟังก์ชัน
+    }
+    const courseItem = object; // สร้าง object สำหรับเพิ่มลงในฐานข้อมูล
+    const docRef = await addDoc(selectedCourseRef, courseItem); // เพิ่มลงในฐานข้อมูล
+    console.log('Course added with ID: ${docRef.id}'); // แสดงข้อความยืนยัน
+    //handleAddToTable(object);
   };
 
   // แก้ไขข้อมูล
@@ -151,14 +162,23 @@ const Main = () => {
   const handleSave = () => {
     handleUpdate();
   };
+  
+  const handleAddToTable = (newItem) => {
+    for (let i=0; i < newItem.length; i++) {
+      const itemId = newItem[i].id
+      const courseRef = doc(db, 'selected_course', itemId)
+      updateDoc(courseRef, {status: "active"})
+    }
+}
+
 
   return (
     <div>
       <Navbar />
       <div className="container-sm mt-5">
         <h2>รายวิชา</h2>
-        <div className="form-group d-flex justify-content-between align-items-center" style={{ width: '100%' }}>
-          <div className="input-group mb-3 mt-3" style={{ width: '60%' }}>
+        <div className="d-flex justify-content-between" style={{ width: '100%' }}>
+          <div className="input-group mb-3 mt-3" style={{ width: '40%' }}>
             <input
               type="text"
               className="form-control"
@@ -167,11 +187,11 @@ const Main = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <div className="d-flex" style={{ width: '40%', justifyContent: 'flex-end' }}>
+          <div className="d-flex">
             <AddCourse handleChange={handleChange} handleAddData={handleAddData} form={form} />
             <AddTeacher />
-            <Upload handleChange={handleChange} handleAddData={handleAddData} form={form} />
-            <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse}/>
+            <Upload handleChange={handleChange} />
+            <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse} handleAddToTable={handleAddToTable}/>
           </div>
         </div>
         <DataTable
@@ -187,9 +207,9 @@ const Main = () => {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
           handleAddCourse={handleAddCourse}
-          setEditId={setEditId}
-          setForm={setForm}
           handleAddData={handleAddData}
+          handleAddToTable={handleAddToTable}
+          
         />
       </div>
     </div>
