@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../assets/AddCourse.css";
+import { Button, Modal } from "react-bootstrap";
 
 const AddCourse = ({ 
   handleChange, 
@@ -7,24 +8,29 @@ const AddCourse = ({
   form,
 }) => {
 
-  const [isPopup, setPopup] = useState(false);
-
-  const togglePopup = () => {
-    setPopup(!isPopup);
-  };
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   return (
-    <div className="form-group col-xl-4 p-3">
-      <div className="form-inline">
-        <button className="btn1" onClick={togglePopup}>
+    <div className="form-group p-3">
+        <Button className="btn1" onClick={handleShow}>
           เพิ่มรายวิชา
-        </button>
+        </Button>
 
-        {isPopup && (
-          <div className="popup-overlay">
-            <div className="popup">
-              <div className="close"><button className="btn-close" onClick={togglePopup}></button></div>
-              
+        <Modal
+          show={show} 
+          onHide={handleClose}
+          aria-labelledby="contained-modal-title-vcenter"
+          centered={true}
+          scrollable={true}
+          size="s"
+        >
+        <Modal.Body closeButton style={{
+            overflowY: 'auto',
+            overflowX: 'auto',
+            padding: '10%'
+          }}>
               <h1>เพิ่มรายวิชา</h1>
               <form>
               <div className="form-group mt-2 ">
@@ -60,7 +66,7 @@ const AddCourse = ({
                 />
               </div>
 
-              <div className="form-group mt-2">
+              <div className="form-group mt-3 d-flex justify-content-between align-items-center">
                 <label htmlFor="credit">หน่วยกิต</label>
                 <input
                   className="form-control"
@@ -68,41 +74,39 @@ const AddCourse = ({
                   type="number"
                   name="credit"
                   value={form.credit || ""}
+                  style={{ width: '30%' }}
                 required/>
-              </div>
 
-              <div className="form-group">
                 <label htmlFor="type">ประเภท</label>
                 <select
                   className="form-select"
                   onChange={(e) => handleChange(e)}
                   name="type"
                   value={form.type || ""}
+                  style={{ width: '30%' }}
                 >
                   <option value="บรรยาย">บรรยาย</option>
                   <option value="ปฎิบัติ">ปฎิบัติ</option>
                 </select>
               </div>
 
-              <div className="form-group mt-2">
+              <div className="form-group mt-3 d-flex justify-content-end">
                   <button
                     type="button"
                     className="btn1"
                     id="submit"
                     onClick={() => {
                       handleAddData();
-                      togglePopup(); // Close the popup after clicking "บันทึก"
+                      handleShow(); 
                     }}
                   >
                     บันทึก
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
-        )}
+              </Modal.Body>
+        </Modal>
       </div>
-    </div>
   );
 };
 

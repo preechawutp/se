@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import * as XLSX from 'xlsx';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { Button, Modal } from "react-bootstrap";
 
 const Upload = ({ handleChange, handleAddData, form }) => {
-  const [isPopup, setPopup] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
 
-  const togglePopup = () => {
-    setPopup(!isPopup);
-  };
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
@@ -46,19 +46,25 @@ const Upload = ({ handleChange, handleAddData, form }) => {
   };
 
   return (
-    <div className="form-group">
-      <div className="form-inline">
-        <button className="btn1" onClick={togglePopup}>
+    <div className="form-group p-3  ">
+        <Button className="btn1" onClick={handleShow}>
           อัปโหลด
-        </button>
+        </Button>
 
-        {isPopup && (
-          <div className="popup-overlay">
-            <div className="popup">
-              <div className="close">
-                <button className="btn-close" onClick={togglePopup}></button>
-              </div>
-
+        <Modal
+          show={show} 
+          onHide={handleClose}
+          aria-labelledby="contained-modal-title-vcenter"
+          centered={true}
+          scrollable={true}
+          size="s"
+        >
+        <Modal.Body closeButton style={{
+            maxHeight: 'calc(100vh - 210px)',
+            overflowY: 'auto',
+            overflowX: 'auto',
+            padding: '10%'
+          }}>
               <h1>อัปโหลด</h1>
               <form className="row">
                 <div className="form-group mt-2">
@@ -81,11 +87,9 @@ const Upload = ({ handleChange, handleAddData, form }) => {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
-        )}
+              </Modal.Body>
+        </Modal>
       </div>
-    </div>
   );
 };
 

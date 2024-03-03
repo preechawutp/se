@@ -54,6 +54,7 @@ const AddTeacher = () => {
 
   return (
     <>
+    <div className="form-group p-3  ">
       <Button className="btn1" onClick={handleShow}>
         เพิ่มอาจารย์
       </Button>
@@ -75,27 +76,25 @@ const AddTeacher = () => {
           <h1>เพิ่มอาจารย์</h1>
           <form className="row">
             <div className="form-group">
-              <label htmlFor="firstname">ชื่อจริง:</label>
+              <label htmlFor="firstname">ชื่อจริง</label>
               <input
                 className="form-control"
                 onChange={(e) => handleChange(e)}
                 type="text"
                 name="firstname"
-                placeholder="First Name"
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="lastname">นามสกุล :</label>
+            <div className="form-group mt-3">
+              <label htmlFor="lastname">นามสกุล</label>
               <input
                 className="form-control"
                 onChange={(e) => handleChange(e)}
                 type="text"
                 name="lastname"
-                placeholder="Last Name"
               />
             </div>
-            <div className="form-group mt-2 d-flex justify-content-end">
+            <div className="form-group mt-3 d-flex justify-content-end">
           <button className="btn1 mt-2 d-flex justify-content-end" onClick={handleAddData}>
               บันทึก
           </button>
@@ -104,6 +103,7 @@ const AddTeacher = () => {
         </Modal.Body>
 
       </Modal>
+      </div>
     </>
   );
 };

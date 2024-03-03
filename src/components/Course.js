@@ -30,9 +30,10 @@ const Course = ({
         <Modal.Body style={{
       maxHeight: 'calc(100vh - 210px)',
       overflowY: 'auto',
-      overflowX: 'auto'
+      overflowX: 'auto',
+      padding: '5%'
      }}>
-        <h1>วิชาที่เลือก</h1>
+              <h1>วิชาที่เลือก</h1>
               {Array.isArray(data) && data.length > 0 ? (
                 <table className="table table-hover">
                   <thead>
