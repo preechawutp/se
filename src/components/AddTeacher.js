@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from "react";
-// import "../assets/AddTeacher.css";
-
+import { Modal, Button } from "react-bootstrap";
 import { db } from "../firebase";
 import {
   collection,
   addDoc,
   onSnapshot,
-  doc,
-  updateDoc,
-  deleteDoc,
 } from "firebase/firestore";
 
 const AddTeacher = () => {
   const roitaiRefT = collection(db, "teacher");
-    // State variables for form data, existing data, editId, and search term
-    const [form, setForm] = useState({});
-    const [data, setData] = useState([]);
-    const [editId, setEditId] = useState(null);
-    const [searchTerm, setSearchTerm] = useState("");
+  const [form, setForm] = useState({ firstname: "", lastname: "" });
+  const [data, setData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const unsubscribe = loadRealtime();
@@ -39,115 +34,136 @@ const AddTeacher = () => {
     };
   };
 
-  // Event handler for input change
   const handleChange = (e) => {
+    const { name, value } = e.target;
+  
+    // Validation for Thai and English letters
+    const thaiAndEnglishRegex = /^[A-Za-zก-๙]+$/;
+    const isValidInput = thaiAndEnglishRegex.test(value);
+  
     setForm({
       ...form,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
-  };
-
-  // Event handler for adding data to Firestore
-  const handleAddData = async () => {
-    await addDoc(roitaiRefT, form)
-      .then((res) => {})
-      .catch((err) => console.log(err));
+  
+    setErrors({
+      ...errors,
+      [name]: isValidInput ? "" : "กรุณากรอกเฉพาะตัวอักษรไทยหรืออังกฤษ",
+    });
   };
   
 
-  // Event handler for initiating edit mode
-  const handleEdit = (id) => {
-    setEditId(id);
-    const selectedItem = data.find((item) => item.id === id);
-    setForm(selectedItem);
-  };
-
-  // Event handler for updating data in Firestore
-  const handleUpdate = async () => {
-    const docRef = doc(db, "teacher", editId);
-    await updateDoc(docRef, form)
+  const handleAddData = async () => {
+    // Check for empty fields
+    const emptyFields = Object.keys(form).filter((key) => !form[key]);
+  
+    if (emptyFields.length > 0) {
+      // Display warning for empty fields
+      const emptyFieldErrors = emptyFields.reduce((acc, field) => {
+        acc[field] = "กรุณากรอกข้อมูล";
+        return acc;
+      }, {});
+  
+      setErrors({ ...errors, ...emptyFieldErrors });
+      return;
+    }
+  
+    // Check if there are any validation errors
+    const validationErrors = Object.values(errors).filter((error) => error);
+  
+    if (validationErrors.length > 0) {
+      // Display warning for validation errors
+      return;
+    }
+  
+    // Add data if no errors
+    await addDoc(roitaiRefT, form)
       .then(() => {
-        setEditId(null);
-        setForm({});
+        // Clear form and errors after successful addition
+        setForm({ firstname: "", lastname: "" });
+        setErrors({});
+        handleClose();
       })
       .catch((err) => console.log(err));
   };
 
-  // Event handler for deleting data from Firestore
-  const handleDelete = async (id) => {
-    const docRef = doc(db, "course", id);
-    await deleteDoc(docRef).catch((err) => console.log(err));
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => {
+    setShow(false);
+    setForm({ firstname: "", lastname: "" });
+    setErrors({});
   };
 
-  const handleSave = () => {
-    handleUpdate();
-    setEditId(null);
-    setForm({});
-  };
-
-  const [isPopup, setPopup] = useState(false);
-
-  const togglePopup = () => {
-    setPopup(!isPopup);
-  };
+  const handleShow = () => setShow(true);
 
   return (
-    <div className="form-group">
-      <div className="form-inline">
-        <button className="btn1" onClick={togglePopup}>
+    <>
+      <div className="form-group p-3  ">
+        <Button className="btn1" onClick={handleShow}>
           เพิ่มอาจารย์
-        </button>
+        </Button>
 
-        {isPopup && (
-          <div className="popup-overlay">
-            <div className="popup">
-              <div className="close"><button className="btn-close" onClick={togglePopup}></button></div>
-              
-              <h1>เพิ่มอาจารย์</h1>
-              <form className="row">
+        <Modal
+          show={show}
+          onHide={handleClose}
+          aria-labelledby="contained-modal-title-vcenter"
+          centered={true}
+          scrollable={true}
+          size="s"
+        >
+          <Modal.Body
+            closeButton
+            style={{
+              maxHeight: "calc(100vh - 210px)",
+              overflowY: "auto",
+              overflowX: "auto",
+              padding: "50px", // เพิ่ม padding เพื่อเพิ่มช่องว่างระหว่างขอบ
+            }}
+          >
+            <h1>เพิ่มอาจารย์</h1>
+            <form className="row">
               <div className="form-group">
-                <label htmlFor="firstname">ชื่อจริง:</label>
+                <label htmlFor="firstname">ชื่อจริง</label>
                 <input
-                  className="form-control"
+                  className={`form-control ${errors.firstname ? "is-invalid" : ""}`}
                   onChange={(e) => handleChange(e)}
                   type="text"
                   name="firstname"
-                //   value={form.code || ""}
-                  placeholder="First Name"
+                  value={form.firstname}
                 />
+                {errors.firstname && (
+                  <div className="invalid-feedback">{errors.firstname}</div>
+                )}
               </div>
 
-              <div className="form-group">
-                <label htmlFor="lastname">นามสกุล :</label>
+              <div className="form-group mt-3">
+                <label htmlFor="lastname">นามสกุล</label>
                 <input
-                  className="form-control"
+                  className={`form-control ${errors.lastname ? "is-invalid" : ""}`}
                   onChange={(e) => handleChange(e)}
                   type="text"
                   name="lastname"
-                //   value={form.grade || ""}
-                  placeholder="Last Name"
+                  value={form.lastname}
                 />
+                {errors.lastname && (
+                  <div className="invalid-feedback">{errors.lastname}</div>
+                )}
               </div>
-
-              <div className="form-group mt-2 d-flex justify-content-end">
-                  <button
-                    type="button"
-                    className="btn1"
-                    id="submit"
-                    onClick={() => {
-                      handleAddData();
-                      togglePopup(); // Close the popup after clicking "บันทึก"
-                    }}
-                  >
-                    บันทึก
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+              <div className="form-group mt-3 d-flex justify-content-end">
+              <button
+                className="btn1 mt-2 d-flex justify-content-end"
+                onClick={handleAddData}
+                disabled={Object.keys(errors).some((key) => errors[key])} // Disable if there are errors
+              >
+                บันทึก
+              </button>
+              </div>
+            </form>
+          </Modal.Body>
+        </Modal>
       </div>
-    </div>
+    </>
   );
 };
 

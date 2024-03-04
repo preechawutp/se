@@ -140,6 +140,28 @@ const AddCourseTotable = ({
                 </div>
 
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="student">ปีการศึกษา</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleCourseChange(e)}
+                    type="number"
+                    name="years"
+                    style={{ width: "150px" }}
+                  />
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+                  <label htmlFor="student">ภาคเรียน</label>
+                  <input
+                    className="form-control"
+                    onChange={(e) => handleCourseChange(e)}
+                    type="text"
+                    name="term"
+                    style={{ width: "150px" }}
+                  />
+                </div>
+
+                <div className="form-group mt-2 d-flex justify-content-between align-items-center">
                   <label htmlFor="student">จำนวนนิสิต</label>
                   <input
                     className="form-control"
