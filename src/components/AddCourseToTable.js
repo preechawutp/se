@@ -205,7 +205,7 @@ const AddCourseTotable = ({
                     ))}
                   </div>
                 </div>
-                <div className="form-group mt-2 d-flex justify-content-end">
+                <div className="form-group mt-2 d-flex justify-content-end ">
                   <button
                     type="button"
                     className="btn1"
