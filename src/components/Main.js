@@ -228,6 +228,8 @@ const Main = () => {
           handleAddCourse={handleAddCourse}
           handleAddData={handleAddData}
           handleAddToTable={handleAddToTable}
+          setEditId={setEditId}
+          setForm={setForm}
           
         />
       </div>
