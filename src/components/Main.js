@@ -115,15 +115,34 @@ const Main = () => {
     // ตรวจสอบว่ามีวิชาที่มี sec ซ้ำกันในฐานข้อมูลหรือไม่
     const q = query(selectedCourseRef, where('sec', '==', object.sec));
     const querySnapshot = await getDocs(q);
+
     if (!querySnapshot.empty) {
-      console.log('This section has already been added.');
-      return; // หยุดการทำงานของฟังก์ชัน
+        // ถ้าพบ sec ที่ซ้ำกันอยู่แล้วในฐานข้อมูล
+        // ตรวจสอบชื่อของวิชาที่เหมือนกันด้วย
+        let isSameCourseName = false;
+        querySnapshot.forEach((doc) => {
+            const existingCourse = doc.data();
+            if (existingCourse.name === object.name) {
+                isSameCourseName = true;
+                // หยุดการทำงานของฟังก์ชันหากพบชื่อวิชาเหมือนกัน
+                console.log('This course already exists with the same section and name.');
+                return;
+            }
+        });
+        // ถ้าชื่อวิชาไม่เหมือนกัน ให้เพิ่มวิชาเข้าไปในฐานข้อมูล
+        if (!isSameCourseName) {
+            const courseItem = object; // สร้าง object สำหรับเพิ่มลงในฐานข้อมูล
+            const docRef = await addDoc(selectedCourseRef, courseItem); // เพิ่มลงในฐานข้อมูล
+            console.log(`Course added with ID: ${docRef.id}`); // แสดงข้อความยืนยัน
+        }
+    } else {
+        // ถ้าไม่พบ sec ที่ซ้ำกันในฐานข้อมูล ให้เพิ่มวิชาเข้าไปเลย
+        const courseItem = object; // สร้าง object สำหรับเพิ่มลงในฐานข้อมูล
+        const docRef = await addDoc(selectedCourseRef, courseItem); // เพิ่มลงในฐานข้อมูล
+        console.log(`Course added with ID: ${docRef.id}`); // แสดงข้อความยืนยัน
     }
-    const courseItem = object; // สร้าง object สำหรับเพิ่มลงในฐานข้อมูล
-    const docRef = await addDoc(selectedCourseRef, courseItem); // เพิ่มลงในฐานข้อมูล
-    console.log('Course added with ID: ${docRef.id}'); // แสดงข้อความยืนยัน
-    //handleAddToTable(object);
-  };
+};
+
 
   // แก้ไขข้อมูล
   const handleEdit = (id) => {
@@ -217,4 +236,3 @@ const Main = () => {
 };
 
 export default Main;
-//HELLO PRAI
