@@ -11,7 +11,6 @@ const AddTeacher = () => {
   const roitaiRefT = collection(db, "teacher");
   const [form, setForm] = useState({ firstname: "", lastname: "" });
   const [data, setData] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {

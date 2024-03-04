@@ -5,6 +5,7 @@ import {
   collection,
   onSnapshot,
 } from 'firebase/firestore';
+import { Button, Modal } from 'react-bootstrap';
 
 const AddCourseTotable = ({ 
   handleCourseChange, 
@@ -14,6 +15,7 @@ const AddCourseTotable = ({
 }) => {
   const teacherRef = collection(db, "teacher");
   const [teachers, setTeacher] = useState([]);
+
   useEffect(() => {
     const unsubscribe = onSnapshot(teacherRef, (snapshot) => {
       const newData = snapshot.docs.map((doc) => ({
@@ -28,26 +30,39 @@ const AddCourseTotable = ({
     };
   }, []);
 
-  const [isPopup, setPopup] = useState(false);
 
-  const togglePopup = () => {
-    setPopup(!isPopup);
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => {
+    setShow(false);
   };
 
+  const handleShow = () => setShow(true);
   const options = ["1", "2", "3", "4", "5"];
+
 
   return (
     <div className="form-group">
-      <div className="form-inline">
-        <button className="btn1" onClick={togglePopup}>
-          + เลือก
-        </button>
+      <Button className="btn1" onClick={handleShow}>
+        เพิ่มรายวิชา
+      </Button>
 
-        {isPopup && (
-          <div className="popup-overlay">
-            <div className="popup">
-              <div className="close"><button className="btn-close" onClick={togglePopup}></button></div>
-
+      <Modal
+        show={show}
+        onHide={handleClose}
+        aria-labelledby="contained-modal-title-vcenter"
+        centered={true}
+        scrollable={true}
+        size="s"
+      >
+        <Modal.Body
+          closeButton
+          style={{
+            overflowY: "auto",
+            overflowX: "auto",
+            padding: "10%",
+          }}
+        >
               <h1>เพิ่มรายวิชาเข้าตาราง</h1>
               <form>
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center">
@@ -197,19 +212,18 @@ const AddCourseTotable = ({
                     id="submit"
                     onClick={() => {
                       handleAddCourse(item_id);
-                      togglePopup(); // Close the popup after clicking "บันทึก"
+                      handleShow(); // Close the popup after clicking "บันทึก"
                     }}
                   >
                     บันทึก
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
-        )}
-      </div>
+              </Modal.Body>
+      </Modal>
     </div>
   );
 };
+
 
 export default AddCourseTotable;

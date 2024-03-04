@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import fetchTeachers from './FetchTeachers';
 import Navbar from './Navbar';
+import AddTeacher from './AddTeacher';
 
 const TeacherTable = () => {
   const [teachers, setTeachers] = useState([]);
@@ -26,17 +27,26 @@ const TeacherTable = () => {
   return (
     <div>
       <Navbar/>
-      <div className='container'>
+      <div className='container-sm mt-5'>
         <div className='mt-5'>
           <h2>รายชื่ออาจารย์</h2>
-          <input
-            type='text'
-            placeholder='ค้นหา ชื่อ หรือ นามสกุล...'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='form-control mb-3'
-            style={{ width: "35%" }}
-          />
+          <div className="d-flex justify-content-between align-items-center" style={{ width: '100%' }}>
+            <div className="input-group mb-3 mt-3" style={{ width: '40%' }}>
+              <input
+                type='text'
+                placeholder='ค้นหา ชื่อ หรือ นามสกุล...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className='form-control mb-3 mt-3'
+                style={{ width: "35%" }}
+              /> 
+              <div className="d-flex">
+                <AddTeacher />
+              </div>
+          </div>
+        </div>
+
+
           <table className='table table-hover' style={{ width: "70%" }}>
             <thead class="table caption-top">
               <tr>
