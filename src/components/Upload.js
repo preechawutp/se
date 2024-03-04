@@ -20,6 +20,17 @@ const Upload = ({ handleChange, handleAddData, form }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+
+    // Check if the file type is valid
+    const validFileTypes = [".xlsx", ".xls"];
+    const fileType = file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2);
+
+    if (!validFileTypes.includes(`.${fileType.toLowerCase()}`)) {
+      // Display an alert or update UI to inform the user
+      alert("ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์ Excel (.xlsx หรือ .xls)");
+      return;
+    }
+
     setSelectedFile(file);
 
     // Read the file and set the Excel data for preview
