@@ -104,7 +104,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                   onChange={(e) => handleChange(e)}
                   name="type"
                   value={form.type || ""}
-                  style={{ width: '30%' }}
+                  style={{ width: '35%' }}
                 >
                   <option value="">- กรุณาเลือก -</option>
                   <option value="บรรยาย">บรรยาย</option>
