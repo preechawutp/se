@@ -56,26 +56,26 @@ const AddTeacher = () => {
   const handleAddData = async () => {
     // Check for empty fields
     const emptyFields = Object.keys(form).filter((key) => !form[key]);
-
+  
     if (emptyFields.length > 0) {
       // Display warning for empty fields
       const emptyFieldErrors = emptyFields.reduce((acc, field) => {
         acc[field] = "กรุณากรอกข้อมูล";
         return acc;
       }, {});
-
+  
       setErrors({ ...errors, ...emptyFieldErrors });
       return;
     }
-
+  
     // Check if there are any validation errors
     const validationErrors = Object.values(errors).filter((error) => error);
-
+  
     if (validationErrors.length > 0) {
       // Display warning for validation errors
       return;
     }
-
+  
     // Add data if no errors
     await addDoc(roitaiRefT, form)
       .then(() => {
@@ -151,12 +151,13 @@ const AddTeacher = () => {
                 )}
               </div>
               <div className="form-group mt-3 d-flex justify-content-end">
-                <button
-                  className="btn1 mt-2 d-flex justify-content-end"
-                  onClick={handleAddData}
-                >
-                  บันทึก
-                </button>
+              <button
+                className="btn1 mt-2 d-flex justify-content-end"
+                onClick={handleAddData}
+                disabled={Object.keys(errors).some((key) => errors[key])} // Disable if there are errors
+              >
+                บันทึก
+              </button>
               </div>
             </form>
           </Modal.Body>
