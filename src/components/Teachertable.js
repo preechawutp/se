@@ -65,7 +65,7 @@ const TeacherTable = () => {
                 placeholder='ค้นหา ชื่อ หรือ นามสกุล...'
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className='form-control mb-3 mt-3'
+                className='form-control mb-3 mt-3 rounded'
                 style={{ width: "35%" }}
               />
               <div className="d-flex">
