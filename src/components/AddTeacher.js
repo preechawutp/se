@@ -188,26 +188,34 @@ const AddTeacher = () => {
         <Modal
           show={showConfirmationModal}
           onHide={handleConfirmationModalClose}
+          size="x"
           centered
         >
-          <Modal.Header>
-            <Modal.Title>ยืนยันการเพิ่มข้อมูล</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>ต้องการเพิ่มข้อมูลใช่หรือไม่?</p>
+         <Modal.Body closeButton style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center", 
+            maxHeight: 'calc(100vh - 210px)',
+            overflowY: 'auto',
+            overflowX: 'auto',
+            padding: '10%',
+          }}>
+            <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+            <h5>ต้องการยืนยันใช่หรือไม่?</h5>   
+            <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+              <Button variant="success" className="btn1"  onClick={handleConfirmAddData}>
+                ยืนยัน
+              </Button>
+              <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+                ยกเลิก
+              </Button>
+            </div>
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="danger" onClick={handleConfirmationModalClose}>
-              ยกเลิก
-            </Button>
-            <Button variant="success" onClick={handleConfirmAddData}>
-              ยืนยัน
-            </Button>
-          </Modal.Footer>
         </Modal>
       </div>
     </>
   );
-};
+};     
 
 export default AddTeacher;
