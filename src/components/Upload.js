@@ -2,38 +2,40 @@ import React, { useState } from "react";
 import * as XLSX from 'xlsx';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { Button, Modal, Table } from "react-bootstrap"; // assuming you have a Table component
+import { Button, Modal, Table, Alert } from "react-bootstrap";
 
 const Upload = ({ handleChange, handleAddData, form }) => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [xlData, setXlData] = useState(null); // State to hold Excel data
-  const [show, setShow] = useState(false);
+  const [xlData, setXlData] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  const handleClose = () => {
-    setShow(false);
-    // Clear the selected file and Excel data when closing the modal
+  const handleUploadModalClose = () => {
+    setShowUploadModal(false);
     setSelectedFile(null);
     setXlData(null);
+    setErrorMessage(null);
   };
 
-  const handleShow = () => setShow(true);
+  const handleConfirmationModalClose = () => {
+    setShowConfirmationModal(false);
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-
-    // Check if the file type is valid
     const validFileTypes = [".xlsx", ".xls"];
-    const fileType = file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2);
-
-    if (!validFileTypes.includes(`.${fileType.toLowerCase()}`)) {
-      // Display an alert or update UI to inform the user
-      alert("ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์ Excel (.xlsx หรือ .xls)");
+    const fileType = file ? file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2) : null;
+  
+    if (!file || !validFileTypes.includes(`.${fileType.toLowerCase()}`)) {
+      setErrorMessage("ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์ Excel (.xlsx หรือ .xls)");
+      setSelectedFile(null);
+      setXlData(null);
       return;
     }
-
+  
     setSelectedFile(file);
-
-    // Read the file and set the Excel data for preview
+  
     const reader = new FileReader();
     reader.onload = (event) => {
       const data = event.target.result;
@@ -42,28 +44,47 @@ const Upload = ({ handleChange, handleAddData, form }) => {
         const sheet_name_list = workbook.SheetNames;
         const dataFromSheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
         setXlData(dataFromSheet);
+        setShowUploadModal(true);
+        setErrorMessage(null); // Clear the error message when a valid file is selected
       }
     };
     reader.readAsBinaryString(file);
   };
+  
 
   const handleUpload = async () => {
-    if (xlData) {
-      // Send data to Firebase Firestore
-      xlData.forEach(async (item) => {
-        try {
-          await addDoc(collection(db, "course"), item);
-          console.log("Document successfully written!");
-        } catch (error) {
-          console.error("Error writing document: ", error);
-        }
-      });
-
-      // Trigger handleAddData after uploading the file
-      handleAddData();
-      handleClose(); // Close the modal after uploading
+    if (!xlData) {
+      setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
+      return;
     }
+
+    setShowUploadModal(false);
+    setShowConfirmationModal(true);
   };
+
+  const handleConfirmUpload = async () => {
+    // Send data to Firebase Firestore
+    xlData.forEach(async (item) => {
+      try {
+        await addDoc(collection(db, "course"), item);
+        console.log("Document successfully written!");
+      } catch (error) {
+        console.error("Error writing document: ", error);
+      }
+    });
+
+    // Trigger handleAddData after uploading the file
+    handleAddData();
+    setShowConfirmationModal(false);
+  };
+
+  const handleShow = () => {
+    setSelectedFile(null);
+    setXlData(null);
+    setErrorMessage(null);
+    setShowUploadModal(true);
+  };
+  
 
   return (
     <div className="form-group p-3">
@@ -71,9 +92,10 @@ const Upload = ({ handleChange, handleAddData, form }) => {
         อัปโหลด
       </Button>
 
+
       <Modal
-        show={show}
-        onHide={handleClose}
+        show={showUploadModal}
+        onHide={handleUploadModalClose}
         aria-labelledby="contained-modal-title-vcenter"
         centered={true}
         scrollable={true}
@@ -85,26 +107,6 @@ const Upload = ({ handleChange, handleAddData, form }) => {
           overflowX: 'auto',
           padding: '10%',
         }}>
-          <style>
-            {`
-              /* WebKit */
-              ::-webkit-scrollbar {
-                width: 12px;
-              }
-
-              ::-webkit-scrollbar-track {
-                background: #f1f1f1;
-              }
-
-              ::-webkit-scrollbar-thumb {
-                background: #888;
-              }
-
-              ::-webkit-scrollbar-thumb:hover {
-                background: #555;
-              }
-            `}
-          </style>
           <h1>อัปโหลด</h1>
           <form className="row">
             <div className="form-group mt-2">
@@ -143,14 +145,41 @@ const Upload = ({ handleChange, handleAddData, form }) => {
               <button
                 type="button"
                 id="submit"
-                className="btn1 mt-3 "
+                className="btn1 mt-3"
                 onClick={handleUpload}
               >
                 อัปโหลด
               </button>
             </div>
           </form>
+          {errorMessage && (
+            <Alert variant="danger" className="mt-3">
+              {errorMessage}
+            </Alert>
+          )}
         </Modal.Body>
+      </Modal>
+
+      {/* Confirmation Dialog Modal */}
+      <Modal
+        show={showConfirmationModal}
+        onHide={handleConfirmationModalClose}
+        centered
+      >
+        <Modal.Header>
+          <Modal.Title>ยืนยันการอัปโหลด</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>ต้องการอัปโหลดใช่หรือไม่?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleConfirmationModalClose}>
+            ยกเลิก
+          </Button>
+          <Button variant="success" onClick={handleConfirmUpload}>
+            ยืนยัน
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

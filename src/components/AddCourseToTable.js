@@ -44,7 +44,7 @@ const AddCourseTotable = ({
   return (
     <div className="form-group">
       <Button className="btn1" onClick={handleShow}>
-        เพิ่มรายวิชา
+        + เลือก
       </Button>
 
       <Modal
@@ -112,6 +112,7 @@ const AddCourseTotable = ({
                     name="teacher"
                     style={{ width: "150px" }} 
                   >
+                    <option value="-">- กรุณาเลือก -</option>
                     {teachers.map((item, index) => (
                       <option value={item}> {item.firstname} {item.lastname} </option>
                     ))}
@@ -149,6 +150,7 @@ const AddCourseTotable = ({
                     name="major"
                     style={{ width: "150px" }}
                   >
+                    <option value="-">- กรุณาเลือก -</option>
                     <option value="T12">- T12 -</option>
 
                   </select>
@@ -167,13 +169,18 @@ const AddCourseTotable = ({
 
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center">
                   <label htmlFor="student">ภาคเรียน</label>
-                  <input
-                    className="form-control"
+                  <select
+                    className="form-select"
                     onChange={(e) => handleCourseChange(e)}
-                    type="text"
                     name="term"
                     style={{ width: "150px" }}
-                  />
+                  >
+                    <option value="-">- กรุณาเลือก -</option>
+                    <option value="ฤดูร้อน">ฤดูร้อน</option>
+                    <option value="ฤดูร้อน">ต้น</option>
+                    <option value="ฤดูร้อน">ปลาย</option>
+
+                  </select>
                 </div>
 
                 <div className="form-group mt-2 d-flex justify-content-between align-items-center">
@@ -197,10 +204,16 @@ const AddCourseTotable = ({
                           type="checkbox"
                           id={`option${index}`}
                           name="grade_level"
+                          checked={courseForm.grade_level && courseForm.grade_level.includes(option)}
                           value={option}
-                          onChange={(e) => handleCourseChange(e)}
+                          onChange={(e) => {
+                            const checkedOptions = e.target.checked
+                              ? [...(courseForm.grade_level || []), option]
+                              : (courseForm.grade_level || []).filter((grade) => grade !== option);
+                            handleCourseChange({ target: { name: 'grade_level', value: checkedOptions } });
+                          }}
                         />
-                        <label htmlFor={`option${index}`} className="form-check-label">{option}</label>
+                        <label htmlFor={`option${index}`} className="form-check-label checkbox-label">{option}</label>
                       </div>
                     ))}
                   </div>
