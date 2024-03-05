@@ -12,6 +12,10 @@ const AddTeacher = () => {
   const [form, setForm] = useState({ firstname: "", lastname: "" });
   const [data, setData] = useState([]);
   const [errors, setErrors] = useState({});
+  const [show, setShow] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showDataEntryModal, setShowDataEntryModal] = useState(false);
+
 
   useEffect(() => {
     const unsubscribe = loadRealtime();
@@ -50,7 +54,6 @@ const AddTeacher = () => {
       [name]: isValidInput ? "" : "กรุณากรอกเฉพาะตัวอักษรไทยหรืออังกฤษ",
     });
   };
-  
 
   const handleAddData = async () => {
     // Check for empty fields
@@ -75,36 +78,54 @@ const AddTeacher = () => {
       return;
     }
   
-    // Add data if no errors
+    // Show confirmation modal before adding data
+    setShowConfirmationModal(true);
+
+    // Close data entry modal
+    setShowDataEntryModal(false);
+  };
+
+  const handleConfirmAddData = async () => {
+    // Add data if user confirms
     await addDoc(roitaiRefT, form)
       .then(() => {
         // Clear form and errors after successful addition
         setForm({ firstname: "", lastname: "" });
         setErrors({});
+        setShowConfirmationModal(false);
         handleClose();
       })
       .catch((err) => console.log(err));
   };
 
-  const [show, setShow] = useState(false);
-
   const handleClose = () => {
-    setShow(false);
+    if (showDataEntryModal) {
+      setShowDataEntryModal(false);
+    } else {
+      setShow(false);
+    }
     setForm({ firstname: "", lastname: "" });
     setErrors({});
   };
+  
 
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+    setShow(true);
+    setShowDataEntryModal(true);
+  };
+  
+
+  const handleConfirmationModalClose = () => setShowConfirmationModal(false);
 
   return (
     <>
-      <div className="form-group p-3  ">
+      <div className="form-group p-3">
         <Button className="btn1" onClick={handleShow}>
           เพิ่มอาจารย์
         </Button>
 
         <Modal
-          show={show}
+          show={showDataEntryModal}
           onHide={handleClose}
           aria-labelledby="contained-modal-title-vcenter"
           centered={true}
@@ -117,7 +138,7 @@ const AddTeacher = () => {
               maxHeight: "calc(100vh - 210px)",
               overflowY: "auto",
               overflowX: "auto",
-              padding: "50px", // เพิ่ม padding เพื่อเพิ่มช่องว่างระหว่างขอบ
+              padding: "50px",
             }}
           >
             <h1>เพิ่มอาจารย์</h1>
@@ -150,16 +171,39 @@ const AddTeacher = () => {
                 )}
               </div>
               <div className="form-group mt-3 d-flex justify-content-end">
-              <button
-                className="btn1 mt-2 d-flex justify-content-end"
-                onClick={handleAddData}
-                disabled={Object.keys(errors).some((key) => errors[key])} // Disable if there are errors
-              >
-                บันทึก
-              </button>
+                <button
+                  className="btn1 mt-2 d-flex justify-content-end"
+                  onClick={handleAddData}
+                  type="button"
+                  disabled={Object.keys(errors).some((key) => errors[key])} // Disable if there are errors
+                >
+                  บันทึก
+                </button>
               </div>
             </form>
           </Modal.Body>
+        </Modal>
+
+        {/* Confirmation Dialog Modal */}
+        <Modal
+          show={showConfirmationModal}
+          onHide={handleConfirmationModalClose}
+          centered
+        >
+          <Modal.Header>
+            <Modal.Title>ยืนยันการเพิ่มข้อมูล</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>ต้องการเพิ่มข้อมูลใช่หรือไม่?</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" onClick={handleConfirmationModalClose}>
+              ยกเลิก
+            </Button>
+            <Button variant="success" onClick={handleConfirmAddData}>
+              ยืนยัน
+            </Button>
+          </Modal.Footer>
         </Modal>
       </div>
     </>

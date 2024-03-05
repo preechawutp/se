@@ -4,7 +4,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { Button, Modal, Table, Alert } from "react-bootstrap";
 
-const Upload = ({ handleChange, handleAddData, form }) => {
+const Upload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [xlData, setXlData] = useState(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -26,16 +26,16 @@ const Upload = ({ handleChange, handleAddData, form }) => {
     const file = e.target.files[0];
     const validFileTypes = [".xlsx", ".xls"];
     const fileType = file ? file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2) : null;
-  
+
     if (!file || !validFileTypes.includes(`.${fileType.toLowerCase()}`)) {
       setErrorMessage("ประเภทไฟล์ไม่ถูกต้อง กรุณาอัปโหลดไฟล์ Excel (.xlsx หรือ .xls)");
       setSelectedFile(null);
       setXlData(null);
       return;
     }
-  
+
     setSelectedFile(file);
-  
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const data = event.target.result;
@@ -50,7 +50,6 @@ const Upload = ({ handleChange, handleAddData, form }) => {
     };
     reader.readAsBinaryString(file);
   };
-  
 
   const handleUpload = async () => {
     if (!xlData) {
@@ -73,8 +72,6 @@ const Upload = ({ handleChange, handleAddData, form }) => {
       }
     });
 
-    // Trigger handleAddData after uploading the file
-    handleAddData();
     setShowConfirmationModal(false);
   };
 
@@ -84,14 +81,12 @@ const Upload = ({ handleChange, handleAddData, form }) => {
     setErrorMessage(null);
     setShowUploadModal(true);
   };
-  
 
   return (
     <div className="form-group p-3">
       <Button className="btn1" onClick={handleShow}>
         อัปโหลด
       </Button>
-
 
       <Modal
         show={showUploadModal}
