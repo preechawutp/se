@@ -209,7 +209,7 @@ const Main = () => {
           <div className="d-flex">
             <AddCourse handleChange={handleChange} handleAddData={handleAddData} form={form} />
             <AddTeacher />
-            <Upload handleChange={handleChange} />
+            <Upload handleChange={handleChange} handleAddData={handleAddData} />
             <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse} handleAddToTable={handleAddToTable}/>
           </div>
         </div>
