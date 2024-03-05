@@ -123,10 +123,17 @@ const Upload = ({ handleChange, handleAddData, form }) => {
                 <h6>ข้อมูลที่จะอัปโหลด</h6>
                 <Table striped bordered hover>
                   <thead>
-                    <tr>
+                    {/* <tr>
                       {Object.keys(xlData[0]).map((header, index) => (
                         <th key={index}>{header}</th>
                       ))}
+                    </tr> */}
+                    <tr>
+                      <th>รหัสวิชา</th>
+                      <th>หน่วยกิต</th>
+                      <th>หลักสูตร</th>
+                      <th>ชื่อวิชา</th>
+                      <th>ประเภท</th>
                     </tr>
                   </thead>
                   <tbody>
