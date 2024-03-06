@@ -71,6 +71,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 type="number"
                 name="code"
                 value={form.code || ""}
+                min="0"
               />
             </div>
 
@@ -82,6 +83,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 type="number"
                 name="grade"
                 value={form.grade || ""}
+                min="0"
               />
             </div>
 
@@ -106,6 +108,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 value={form.credit || ""}
                 style={{ width: '30%' }}
                 required
+                min="0"
               />
 
               <label htmlFor="type">ประเภท</label>

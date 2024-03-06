@@ -128,6 +128,7 @@ const AddCourseTotable = ({
                     name="sec"
                     value={courseForm.sec || ""}
                     style={{ width: "150px" }} // Adjust the width as needed
+                    min="0"
                   />
                 </div>
 
@@ -139,6 +140,7 @@ const AddCourseTotable = ({
                     type="number"
                     name="room"
                     style={{ width: "150px" }}
+                    min="0"
                   />
                 </div>
 
@@ -164,6 +166,7 @@ const AddCourseTotable = ({
                     type="number"
                     name="years"
                     style={{ width: "150px" }}
+                    min="0"
                   />
                 </div>
 
@@ -191,6 +194,7 @@ const AddCourseTotable = ({
                     type="number"
                     name="student"
                     style={{ width: "150px" }}
+                    min="0"
                   />
                 </div>
 
