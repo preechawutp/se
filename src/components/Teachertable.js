@@ -41,7 +41,7 @@ const TeacherTable = () => {
         <div className='mt-5'>
           <h2>รายชื่ออาจารย์</h2>
           <div className="d-flex justify-content-between align-items-center" style={{ width: '100%' }}>
-            <div className="input-group mb-3 mt-3" style={{ width: '40%' }}>
+            <div className="input-group mb-3 mt-3" style={{ width: '70%' }}>
               <input
                 type='text'
                 placeholder='ค้นหา ชื่อ หรือ นามสกุล...'
@@ -68,8 +68,10 @@ const TeacherTable = () => {
                 <tr key={teacher.id}>
                   <td>{teacher.firstname}</td>
                   <td>{teacher.lastname}</td>
-                  <td>
-                    <button className="btn1" onClick={() => handleDelete(teacher.id)}>
+                  <td style={{ width: "20%" }}>
+                    <button className="btn1" 
+                    onClick={() => handleDelete(teacher.id)}
+                    >
                       <i className="fa-solid fa-trash"></i> ลบ
                     </button>
                   </td>
