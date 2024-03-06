@@ -91,12 +91,21 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
               <label htmlFor="name">ชื่อวิชา</label>
               <input
                 className="form-control"
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => {
+                  // Use a regular expression to allow only Thai and English characters
+                  const validInput = /^[a-zA-Zก-๙\s]*$/;
+
+                  if (validInput.test(e.target.value)) {
+                    // If the input is valid, update the state
+                    handleChange(e);
+                  }
+                }}
                 type="text"
                 name="name"
                 value={form.name || ""}
               />
             </div>
+
 
             <div className="form-group mt-3 d-flex justify-content-between align-items-center">
               <label htmlFor="credit">หน่วยกิต</label>
