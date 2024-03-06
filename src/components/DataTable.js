@@ -27,13 +27,16 @@ const DataTable = ({
   const turtlepage = Math.ceil(data.length / courseperpage);
 
   const handleNextPage = () => {
-    setcurpage((kornpage) => kornpage + 1);
+    if (curpage < turtlepage) {
+      setcurpage((kornpage) => kornpage + 1);
+    }
   };
-
+  
   const handlekornpage = () => {
-    setcurpage((kornpage) => kornpage - 1);
+    if (curpage > 1) {
+      setcurpage((kornpage) => kornpage - 1);
+    }
   };
-
   return (
     <div>
       <table className="table table-hover">
@@ -178,11 +181,11 @@ const DataTable = ({
         </table>
         <div className="pagination mb-3">
               <button className="btn1" onClick={handlekornpage} disabled={curpage === 1}>
-                Prev
+                กลับ
               </button>
               <span>{` ${curpage} / ${turtlepage}`}</span>
               <button className="btn1" onClick={handleNextPage} disabled={curpage === turtlepage}>
-                Next
+                ถัดไป
               </button>
           </div>
 
