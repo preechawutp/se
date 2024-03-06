@@ -58,8 +58,9 @@ function Dropdown() {
       <label className='labelsearch'>ภาคเรียน</label>
       <select value={semester} onChange={handleSemesterChange}>
         <option value=""  disabled selected>กรุณาเลือก</option>
-        <option value="1">ภาคเรียนที่ 1</option>
-        <option value="2">ภาคเรียนที่ 2</option>
+        <option value="ฤดูร้อน">ฤดูร้อน</option>
+        <option value="ฤดูร้อน">ต้น</option>
+        <option value="ฤดูร้อน">ปลาย</option>
         {/* เพิ่มตัวเลือกสำหรับภาคเรียนต่อไปตามต้องการ */}
       </select>
       <button
