@@ -38,7 +38,7 @@ const AddCourseTotable = ({
   };
 
   const handleShow = () => setShow(true);
-  const options = ["1", "2", "3", "4", "5"];
+  const options = ["1", "2", "3", "4", "5+"];
 
 
   return (
@@ -92,7 +92,7 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     type="time"
                     name="TimeStart"
-                    
+                    style={{ width: "150px" }}
                   />
 
                   <label htmlFor="TimeStop">ถึง</label>
@@ -101,6 +101,7 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     type="time"
                     name="TimeStop"
+                    style={{ width: "150px" }}
                   />
                 </div>
 
@@ -128,6 +129,7 @@ const AddCourseTotable = ({
                     name="sec"
                     value={courseForm.sec || ""}
                     style={{ width: "150px" }} // Adjust the width as needed
+                    min="0"
                   />
                 </div>
 
@@ -139,6 +141,7 @@ const AddCourseTotable = ({
                     type="number"
                     name="room"
                     style={{ width: "150px" }}
+                    min="0"
                   />
                 </div>
 
@@ -164,6 +167,7 @@ const AddCourseTotable = ({
                     type="number"
                     name="years"
                     style={{ width: "150px" }}
+                    min="0"
                   />
                 </div>
 
@@ -191,6 +195,7 @@ const AddCourseTotable = ({
                     type="number"
                     name="student"
                     style={{ width: "150px" }}
+                    min="0"
                   />
                 </div>
 

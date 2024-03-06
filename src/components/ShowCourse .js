@@ -2,7 +2,9 @@ import React from "react";
 import Navbar from "./Navbar";
 import "../assets/showCouse.css";
 
+
 const ShowCourse  = () => {
+    
     return (
             <div className="showcourse"> 
                 <Navbar/>
@@ -28,7 +30,7 @@ const ShowCourse  = () => {
                             <th scope="col">test</th>
                             <th scope="col">test</th>
                             <th scope="col">test</th>
-                            <th scope="col"><a href="#" class="link-primary">Download</a></th>
+                            <th scope="col"><a href="" class="link-primary">Download</a></th>
                         </tr>
                     </tbody>
                 </table>
