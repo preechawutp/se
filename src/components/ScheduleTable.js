@@ -34,13 +34,9 @@ const ScheduleTable = () => {
 
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
         const startHour = Math.floor(index / 2) + 7 < 10 ? '0' + `${Math.floor(index / 2) + 7}` : `${Math.floor(index / 2) + 7}`;
-        console.log(startHour)
         const startMinute = index % 2 === 0 ? '00' : '30';
-        console.log(startMinute)
         const endHour = Math.floor((index+1)/ 2) + 7 < 10 ? '0' + `${Math.floor((index+1) / 2) + 7}` : `${Math.floor((index+1) / 2) + 7}`;
-        console.log(endHour)
         const endMinute = (index + 1) % 2 === 0 ? '00' : '30';
-        console.log(endMinute)
 
         return `${startHour}:${startMinute}-${endHour}:${endMinute}`;
     });
