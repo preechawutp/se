@@ -1,8 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from 'firebase/firestore'
-
+import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyArngwzT3-9iPN9fGtIUEqsTqX_MjaS6hA",
@@ -19,4 +18,18 @@ const db = getFirestore(app)
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export {db,app,auth,provider}
+const copySelectedCourseToChooseSubject = async () => {
+  try {
+    // Retrieve data from the "selected_course" collection
+    const querySnapshot = await getDocs(collection(db, 'selected_course'));
+    // Loop through each document and add it to the "ChooseSubject" collection
+    querySnapshot.forEach(async (doc) => {
+      await addDoc(collection(db, 'ChooseSubject'), doc.data());
+    });
+    console.log('All documents copied successfully.');
+  } catch (error) {
+    console.error('Error copying documents: ', error);
+  }
+};
+
+export { db, app, auth, provider, copySelectedCourseToChooseSubject };

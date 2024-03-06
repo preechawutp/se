@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import ScheduleTable from './ScheduleTable'; // เพิ่มการ import ScheduleTable
+import { copySelectedCourseToChooseSubject } from '../firebase'; // Import the function
+
 
 const Course = ({ 
   data,
@@ -72,12 +74,13 @@ const Course = ({
               )}
         </Modal.Body>
         <Modal.Footer>
-          <button
+        <button
             type="button"
             className="btn1"
-            onClick={() => {
-              handleAddToTable(data); // เรียกใช้ handleAddToTable ที่ถูกส่งมาจาก Main component
-              handleClose(); // ปิด Modal หลังจากจัดข้อมูล
+            onClick={async () => {
+              await handleAddToTable(data);
+              await copySelectedCourseToChooseSubject(); // Call the function to copy data
+              handleClose();
             }}
           >
             จัดข้อมูลลงตาราง
