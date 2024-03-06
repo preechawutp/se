@@ -17,6 +17,9 @@ function Mainnav() {
           <li><NavLink to="/result"><i className="fa-solid fa-square-poll-vertical"></i> ผลการจัดตาราง</NavLink></li>
           <li><NavLink to="/teacher"><i className="fa-solid fa-clipboard-list"></i> รายชื่ออาจารย์</NavLink></li>
         </ul>
+        <ul className="navbar-menu">
+          <li><NavLink to="/login">เข้าสู่ระบบ</NavLink></li>
+        </ul>
       </nav>
     </>
   );

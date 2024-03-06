@@ -9,67 +9,6 @@
   pointer-events: none;
 }
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  padding-left: 4%;
-  background-color: #ffffff;
-  color: rgb(42, 42, 42);
-  box-shadow: 0px 3px 4px 3px rgba(0, 0, 0, 0.15);
-}
-
-.navbar-logo img {
-  height: 60%;
-  width: 60%;
-  margin: 5%;
-  display: flex;
-   /* Adjust the height as needed */
-}
-
-.navbar-menu {
-  width: 90%;
-  list-style: none;
-  /* display: flex; */
-  margin: 0; /* Remove default margin for list items */
-  padding: 0; /* Remove default padding for list items */
-}
-
-.navbar-menu li {
-  margin-right: 20px;
-}
-
-.navbar-menu a {
-  color: white;
-  font-size: 1px;
-  font-family: "Poppins", "Prompt",sans-serif;
-  font-weight: 500;
-}
-
-/* Navbar links */
-.navbar-menu a {
-  float: left;
-  text-align: center;
-  padding: 12px;
-  color: rgb(0, 0, 0);
-  text-decoration: none;
-  font-size: 15px;
-  padding: 10px 16px;
-}
-
-
-
-.navbar-menu a:hover {
-  background-color: #f5f5f5;
-  border-radius: 10px;
-}
-
-.navbar-menu a.active {
-  background-color: #f5f5f5;
-  border-radius: 10px;
-}
-
 h2{
   font-weight: bold;
 }
