@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import fetchTeachers from './FetchTeachers';
 import '../assets/Dropdown.css'; // Import CSS file
+import FetchYear from './FetchYear';
 
 function Dropdown() {
-  const [year, setYear] = useState(''); // ปีการศึกษาที่เลือก
-  const [academicYear, setAcademicYear] = useState(''); // ปีการศึกษาที่เลือก
+  const [year, setYear] = useState([]);
+  const [selectYear, setSelectYear] = useState('');
+
   const [semester, setSemester] = useState(''); // ภาคเรียนที่เลือก
 
   const [teachers, setTeachers] = useState([]);
@@ -16,18 +18,20 @@ function Dropdown() {
       setTeachers(teachersData);
     };
     getTeachers();
+
+    const getYear = async () => {
+      const yearData = await FetchYear();
+      setYear(yearData);
+    };
+    getYear();
   }, []);
 
   const handleTeacherChange = (e) => {
     setSelectedTeacher(e.target.value);
   };
 
-  const handleYearChange = (event) => {
-    setYear(event.target.value);
-  };
-
-  const handleAcademicYearChange = (event) => {
-    setAcademicYear(event.target.value);
+  const handleYearChange = (e) => {
+    setSelectYear(e.target.value);
   };
 
   const handleSemesterChange = (event) => {
@@ -36,6 +40,7 @@ function Dropdown() {
 
   return (
     <div className="dropdown-container">
+
       <label className='labelsearch'>อาจารย์ผู้สอน</label>
       <select value={selectedTeacher} onChange={handleTeacherChange}>
         <option value="" disabled selected >- กรุณาเลือก -</option>
@@ -47,17 +52,18 @@ function Dropdown() {
       </select>
 
       <label className='labelsearch'>ปีการศึกษา</label>
-      <select value={academicYear} onChange={handleAcademicYearChange} >
-        <option value="" disabled selected>- กรุณาเลือก -</option>
-        <option value="2565">2565</option>
-        <option value="2566">2566</option>
-        <option value="2567">2567</option>
-        {/* เพิ่มตัวเลือกสำหรับปีการศึกษาต่อไปตามต้องการ */}
+      <select value={selectYear} onChange={handleYearChange}>
+        <option value="" disabled>- กรุณาเลือก -</option>
+        {[...new Set(year.map((year) => year.years))].map((year, index) => (
+          <option key={index} value={year}>
+            {year}
+          </option>
+        ))}
       </select>
 
       <label className='labelsearch'>ภาคเรียน</label>
       <select value={semester} onChange={handleSemesterChange}>
-        <option value=""  disabled selected>กรุณาเลือก</option>
+        <option value="" disabled selected>กรุณาเลือก</option>
         <option value="ฤดูร้อน">ฤดูร้อน</option>
         <option value="ฤดูร้อน">ต้น</option>
         <option value="ฤดูร้อน">ปลาย</option>
