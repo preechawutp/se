@@ -92,7 +92,7 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     type="time"
                     name="TimeStart"
-                    
+                    style={{ width: "150px" }}
                   />
 
                   <label htmlFor="TimeStop">ถึง</label>
@@ -101,6 +101,7 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     type="time"
                     name="TimeStop"
+                    style={{ width: "150px" }}
                   />
                 </div>
 
