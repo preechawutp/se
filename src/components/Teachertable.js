@@ -1,47 +1,29 @@
+// TeacherTable.js
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import Navbar from './Navbar';
 import AddTeacher from './AddTeacher';
-
-const fetchTeachers = async () => {
-  const teachersCollection = collection(db, 'teacher');
-  const teachersSnapshot = await getDocs(teachersCollection);
-  const teachers = [];
-  teachersSnapshot.forEach((doc) => {
-    teachers.push({ id: doc.id, ...doc.data() });
-  });
-  return teachers;
-};
-
-const deleteTeacher = async (teacherId) => {
-  try {
-    await deleteDoc(doc(db, 'teacher', teacherId));
-  } catch (error) {
-    throw error;
-  }
-};
 
 const TeacherTable = () => {
   const [teachers, setTeachers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const fetchedTeachers = await fetchTeachers();
-        setTeachers(fetchedTeachers);
-      } catch (error) {
-        console.error('Error fetching teachers:', error);
-      }
-    };
-    fetchData();
+    const unsubscribe = onSnapshot(collection(db, 'teacher'), (snapshot) => {
+      const fetchedTeachers = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTeachers(fetchedTeachers);
+    });
+    
+    return () => unsubscribe(); // Unsubscribe from snapshot listener when component unmounts
   }, []);
 
   const handleDelete = async (teacherId) => {
     try {
-      await deleteTeacher(teacherId);
-      setTeachers(teachers.filter(teacher => teacher.id !== teacherId));
+      await deleteDoc(doc(db, 'teacher', teacherId));
     } catch (error) {
       console.error('Error deleting teacher:', error);
     }
@@ -82,12 +64,12 @@ const TeacherTable = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTeachers.map((teacher, index) => (
-                <tr key={index}>
+              {filteredTeachers.map((teacher) => (
+                <tr key={teacher.id}>
                   <td>{teacher.firstname}</td>
                   <td>{teacher.lastname}</td>
                   <td>
-                    <button className="btn1" onClick={() => handleDelete(teacher.id)}> 
+                    <button className="btn1" onClick={() => handleDelete(teacher.id)}>
                       <i className="fa-solid fa-trash"></i> ลบ
                     </button>
                   </td>
