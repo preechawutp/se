@@ -38,7 +38,7 @@ const AddCourseTotable = ({
   };
 
   const handleShow = () => setShow(true);
-  const options = ["1", "2", "3", "4", "5"];
+  const options = ["1", "2", "3", "4", "5+"];
 
 
   return (
