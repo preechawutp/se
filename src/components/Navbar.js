@@ -1,23 +1,23 @@
+import React from 'react';
+import { NavLink } from 'react-router-dom'; // Import NavLink
 import Logo from '../assets/logo.png';
-import "../assets/Navbar.css"
-import React from "react";
+import '../assets/Navbar.css';
 
 function Mainnav() {
   return (
     <>
-    
-    <nav className="navbar">
-      <div className="navbar-logo">
-        <img src={Logo} alt="Logo" />
-      </div>
+      <nav className="navbar">
+        <div className="navbar-logo">
+          <img src={Logo} alt="Logo" />
+        </div>
         <ul className="navbar-menu">
-          <li><a href="/"><i class="fa-solid fa-book"></i> รายวิชา</a></li>
-          <li><a href="/table"><i class="fa-solid fa-table"></i> ตารางสอน</a></li>
-          <li><a href="/course"><i class="fa-solid fa-bookmark"></i> หลักสูตร</a></li>
-          <li><a href="/result"><i class="fa-solid fa-square-poll-vertical"></i> ผลการจัดตาราง</a></li>
-          <li><a href="/teacher"><i class="fa-solid fa-clipboard-list"></i> รายชื่ออาจารย์</a></li>
+          <li><NavLink to="/"><i className="fa-solid fa-book"></i> รายวิชา</NavLink></li>
+          <li><NavLink to="/table"><i className="fa-solid fa-table"></i> ตารางสอน</NavLink></li>
+          <li><NavLink to="/course"><i className="fa-solid fa-bookmark"></i> หลักสูตร</NavLink></li>
+          <li><NavLink to="/result"><i className="fa-solid fa-square-poll-vertical"></i> ผลการจัดตาราง</NavLink></li>
+          <li><NavLink to="/teacher"><i className="fa-solid fa-clipboard-list"></i> รายชื่ออาจารย์</NavLink></li>
         </ul>
-    </nav>
+      </nav>
     </>
   );
 }
