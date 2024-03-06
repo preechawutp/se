@@ -63,9 +63,7 @@ h2{
   justify-content: center;
   align-items: center;
 }
-table {
-  text-align: center; 
-}
+
 .btn1 {
   cursor: pointer;
   outline: none;
