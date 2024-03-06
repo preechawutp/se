@@ -12,7 +12,9 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
     setValidationError(null);
   };
 
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+    setShow(true);
+  };
 
   const handleSave = () => {
     // Perform validation
@@ -20,24 +22,29 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
       setValidationError("กรุณากรอกข้อมูลให้ครบ");
       return;
     }
-
+  
     // Clear any previous validation error
     setValidationError(null);
-
+  
     // Show confirmation modal before adding data
     setShowConfirmationModal(true);
+  
+    // Close the main modal
+    handleClose();
   };
 
   const handleConfirmAddData = () => {
     // Close confirmation modal
     setShowConfirmationModal(false);
-
+  
     // Call the handleAddData function if data is valid
     handleAddData();
-
-    // Close the modal
+  
+    // Close the main modal
     handleClose();
   };
+
+  const handleConfirmationModalClose = () => setShowConfirmationModal(false);
 
   return (
     <div className="form-group p-3">
@@ -156,26 +163,34 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
       </Modal>
 
       {/* Confirmation Dialog Modal */}
-      <Modal
-        show={showConfirmationModal}
-        onHide={() => setShowConfirmationModal(false)}
-        centered
-      >
-        <Modal.Header>
-          <Modal.Title>ยืนยันการเพิ่มรายวิชา</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>ต้องการเพิ่มรายวิชาใช่หรือไม่?</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={() => setShowConfirmationModal(false)}>
-            ยกเลิก
-          </Button>
-          <Button variant="success" onClick={handleConfirmAddData}>
-            ยืนยัน
-          </Button>
-        </Modal.Footer>
-      </Modal>
+<Modal
+          show={showConfirmationModal}
+          onHide={handleConfirmationModalClose}
+          size="x"
+          centered
+        >
+         <Modal.Body closeButton style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center", 
+            maxHeight: 'calc(100vh - 210px)',
+            overflowY: 'auto',
+            overflowX: 'auto',
+            padding: '10%',
+          }}>
+            <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+            <h5>ต้องการยืนยันใช่หรือไม่?</h5>   
+            <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+              <Button variant="success" className="btn1"  onClick={handleConfirmAddData}>
+                ยืนยัน
+              </Button>
+              <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+                ยกเลิก
+              </Button>
+            </div>
+          </Modal.Body>
+        </Modal>
     </div>
   );
 };
