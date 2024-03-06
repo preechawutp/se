@@ -230,7 +230,8 @@ const AddCourseTotable = ({
                     id="submit"
                     onClick={() => {
                       handleAddCourse(item_id);
-                      handleShow(); // Close the popup after clicking "บันทึก"
+                      handleShow();
+                      handleClose(); // Close the popup after clicking "บันทึก"
                     }}
                   >
                     บันทึก
