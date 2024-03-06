@@ -45,6 +45,7 @@ const DataTable = ({
                     name="code"
                     value={form.code !== undefined ? form.code : item.code}
                     placeholder="code"
+                    min="0"
                   />
                 </>
               ) : (
@@ -61,6 +62,7 @@ const DataTable = ({
                     name="grade"
                     value={form.grade !== undefined ? form.grade : item.grade}
                     placeholder="grade"
+                    min="0"
                   />
                 </>
               ) : (
@@ -93,6 +95,7 @@ const DataTable = ({
                     name="credit"
                     value={form.credit !== undefined ? form.credit : item.credit}
                     placeholder="credit"
+                    min="0"
                   />
                 </>
               ) : (
