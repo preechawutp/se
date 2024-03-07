@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Alert } from "react-bootstrap";
 import { db } from "../firebase";
 import {
   collection,
@@ -15,6 +15,7 @@ const AddTeacher = () => {
   const [show, setShow] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [showDataEntryModal, setShowDataEntryModal] = useState(false);
+  const [validationError, setValidationError] = useState(null);
 
 
   useEffect(() => {
@@ -57,26 +58,14 @@ const AddTeacher = () => {
 
   const handleAddData = async () => {
     // Check for empty fields
-    const emptyFields = Object.keys(form).filter((key) => !form[key]);
-  
-    if (emptyFields.length > 0) {
-      // Display warning for empty fields
-      const emptyFieldErrors = emptyFields.reduce((acc, field) => {
-        acc[field] = "กรุณากรอกข้อมูล";
-        return acc;
-      }, {});
-  
-      setErrors({ ...errors, ...emptyFieldErrors });
+    // Perform validation
+    if (!form.firstname || !form.lastname) {
+      setValidationError("กรุณากรอกข้อมูลให้ครบ");
       return;
     }
   
-    // Check if there are any validation errors
-    const validationErrors = Object.values(errors).filter((error) => error);
-  
-    if (validationErrors.length > 0) {
-      // Display warning for validation errors
-      return;
-    }
+    // Clear any previous validation error
+    setValidationError(null);
   
     // Show confirmation modal before adding data
     setShowConfirmationModal(true);
@@ -106,6 +95,7 @@ const AddTeacher = () => {
     }
     setForm({ firstname: "", lastname: "" });
     setErrors({});
+    setValidationError(null);
   };
   
 
@@ -152,9 +142,8 @@ const AddTeacher = () => {
                   name="firstname"
                   value={form.firstname}
                 />
-                {errors.firstname && (
-                  <div className="invalid-feedback">{errors.firstname}</div>
-                )}
+
+
               </div>
 
               <div className="form-group mt-3">
@@ -166,9 +155,7 @@ const AddTeacher = () => {
                   name="lastname"
                   value={form.lastname}
                 />
-                {errors.lastname && (
-                  <div className="invalid-feedback">{errors.lastname}</div>
-                )}
+
               </div>
               <div className="form-group mt-3 d-flex justify-content-end">
                 <button
@@ -180,6 +167,12 @@ const AddTeacher = () => {
                   บันทึก
                 </button>
               </div>
+
+                {validationError && (
+                <Alert variant="danger" className="mt-3">
+                  {validationError}
+                </Alert>
+                )}
             </form>
           </Modal.Body>
         </Modal>
