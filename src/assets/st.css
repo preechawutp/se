@@ -36,6 +36,18 @@
   display: none;
 }
 
-.visible-cell {
-  /* Add any additional styling for visible cells if needed */
+.schedule-table .cellselected {
+  border-radius: 6px !important;
+  background-color: rgba(211, 224, 235, 0.448);
+  padding: 5px; 
+}
+
+.card-more {
+  display: none;
+}
+
+.card {
+  width: 100%;
+  height: 50%;
+  border: 1px solid #ccc;
 }

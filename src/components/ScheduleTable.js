@@ -71,97 +71,86 @@ const ScheduleTable = () => {
                     <h2>ตารางสอน</h2>
                     <Dropdown/>
                     <table className="schedule-table">
-        <thead>
-          <tr>
-            <th>Day/Time</th>
-            {timeSlots.map((time, index) => (
-              <th key={index}>{time}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {daysOfWeek.map((day, dayIndex) => (
-            <tr key={dayIndex}>
-              <td>{day.split('/')[0]}</td>
-              {timeSlots.map((time, timeIndex) => {
-                const courseForThisSlot = courses.find(
-                  (course) =>
-                    course.day === day.split('/')[1] &&
-                    course.startTime <= time.split('-')[0] &&
-                    course.endTime >= time.split('-')[1]
-                );
-
-                if (courseForThisSlot) {
-                  // Check if this is the first cell in the consecutive time slots
-                  const isFirstCell =
-                    timeIndex === 0 ||
-                    !courses.find(
-                      (course) =>
-                        course.day === day.split('/')[1] &&
-                        course.startTime <= timeSlots[timeIndex - 1].split('-')[0] &&
-                        course.endTime >= timeSlots[timeIndex - 1].split('-')[1]
-                    );
-
-                  if (isFirstCell) {
-                    // Calculate the colspan based on the number of consecutive time slots
-                    const startSlotIndex = timeIndex;
-                    let colspan = 1;
-                    while (
-                      timeSlots[startSlotIndex + colspan] &&
-                      courses.find(
-                        (course) =>
-                          course.day === day.split('/')[1] &&
-                          course.startTime <= timeSlots[startSlotIndex + colspan].split('-')[0] &&
-                          course.endTime >= timeSlots[startSlotIndex + colspan].split('-')[1]
-                      )
-                    ) {
-                      colspan++;
-                    }
-
-                    return (
-                      <td key={timeIndex} colSpan={colspan} className="visible-cell">
-                        {`${courseForThisSlot.name}`}
-                      </td>
-                    );
-                  } else {
-                    // If not the first cell, return a hidden cell
-                    return <td key={timeIndex} className="hidden-cell"></td>;
-                  }
-                } else {
-                  return <td key={timeIndex}></td>;
-                }
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-                </div>
-                <div className="course-detail-table mt-5">
-                    <h2>รายละเอียดรายวิชา</h2>
-                    <table className="table table-hover">
-                        <thead >
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">รหัสวิชา</th>
-                                <th scope="col">หลักสูตร</th>
-                                <th scope="col">ชื่อวิชา</th>
-                                <th scope="col">หน่วยกิต</th>
-                                <th scope="col">ประเภท</th>
-                            </tr>
+                        <thead>
+                        <tr>
+                            <th>Day/Time</th>
+                            {timeSlots.map((time, index) => (
+                            <th key={index}>{time}</th>
+                            ))}
+                        </tr>
                         </thead>
                         <tbody>
-                            {courses.map((course, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{course.code}</td>
-                                    <td>{course.curriculum}</td>
-                                    <td>{course.name}</td>
-                                    <td>{course.credit}</td>
-                                    <td>{course.type}</td>
-                                </tr>
-                            ))}
+                        {daysOfWeek.map((day, dayIndex) => (
+                            <tr key={dayIndex}>
+                            <td>{day.split('/')[0]}</td>
+                            {timeSlots.map((time, timeIndex) => {
+                                const courseForThisSlot = courses.find(
+                                (course) =>
+                                    course.day === day.split('/')[1] &&
+                                    course.startTime <= time.split('-')[0] &&
+                                    course.endTime >= time.split('-')[1]
+                                );
+
+                                if (courseForThisSlot) {
+                                // Check if this is the first cell in the consecutive time slots
+                                const isFirstCell =
+                                    timeIndex === 0 ||
+                                    !courses.find(
+                                    (course) =>
+                                        course.day === day.split('/')[1] &&
+                                        course.startTime <= timeSlots[timeIndex - 1].split('-')[0] &&
+                                        course.endTime >= timeSlots[timeIndex - 1].split('-')[1]
+                                    );
+
+                                if (isFirstCell) {
+                                    // Calculate the colspan based on the number of consecutive time slots
+                                    const startSlotIndex = timeIndex;
+                                    let colspan = 1;
+                                    while (
+                                    timeSlots[startSlotIndex + colspan] &&
+                                    courses.find(
+                                        (course) =>
+                                        course.day === day.split('/')[1] &&
+                                        course.startTime <= timeSlots[startSlotIndex + colspan].split('-')[0] &&
+                                        course.endTime >= timeSlots[startSlotIndex + colspan].split('-')[1]
+                                    )
+                                    ) {
+                                    colspan++;
+                                    }
+
+                                    return (
+                                        <td key={timeIndex} colSpan={colspan} className="cellselected">
+                                            {`${courseForThisSlot.code} ${courseForThisSlot.name}`}
+                                        </td>
+                                    );
+                                } else {
+                                    // If not the first cell, return a hidden cell
+                                    return <td key={timeIndex} className="hidden-cell"></td>;
+                                }
+                                } else {
+                                return <td key={timeIndex}></td>;
+                                }
+                            })}
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
+                </div>
+                <div className="course-detail-cards ">
+                    <h2>รายละเอียดรายวิชา</h2>
+                    <div className="card-container">
+                        {courses.map((course, index) => (
+                            <div className="card mb-3" key={index}>
+                                <div className="card-body">
+                                    <h5 className="card-title">รหัสวิชา: {course.code}</h5>
+                                    <h6 className="card-subtitle mb-2 text-muted">หลักสูตร: {course.curriculum}</h6>
+                                    <p className="card-text">ชื่อวิชา: {course.name}</p>
+                                    <p className="card-text">หน่วยกิต: {course.credit}</p>
+                                    <p className="card-text">ประเภท: {course.type}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
