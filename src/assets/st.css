@@ -31,3 +31,11 @@
     width: 100%;
   }
 }
+
+.hidden-cell {
+  display: none;
+}
+
+.visible-cell {
+  /* Add any additional styling for visible cells if needed */
+}
