@@ -85,16 +85,29 @@ const ShowCourse = () => {
                 <table className="table table-hover mt-4">
                     <thead>
                         <tr>
+                            <th scope="col">สาขาวิชา</th>
                             <th scope="col">ปีที่ปรับปรุง</th>
                             <th scope="col">หน่วยกิตรวม</th>
+                            <th scope="col">ปีที่ศึกษา</th>
+                            <th scope="col">รหัสนิสิต</th>
                             <th scope="col">ดาวน์โหลดไฟล์หลักสูตร</th>
                         </tr>
                     </thead>
                     <tbody>
                         {uniqueGrades.map((grade, index) => (
                             <tr key={index}>
+                                <th scope="col">วิศวกรรมศาสตรบัณฑิต(วิศวกรรมคอมพิวเตอร์)</th>
                                 <th scope="col">25{grade}</th>
                                 <th scope="col">{totalCredits[grade]}</th>
+                                <th scope="col">4</th>
+                                <th scope="col">
+                                    {[...Array(5)].map((_, i) => (
+                                        <span key={i}>
+                                            {parseInt(grade, 10) + i}*
+                                            {i < 4 && <>,</>}
+                                        </span>
+                                    ))}
+                                </th>
                                 <th scope="col">
                                     <button
                                         onClick={() => handleDownload(grade)}
@@ -107,6 +120,7 @@ const ShowCourse = () => {
                             </tr>
                         ))}
                     </tbody>
+
                 </table>
             </div>
         </div>
