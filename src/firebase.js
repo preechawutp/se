@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore, collection, getDocs, addDoc, deleteDoc, } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, updateDoc, FieldValue } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyArngwzT3-9iPN9fGtIUEqsTqX_MjaS6hA",
@@ -37,23 +37,30 @@ const copySelectedCourseToNewFirestore = async () => {
     const querySnapshot = await getDocs(collection(db, 'course'));
     querySnapshot.forEach(async (doc) => {
       const data = doc.data();
-      const { grade } = data; // เอา { grade } ออกเพราะไม่จำเป็นต้องทำ destructuring ในที่นี้
+      const { grade } = data;
       const newCollectionName = `course_${grade}`;
-      
-      // ตรวจสอบว่ามี collection ที่ต้องการสร้างอยู่แล้วหรือไม่
+
+      // ลบข้อมูลใน collection ใหม่ก่อนที่จะคัดลอกข้อมูลใหม่เข้าไป
       const existingCollectionSnapshot = await getDocs(collection(db, newCollectionName));
       existingCollectionSnapshot.forEach(async (existingDoc) => {
         await deleteDoc(existingDoc.ref);
       });
-      
-      // สร้าง collection ใหม่และคัดลอกข้อมูล
+
+      // คัดลอกข้อมูลใหม่เข้าไปใน collection ใหม่
       await addDoc(collection(db, newCollectionName), data);
     });
+
+    const docRef = doc(db, 'timestamp', 'xHT6YRaTiOlpbFCQhKj4');
+    await updateDoc(docRef, {
+      lastUpdate: new Date()
+    });
+
     console.log('All documents copied successfully.');
   } catch (error) {
     console.error('Error copying documents: ', error);
   }
 };
+
 
 
 export { db, app, auth, provider, copySelectedCourseToChooseSubject, copySelectedCourseToNewFirestore };

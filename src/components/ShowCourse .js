@@ -3,7 +3,7 @@ import Navbar from "./Navbar";
 import "../assets/showCouse.css";
 import { db, copySelectedCourseToNewFirestore } from '../firebase';
 import FetchYearCourse from './FetchYearCourse';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 
@@ -11,6 +11,7 @@ const ShowCourse = () => {
     const [year, setYear] = useState([]);
     const [totalCredits, setTotalCredits] = useState({});
     const [loading, setLoading] = useState(true);
+    const [lastUpdateTime, setLastUpdateTime] = useState(null); // เพิ่ม state เก็บวัน/เวลาที่อัพเดทล่าสุด
 
     useEffect(() => {
         const getYear = async () => {
@@ -32,6 +33,14 @@ const ShowCourse = () => {
         };
         fetchTotalCredits();
     }, [year]);
+
+    useEffect(() => {
+        const fetchLastUpdateTime = async () => {
+            const lastUpdate = await getLastUpdateTime(); // Assume this function gets the last update time from Firebase Firestore
+            setLastUpdateTime(lastUpdate);
+        };
+        fetchLastUpdateTime();
+    }, []);
 
     const uniqueGrades = [...new Set(year.map(item => item.grade))];
 
@@ -57,6 +66,11 @@ const ShowCourse = () => {
         saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `course_${grade}.xlsx`);
     };
 
+    const getLastUpdateTime = async () => {
+        const docSnap = await getDoc(doc(db, 'timestamp', 'xHT6YRaTiOlpbFCQhKj4')); // Replace 'your_document_id' with the actual document ID
+        return docSnap.data().lastUpdate;
+    };
+
     if (loading) {
         return <p>Loading...</p>;
     }
@@ -80,6 +94,12 @@ const ShowCourse = () => {
                     >
                         อัพเดทหลักสูตร
                     </button>
+                </div>
+
+                <div className="last-update-time">
+                    {lastUpdateTime && (
+                        <p>อัพเดทล่าสุดเมื่อ: {lastUpdateTime.toDate().toLocaleString()}</p>
+                    )}
                 </div>
 
                 <table className="table table-hover mt-4">
