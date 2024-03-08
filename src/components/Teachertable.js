@@ -1,13 +1,14 @@
-// TeacherTable.js
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
 import { collection, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import Navbar from './Navbar';
 import AddTeacher from './AddTeacher';
+import { Button, Modal } from 'react-bootstrap';
 
 const TeacherTable = () => {
   const [teachers, setTeachers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [teacherToDelete, setTeacherToDelete] = useState(null); // State for the teacher to be deleted
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'teacher'), (snapshot) => {
@@ -24,10 +25,13 @@ const TeacherTable = () => {
   const handleDelete = async (teacherId) => {
     try {
       await deleteDoc(doc(db, 'teacher', teacherId));
+      setTeacherToDelete(null); // Reset teacher to be deleted after deletion
     } catch (error) {
       console.error('Error deleting teacher:', error);
     }
   };
+
+  const handleConfirmationModalClose = () => setTeacherToDelete(null);
 
   const filteredTeachers = teachers.filter(teacher => {
     return (teacher.firstname && teacher.firstname.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -70,7 +74,7 @@ const TeacherTable = () => {
                   <td>{teacher.lastname}</td>
                   <td style={{ width: "20%" }}>
                     <button className="btn1" 
-                    onClick={() => handleDelete(teacher.id)}
+                      onClick={() => setTeacherToDelete(teacher)}
                     >
                       <i className="fa-solid fa-trash"></i> ลบ
                     </button>
@@ -81,6 +85,35 @@ const TeacherTable = () => {
           </table>
         </div>
       </div>
+       {/* Confirmation Dialog Modal */}
+       <Modal
+          show={teacherToDelete !== null}
+          onHide={handleConfirmationModalClose}
+          size="x"
+          centered
+        >
+         <Modal.Body closeButton style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center", 
+            maxHeight: 'calc(100vh - 210px)',
+            overflowY: 'auto',
+            overflowX: 'auto',
+            padding: '10%',
+          }}>
+            <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+            <h5>ต้องการยืนยันใช่หรือไม่?</h5>   
+            <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+              <Button variant="success" className="btn1"  onClick={() => handleDelete(teacherToDelete.id)}>
+                ยืนยัน
+              </Button>
+              <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+                ยกเลิก
+              </Button>
+            </div>
+          </Modal.Body>
+        </Modal>
     </div>
   );
 };
