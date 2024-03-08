@@ -147,6 +147,8 @@ const ScheduleTable = () => {
                                     <p className="card-text">ชื่อวิชา: {course.name}</p>
                                     <p className="card-text">หน่วยกิต: {course.credit}</p>
                                     <p className="card-text">ประเภท: {course.type}</p>
+                                    <p className="card-text">วัน: {course.day}</p>
+                                    <p className="card-text">เวลา: {course.startTime} - {course.endTime} น.</p>
                                 </div>
                             </div>
                         ))}

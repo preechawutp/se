@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc, deleteDoc, } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyArngwzT3-9iPN9fGtIUEqsTqX_MjaS6hA",
@@ -32,4 +32,28 @@ const copySelectedCourseToChooseSubject = async () => {
   }
 };
 
-export { db, app, auth, provider, copySelectedCourseToChooseSubject };
+const copySelectedCourseToNewFirestore = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'course'));
+    querySnapshot.forEach(async (doc) => {
+      const data = doc.data();
+      const { grade } = data; // เอา { grade } ออกเพราะไม่จำเป็นต้องทำ destructuring ในที่นี้
+      const newCollectionName = `course_${grade}`;
+      
+      // ตรวจสอบว่ามี collection ที่ต้องการสร้างอยู่แล้วหรือไม่
+      const existingCollectionSnapshot = await getDocs(collection(db, newCollectionName));
+      existingCollectionSnapshot.forEach(async (existingDoc) => {
+        await deleteDoc(existingDoc.ref);
+      });
+      
+      // สร้าง collection ใหม่และคัดลอกข้อมูล
+      await addDoc(collection(db, newCollectionName), data);
+    });
+    console.log('All documents copied successfully.');
+  } catch (error) {
+    console.error('Error copying documents: ', error);
+  }
+};
+
+
+export { db, app, auth, provider, copySelectedCourseToChooseSubject, copySelectedCourseToNewFirestore };
