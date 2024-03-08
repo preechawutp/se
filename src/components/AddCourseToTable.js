@@ -5,7 +5,7 @@ import {
   collection,
   onSnapshot,
 } from 'firebase/firestore';
-import { Button, Modal } from 'react-bootstrap';
+import { Alert, Button, Modal } from 'react-bootstrap';
 
 const AddCourseTotable = ({ 
   handleCourseChange, 
@@ -52,6 +52,22 @@ const AddCourseTotable = ({
       handleCourseChange(e);
     }
   };
+  const [selectedTeachers, setSelectedTeachers] = useState([]);
+  const handleTeacherSelection = (e, index) => {
+    const { value } = e.target;
+    const newSelectedTeachers = [...selectedTeachers];
+    newSelectedTeachers[index] = value;
+    setSelectedTeachers(newSelectedTeachers);
+  };
+
+  const addTeacherDropdown = () => {
+    setSelectedTeachers([...selectedTeachers, '']);
+  };
+
+  const handleRemoveTeacher = (teacherIdToRemove) => {
+    setSelectedTeachers(prevTeachers => prevTeachers.filter(teacher => teacher.id !== teacherIdToRemove));
+  };
+
 
   return (
     <div className="form-group">
@@ -65,14 +81,14 @@ const AddCourseTotable = ({
         aria-labelledby="contained-modal-title-vcenter"
         centered={true}
         scrollable={true}
-        size="s"
+        size="md"
       >
         <Modal.Body
           closeButton
           style={{
             overflowY: "auto",
             overflowX: "auto",
-            padding: "10%",
+            padding: "7%",
           }}
         >
           <h1>เพิ่มรายวิชาเข้าตาราง</h1>
@@ -112,26 +128,53 @@ const AddCourseTotable = ({
                 onChange={handleTimeChange}
                 type="time"
                 name="TimeStop"
-                style={{ width: "150px" }}
-              />
-              {timeError && <div className="invalid-feedback">เวลาต้องอยู่ระหว่าง 07:00 ถึง 20:00 และใส่นาทีได้แค่ 00, 15, 30, 45 เท่านั้น</div>}
-            </div>
+                style={{ width: "150px" }} 
+              /> </div>
+              
+           
 
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="teacher">อาจารย์</label>
-              <select
-                className="form-select"
-                onChange={(e) => handleCourseChange(e)}
-                name="teacher"
-                style={{ width: "150px" }} 
-              >
-                <option value="-">- กรุณาเลือก -</option>
-                {teachers.map((item, index) => (
-                  <option key={index} value={item.id}> {item.firstname} {item.lastname} </option>
-                ))}
-              </select>
+              <div className='d-flex justify-content-between'>
+                <select
+                  className="form-select "
+                  onChange={(e) => handleCourseChange(e)}
+                  name="teacher"
+                  style={{ width: "150px" }} 
+                
+                >
+                  <option value="">- กรุณาเลือก -</option>
+                  {teachers.map((item, index) => (
+                    <option key={index} value={item.id}> {item.firstname} {item.lastname} </option>
+                  ))}
+                </select>
+                <Button className="btn1" onClick={addTeacherDropdown}>+</Button>
+                </div>
             </div>
 
+            {selectedTeachers.map((selectedTeacher, index) => (
+              <div key={index} className="form-group mt-2 d-flex justify-content-between align-items-center">
+                <label htmlFor={`teacher${index}`}>อาจารย์</label>
+                <div className='d-flex justify-content-between'>
+                <select
+                  className="form-select"
+                  onChange={(e) => handleTeacherSelection(e, index)}
+                  value={selectedTeacher}
+                  name={`teacher${index}`}
+                  style={{ width: "150px" }} 
+                >
+                  <option value="-">- กรุณาเลือก -</option>
+                  {teachers.map((teacher, teacherIndex) => (
+                    <option key={teacherIndex} value={teacher.id}> {teacher.firstname} {teacher.lastname} </option>
+                  ))}
+                  
+                </select>
+                <Button className="btn1 " onClick={addTeacherDropdown}>+</Button>
+                <button type="button" className="btn-cancel" onClick={() => handleRemoveTeacher()}>-</button>
+              </div>     
+                
+              </div> ))}
+          
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="sec">หมู่เรียน</label>
               <input
@@ -143,9 +186,8 @@ const AddCourseTotable = ({
                 style={{ width: "150px" }} // Adjust the width as needed
                 min="0"
               />
-            </div>
-
-            <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+              </div>
+              <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="room">ห้อง</label>
               <input
                 className="form-control"
@@ -181,14 +223,13 @@ const AddCourseTotable = ({
                 min="0"
               />
             </div>
-
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="term">ภาคเรียน</label>
               <select
                 className="form-select"
                 onChange={(e) => handleCourseChange(e)}
                 name="term"
-                style={{ width: "150px" }}
+                style={{ width: '150px' }}
               >
                 <option value="-">- กรุณาเลือก -</option>
                 <option value="ฤดูร้อน">ฤดูร้อน</option>
@@ -247,6 +288,11 @@ const AddCourseTotable = ({
                 บันทึก
               </button>
             </div>
+
+            {timeError && <Alert variant="danger" className="mt-3">
+                เวลาต้องอยู่ระหว่าง 07:00 ถึง 20:00 และใส่นาทีได้แค่ 00, 15, 30, 45 เท่านั้น
+                </Alert>}
+
           </form>
         </Modal.Body>
       </Modal>
