@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword,signOut,GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword,signOut,GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import logo from "../assets/logo.png";
 import "../assets/LoginForm.css";
 import { useNavigate } from 'react-router-dom';
 import { auth,provider } from "../firebase";
-
-
-
-
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -16,7 +11,6 @@ const LoginForm = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [displayName, setDisplayName] = useState('');
   const navigate = useNavigate();
- 
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {

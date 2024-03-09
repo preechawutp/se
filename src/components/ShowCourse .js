@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Navbar from "./Navbar";
 import "../assets/showCouse.css";
 import { db, copySelectedCourseToNewFirestore } from '../firebase';
@@ -12,6 +12,8 @@ const ShowCourse = () => {
     const [totalCredits, setTotalCredits] = useState({});
     const [loading, setLoading] = useState(true);
     const [lastUpdateTime, setLastUpdateTime] = useState(null); // เพิ่ม state เก็บวัน/เวลาที่อัพเดทล่าสุด
+
+    const uniqueGrades = useMemo(() => [...new Set(year.map(item => item.grade))], [year]);
 
     useEffect(() => {
         const getYear = async () => {
@@ -32,7 +34,7 @@ const ShowCourse = () => {
             setLoading(false);
         };
         fetchTotalCredits();
-    }, [year]);
+    }, [year, uniqueGrades]);
 
     useEffect(() => {
         const fetchLastUpdateTime = async () => {
@@ -41,8 +43,6 @@ const ShowCourse = () => {
         };
         fetchLastUpdateTime();
     }, []);
-
-    const uniqueGrades = [...new Set(year.map(item => item.grade))];
 
     const getTotalCredit = async (grade) => {
         const querySnapshot = await getDocs(collection(db, `course_${grade}`));
@@ -57,7 +57,8 @@ const ShowCourse = () => {
         const querySnapshot = await getDocs(collection(db, `course_${grade}`));
         const data = [];
         querySnapshot.forEach((doc) => {
-            data.push(doc.data());
+            const { code, grade, credit, name, nameTH, type } = doc.data(); // เรียงลำดับตามที่ต้องการ
+            data.push({ code, grade, credit, name, nameTH, type });
         });
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
@@ -65,6 +66,7 @@ const ShowCourse = () => {
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
         saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `course_${grade}.xlsx`);
     };
+    
 
     const getLastUpdateTime = async () => {
         const docSnap = await getDoc(doc(db, 'timestamp', 'xHT6YRaTiOlpbFCQhKj4')); // Replace 'your_document_id' with the actual document ID

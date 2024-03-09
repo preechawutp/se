@@ -17,30 +17,18 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
   };
 
   const handleSave = () => {
-    // Perform validation
     if (!form.code || !form.grade || !form.name || !form.credit || !form.type) {
       setValidationError("กรุณากรอกข้อมูลให้ครบ");
       return;
     }
-  
-    // Clear any previous validation error
     setValidationError(null);
-  
-    // Show confirmation modal before adding data
     setShowConfirmationModal(true);
-  
-    // Close the main modal
     handleClose();
   };
 
   const handleConfirmAddData = () => {
-    // Close confirmation modal
     setShowConfirmationModal(false);
-  
-    // Call the handleAddData function if data is valid
     handleAddData();
-  
-    // Close the main modal
     handleClose();
   };
 
