@@ -16,7 +16,7 @@ const ScheduleTable = () => {
     const [courses, setCourses] = useState([]);
     const [duplicateCourse, setDuplicateCourse] = useState([]);
     const [searchedCourse, setSearchedCourses] = useState([]);
-    const selectedCourseRef = collection(db, 'selected_course');
+    const selectedCourseRef = collection(db, 'ChooseSubject');
 
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
         const startHour = Math.floor(index / 2) + 7 < 10 ? '0' + `${Math.floor(index / 2) + 7}` : `${Math.floor(index / 2) + 7}`;
