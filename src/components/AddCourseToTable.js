@@ -180,7 +180,8 @@ const AddCourseTotable = ({
               <select
                 className="form-select"
                 onChange={(e) => handleCourseChange(e)}
-                name=""
+                name="subjecttype"
+                value={courseForm.subjecttype || ""}
                 style={{ width: "150px" }}
               >
                 <option value="-">- กรุณาเลือก -</option>
