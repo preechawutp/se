@@ -3,18 +3,24 @@ import '../assets/st.css';
 import Navbar from "./Navbar";
 import Dropdown from './Dropdown';
 import { db } from '../firebase'; // Import the Firebase db instance
-import { collection, getDocs } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
 
 
 const Result = () => {
-  const [courses, setCourses] = useState([]);
+  const [searchedCourse, setSearchedCourses] = useState([]);
+  const ChooseSubjectRef = collection(db, 'ChooseSubject');
 
   useEffect(() => {
     const fetchCourses = async () => {
         try {
           const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
           const coursesData = querySnapshot.docs.map(doc => doc.data());
-          setCourses(coursesData);
+          setSearchedCourses(coursesData);
         } catch (error) {
           console.error('Error fetching courses: ', error);
         }
@@ -23,13 +29,34 @@ const Result = () => {
     fetchCourses();
   }, []);
 
+  const queryCourses = async ({
+      teacher,
+      term,
+      year,
+  }) => {
+      const q = query(ChooseSubjectRef,
+          where('teacher', '==', teacher),
+          where('term', '==', term),
+          where('years', '==', year),
+          where('status', '==', 'active')
+      );
+      const querySnapshot = await getDocs(q);
+      // const coursesArray = querySnapshot.docs.map(doc => doc.data());
+      const coursesArray = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      setSearchedCourses(coursesArray);
+  };
+
+
   return (
     <div> 
         <Navbar/>
     <div className='container'>
         <div className="schedule-table-container mt-5">
         <h2>ตารางสอน</h2>
-        <Dropdown/>
+        <Dropdown queryCourses={queryCourses} />
             <table className="table table-hover mt-3">
                 <thead class="thead-light">
                     <tr>
@@ -40,12 +67,12 @@ const Result = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {courses.map((courses, index) => (
+                    {searchedCourse.map((searchedCourse, index) => (
                       <tr key={index}>
                           <td>{index + 1}</td>
-                          <td>{courses.code}</td>
-                          <td>{courses.name}</td>
-                          <td>{courses.credit}</td>
+                          <td>{searchedCourse.code}</td>
+                          <td>{searchedCourse.name}</td>
+                          <td>{searchedCourse.credit}</td>
                       </tr>
                     ))}
                 </tbody>
