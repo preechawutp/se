@@ -14,23 +14,9 @@ import {
 
 const ScheduleTable = () => {
     const [courses, setCourses] = useState([]);
-    const [selectedCourses, setSelectedCourses] = useState([]);
+    const [duplicateCourse, setDuplicateCourse] = useState([]);
+    const [searchedCourse, setSearchedCourses] = useState([]);
     const selectedCourseRef = collection(db, 'selected_course');
-    const q = query(selectedCourseRef, where('status', '==', 'active'));
-    //const courseRef = getDocs(q);
-    useEffect(() => {
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const newSelectedCourses = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-            }));
-            setSelectedCourses(newSelectedCourses);
-        });
-
-        return () => {
-            unsubscribe();
-        };
-    }, []);
 
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
         const startHour = Math.floor(index / 2) + 7 < 10 ? '0' + `${Math.floor(index / 2) + 7}` : `${Math.floor(index / 2) + 7}`;
@@ -42,36 +28,107 @@ const ScheduleTable = () => {
     });
 
     const daysOfWeek = ['จันทร์/MON', 'อังคาร/TUE', 'พุธ/WED', 'พฤหัสบดี/THU', 'ศุกร์/FRI', 'เสาร์/SAT', 'อาทิตย์/SUN'];
+    
+    // This function is use for query course from search data
+    const queryCourses = async ({
+        teacher,
+        term,
+        year,
+    }) => {
+        const q = query(selectedCourseRef,
+            where('teacher', '==', teacher),
+            where('term', '==', term),
+            where('years', '==', year),
+            where('status', '==', 'active')
+        );
+        const querySnapshot = await getDocs(q);
+        // const coursesArray = querySnapshot.docs.map(doc => doc.data());
+        const coursesArray = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+        setSearchedCourses(coursesArray);
+    };
+    // This function should call after query selected course
+    useEffect(() => {
+        addDummyCourse();
+        checkDuplicatedTime();
+    }, [searchedCourse]);
 
     // Function to simulate adding a course to the schedule
     // This should be replaced with your actual logic to add courses
     const addDummyCourse = () => {
-        for (let i = 0; i < selectedCourses.length; i++) {
+        setCourses([]);
+        for (let i = 0; i < searchedCourse.length; i++) {
             console.log(i)
             setCourses(prevCourses => [...prevCourses, {
                 id: prevCourses.length + 1,
-                code: selectedCourses[i].code,
-                curriculum: selectedCourses[i].grade,
-                name: selectedCourses[i].name,
-                credit: selectedCourses[i].credit,
-                type: selectedCourses[i].type,
-                day: selectedCourses[i].day,
-                startTime: selectedCourses[i].TimeStart,
-                endTime: selectedCourses[i].TimeStop,
-                teacher: selectedCourses[i].teacher,
-                student: selectedCourses[i].student
+                code: searchedCourse[i].code,
+                curriculum: searchedCourse[i].grade,
+                name: searchedCourse[i].name,
+                credit: searchedCourse[i].credit,
+                type: searchedCourse[i].type,
+                day: searchedCourse[i].day,
+                startTime: searchedCourse[i].TimeStart,
+                endTime: searchedCourse[i].TimeStop,
+                teacher: searchedCourse[i].teacher,
+                student: searchedCourse[i].student
             }]);
         }
     };
-    console.log(selectedCourses)
+
+    var dupCourse = []
+    const checkDuplicatedTime = () => {
+        for (let i=0; i<searchedCourse.length - 1; i++) {
+            if (searchedCourse[i].day === searchedCourse[i + 1].day) {
+                if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStart.split('-')[0] && searchedCourse[i + 1].TimeStart.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
+                    dupCourse.push(i+1)
+                }
+                else if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStop.split('-')[0] && searchedCourse[i + 1].TimeStop.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
+                    dupCourse.push(i+1)
+                }
+            }
+
+        }
+        setDuplicateCourse(dupCourse)
+    };
+
+    const changeColor = (course) => {
+        if (course) {
+            if (duplicateCourse.includes(course.id)) {
+                return "red"
+            }
+            else {
+                if (course.day === "MON") {
+                    return "yellow";
+                } else if (course.day === "TUE") {
+                    return "blue"; // Example color for Tuesday
+                } else if (course.day === "WED") {
+                    return "orange"; // Example color for Wednesday
+                } else if (course.day === "THU") {
+                    return "black";
+                } else if (course.day === "FRI") {
+                    return "green"; // Example color for Friday
+                } else if (course.day === "SAT") {
+                    return "purple"; // Example color for Saturday
+                } else if (course.day === "SUN") {
+                    return "pink"; // Example color for Sunday
+                } else {
+                    return "green"; // Default color for any day not specified
+                }
+            }
+        }
+        else {
+            return ""
+        }
+    };
     return (
         <div>
             <Navbar />
             <div className='container'>
-                <button onClick={addDummyCourse}>Add Dummy Course</button>
                 <div className="schedule-table-container mt-5">
                     <h2>ตารางสอน</h2>
-                    <Dropdown />
+                    <Dropdown queryCourses={queryCourses} />
                     <table className="schedule-table">
                         <thead>
                             <tr>
@@ -121,7 +178,7 @@ const ScheduleTable = () => {
                                                 }
 
                                                 return (
-                                                    <td key={timeIndex} colSpan={colspan} className="cellselected">
+                                                    <td key={timeIndex} colSpan={colspan} className="cellselected" style={{background:changeColor(courseForThisSlot)}}>
                                                         {`${courseForThisSlot.code} ${courseForThisSlot.name}`}
                                                     </td>
                                                 );
@@ -138,7 +195,7 @@ const ScheduleTable = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className="course-detail-cards ">
+                <div className="course-detail-table mt-5">
                     <h2>รายละเอียดรายวิชา</h2>
 
                     <table className="table table-hover mt-4">
@@ -171,8 +228,6 @@ const ScheduleTable = () => {
                             ))}
                         </tbody>
                     </table>
-
-                    
                 </div>
             </div>
         </div>
