@@ -165,7 +165,7 @@ const AddCourseTotable = ({
                 >
                   <option value="-">- กรุณาเลือก -</option>
                   {teachers.map((teacher, teacherIndex) => (
-                    <option key={teacherIndex} value={teacher.firstname + ' ' + teacher.lastname}> {teacher.firstname} {teacher.lastname} </option>
+                    <option key={teacherIndex} value={`${teacher.firstname} ${teacher.lastname}`}> {teacher.firstname} {teacher.lastname} </option>
                   ))}
                   
                 </select>
