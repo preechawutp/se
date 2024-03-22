@@ -174,6 +174,22 @@ const AddCourseTotable = ({
               </div>     
                 
               </div> ))}
+
+            <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+              <label >ประเภทวิชา</label>
+              <select
+                className="form-select"
+                onChange={(e) => handleCourseChange(e)}
+                name=""
+                style={{ width: "150px" }}
+              >
+                <option value="-">- กรุณาเลือก -</option>
+                <option value="วิชาเฉพาะ">วิชาเฉพาะ</option>
+                <option value="วิชาเฉพาะเลือก">วิชาเฉพาะเลือก</option>
+              </select>
+            </div>
+
+            
           
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="sec">หมู่เรียน</label>
