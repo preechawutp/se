@@ -60,7 +60,6 @@ const ScheduleTable = () => {
     const addDummyCourse = () => {
         setCourses([]);
         for (let i = 0; i < searchedCourse.length; i++) {
-            console.log(i)
             setCourses(prevCourses => [...prevCourses, {
                 id: prevCourses.length + 1,
                 code: searchedCourse[i].code,
