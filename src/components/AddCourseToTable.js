@@ -130,6 +130,28 @@ const AddCourseTotable = ({
                 name="TimeStop"
                 style={{ width: "150px" }} 
               /> </div>
+              
+           
+
+            <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+              <label htmlFor="teacher">อาจารย์</label>
+              <div className='d-flex justify-content-between'>
+                <select
+                  className="form-select "
+                  onChange={(e) => handleCourseChange(e)}
+                  name="teacher"
+                  style={{ width: "150px" }} 
+                
+                >
+                  <option value="">- กรุณาเลือก -</option>
+                  {teachers.map((item, index) => (
+                    <option key={index} value={item.firstname + ' ' + item.lastname}> {item.firstname} {item.lastname} </option>
+                  ))}
+                </select>
+                <Button className="btn1" onClick={addTeacherDropdown}>+</Button>
+                </div>
+            </div>
+
             {selectedTeachers.map((selectedTeacher, index) => (
               <div key={index} className="form-group mt-2 d-flex justify-content-between align-items-center">
                 <label htmlFor={`teacher${index}`}>อาจารย์</label>
@@ -203,7 +225,7 @@ const AddCourseTotable = ({
                 style={{ width: "150px" }}
               >
                 <option value="-">- กรุณาเลือก -</option>
-                <option value="T12">- T12 -</option>
+                <option value="T12">T12</option>
               </select>
             </div>
 
