@@ -51,7 +51,7 @@ const TeacherTable = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className='form-control rounded'
-              style={{ width: "50%" }}
+              style={{ width: "40%" }}
             />
             <AddTeacher />
           </div>
