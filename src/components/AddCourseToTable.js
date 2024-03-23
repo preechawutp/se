@@ -162,7 +162,8 @@ const AddCourseTotable = ({
                 style={{ width: "150px" }}
               >
                 <option value="" disabled selected>- กรุณาเลือก -</option>
-                <option value="วิชาเฉพาะ">วิชาเฉพาะ</option>
+                <option value="วิชาแกน">วิชาแกน</option>
+                <option value="วิชาเฉพาะ">วิชาเฉพาะบังคับ</option>
                 <option value="วิชาเฉพาะเลือก">วิชาเฉพาะเลือก</option>
               </select>
             </div>
