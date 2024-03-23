@@ -9,6 +9,8 @@ const TeacherTable = () => {
   const [teachers, setTeachers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [teacherToDelete, setTeacherToDelete] = useState(null); // State for the teacher to be deleted
+  const [curpage, setCurpage] = useState(1);
+  const coursePerPage = 10;
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'teacher'), (snapshot) => {
@@ -38,6 +40,23 @@ const TeacherTable = () => {
       (teacher.lastname && teacher.lastname.toLowerCase().includes(searchQuery.toLowerCase()));
   });
 
+  const totalPages = Math.ceil(filteredTeachers.length / coursePerPage);
+  const indexLast = curpage * coursePerPage;
+  const indexFirst = indexLast - coursePerPage;
+  const currentItems = filteredTeachers.slice(indexFirst, indexLast);
+
+  const handleNextPage = () => {
+    if (curpage < totalPages) {
+      setCurpage(curpage + 1);
+    }
+  };
+  
+  const handlePrevPage = () => {
+    if (curpage > 1) {
+      setCurpage(curpage - 1);
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -66,7 +85,7 @@ const TeacherTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredTeachers.map((teacher) => (
+                {currentItems.map((teacher) => (
                   <tr key={teacher.id}>
                     <td>{teacher.firstname}</td>
                     <td>{teacher.lastname}</td>
@@ -81,6 +100,17 @@ const TeacherTable = () => {
             </table>
           </div>
         </div>
+
+        <div className="pagination mb-3">
+          <button className="btn1" onClick={handlePrevPage} disabled={curpage === 1}>
+            กลับ
+          </button>
+          <span>{` ${curpage} / ${totalPages}`}</span>
+          <button className="btn1" onClick={handleNextPage} disabled={curpage === totalPages}>
+            ถัดไป
+          </button>
+        </div>
+
       </div>
        {/* Confirmation Dialog Modal */}
        <Modal
