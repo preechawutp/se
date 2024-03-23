@@ -41,48 +41,45 @@ const TeacherTable = () => {
   return (
     <div>
       <Navbar />
-      <div className='container-sm mt-5'>
+      <div className='container mt-5'>
         <div className='mt-5'>
-          <h2>รายชื่ออาจารย์</h2>
-          <div className="d-flex justify-content-between align-items-center" style={{ width: '100%' }}>
-            <div className="input-group mb-3 mt-3" style={{ width: '70%' }}>
-              <input
-                type='text'
-                placeholder='ค้นหา ชื่อ หรือ นามสกุล...'
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className='form-control mb-3 mt-3 rounded'
-                style={{ width: "35%" }}
-              />
-              <div className="d-flex">
-                <AddTeacher />
-              </div>
-            </div>
+          <h2 className="text-center">รายชื่ออาจารย์</h2>
+          <div className="d-flex justify-content-center align-items-center mb-3">
+            <input
+              type='text'
+              placeholder='ค้นหา ชื่อ หรือ นามสกุล...'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className='form-control rounded'
+              style={{ width: "50%" }}
+            />
+            <AddTeacher />
           </div>
-          <table className='table table-hover' style={{ width: "70%" }}>
-            <thead className="table caption-top">
-              <tr>
-                <th>ชื่อ</th>
-                <th>นามสกุล</th>
-                <th>การจัดการ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTeachers.map((teacher) => (
-                <tr key={teacher.id}>
-                  <td>{teacher.firstname}</td>
-                  <td>{teacher.lastname}</td>
-                  <td style={{ width: "20%" }}>
-                    <button className="btn1" 
-                      onClick={() => setTeacherToDelete(teacher)}
-                    >
-                      <i className="fa-solid fa-trash"></i> ลบ
-                    </button>
-                  </td>
+
+          <div className="d-flex justify-content-center">
+            <table className='table table-hover' style={{ width: "50%" }}>
+              <thead className="table caption-top">
+                <tr>
+                  <th>ชื่อ</th>
+                  <th>นามสกุล</th>
+                  <th>การจัดการ</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredTeachers.map((teacher) => (
+                  <tr key={teacher.id}>
+                    <td>{teacher.firstname}</td>
+                    <td>{teacher.lastname}</td>
+                    <td>
+                      <button className="btn1" onClick={() => setTeacherToDelete(teacher)}>
+                        <i className="fa fa-trash"></i> ลบ
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
        {/* Confirmation Dialog Modal */}
