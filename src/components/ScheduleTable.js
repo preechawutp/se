@@ -71,7 +71,8 @@ const ScheduleTable = () => {
                 startTime: searchedCourse[i].TimeStart,
                 endTime: searchedCourse[i].TimeStop,
                 teacher: searchedCourse[i].teacher,
-                student: searchedCourse[i].student
+                student: searchedCourse[i].student,
+                room: searchedCourse[i].room,
             }]);
         }
     };
@@ -94,33 +95,17 @@ const ScheduleTable = () => {
 
     const changeColor = (course) => {
         if (course) {
+            // Check if the course ID exists in the duplicateCourse array
             if (duplicateCourse.includes(course.id)) {
-                return "red"
+                return "red"; // If it's a duplicate, return red color
+            } else {
+                return "base"; // If it's not a duplicate, return base color
             }
-            else {
-                if (course.day === "MON") {
-                    return "yellow";
-                } else if (course.day === "TUE") {
-                    return "blue"; // Example color for Tuesday
-                } else if (course.day === "WED") {
-                    return "orange"; // Example color for Wednesday
-                } else if (course.day === "THU") {
-                    return "black";
-                } else if (course.day === "FRI") {
-                    return "green"; // Example color for Friday
-                } else if (course.day === "SAT") {
-                    return "purple"; // Example color for Saturday
-                } else if (course.day === "SUN") {
-                    return "pink"; // Example color for Sunday
-                } else {
-                    return "green"; // Default color for any day not specified
-                }
-            }
-        }
-        else {
-            return ""
+        } else {
+            return ""; // Return empty string for non-existent courses
         }
     };
+    
     return (
         <div>
             <Navbar />
@@ -177,8 +162,14 @@ const ScheduleTable = () => {
                                                 }
 
                                                 return (
-                                                    <td key={timeIndex} colSpan={colspan} className="cellselected" style={{background:changeColor(courseForThisSlot)}}>
-                                                        {`${courseForThisSlot.code} ${courseForThisSlot.name}`}
+                                                    <td key={timeIndex} colSpan={colspan} className="cellselected" style={{ background: changeColor(courseForThisSlot) }}>
+                                                        <div>
+                                                            <span>{`${courseForThisSlot.code} ${courseForThisSlot.name}`}</span>
+                                                            <br />
+                                                            <span>{`อาจารย์: ${courseForThisSlot.teacher}`}</span>
+                                                            <br />
+                                                            <span>{`ห้อง: ${courseForThisSlot.room}`}</span>
+                                                        </div>
                                                     </td>
                                                 );
                                             } else {
@@ -208,6 +199,7 @@ const ScheduleTable = () => {
                                 <th scope="col">เวลา</th>
                                 <th scope="col">ประเภท</th>
                                 <th scope="col">จำนวนที่เปิดรับ</th>
+                                <th scope="col">ห้อง</th>
                                 <th scope="col">อาจารย์</th>
                             </tr>
                         </thead>
@@ -222,6 +214,7 @@ const ScheduleTable = () => {
                                     <th scope="col">{course.startTime} - {course.endTime} น.</th>
                                     <th scope="col">{course.type}</th>
                                     <th scope="col">{course.student}</th>
+                                    <th scope="col">{course.room}</th>
                                     <th scope="col">{course.teacher}</th>
                                 </tr>
                             ))}
