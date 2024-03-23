@@ -123,7 +123,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 value={form.type || ""}
                 style={{ width: '38%' }}
               >
-                <option value="">- กรุณาเลือก -</option>
+                <option value="" disabled selected>- กรุณาเลือก -</option>
                 <option value="บรรยาย">บรรยาย</option>
                 <option value="ปฎิบัติ">ปฎิบัติ</option>
               </select>

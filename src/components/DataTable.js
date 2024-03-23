@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../assets/DataTable.css"; // เชื่อมต่อไฟล์ CSS
 import AddCourseToTable from "./AddCourseToTable";
-import { Button, Modal } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 
 const DataTable = ({
   data,
@@ -19,15 +19,13 @@ const DataTable = ({
   handleCourseChange,
 }) => {
   const [curpage, setcurpage] = useState(1);
-  const courseperpage = 20;
+  const courseperpage = 20;  //เปลี่ยนเอา
 
   const indexlast = curpage * courseperpage;
   const indexfirst = indexlast - courseperpage;
   const currentItems = data.slice(indexfirst, indexlast);
 
   const turtlepage = Math.ceil(data.length / courseperpage);
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState(null);
 
   const handleNextPage = () => {
     if (curpage < turtlepage) {
@@ -41,22 +39,22 @@ const DataTable = ({
     }
   };
 
-  const handleConfirmationModalClose = () => {
-    setShowConfirmationModal(false);
-    setItemToDelete(null); // Reset item to delete when modal is closed
-  };
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
-  const handleConfirmDeleteData = () => {
-    if (itemToDelete) {
-      handleDelete(itemToDelete);
-      setShowConfirmationModal(false);
-      setItemToDelete(null); // Reset item to delete after deletion
-    }
-  };
-
-  const handleshow = (itemId) => {
+  const handleShowConfirmationModal = (itemId) => {
     setShowConfirmationModal(true);
     setItemToDelete(itemId);
+  };
+
+  const handleConfirmationModalClose = () => {
+    setShowConfirmationModal(false);
+    setItemToDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+    handleDelete(itemToDelete);
+    handleConfirmationModalClose();
   };
 
   return (
@@ -76,37 +74,132 @@ const DataTable = ({
         <tbody>
           {currentItems.map((item, index) => (
             <tr key={index}>
-              <td>{item.code}</td>
-              <td>{item.grade}</td>
-              <td>{item.name}</td>
-              <td>{item.credit}</td>
-              <td>{item.type}</td>
               <td>
-                <div className="form-group d-flex justify-content-between">
-                  <div className="d-inline-flex">
+                {editId === item.id ? (
+                  <>
+                    <input
+                      className="form-control"
+                      onChange={(e) => handleChange(e)}
+                      type="number"
+                      name="code"
+                      value={form.code !== undefined ? form.code : item.code}
+                      placeholder="code"
+                    />
+                  </>
+                ) : (
+                  item.code
+                )}
+              </td>
+              <td>
+                {editId === item.id ? (
+                  <>
+                    <input
+                      className="form-control"
+                      onChange={(e) => handleChange(e)}
+                      type="number"
+                      name="grade"
+                      value={form.grade !== undefined ? form.grade : item.grade}
+                      placeholder="grade"
+                    />
+                  </>
+                ) : (
+                  item.grade
+                )}
+              </td>
+              <td>
+                {editId === item.id ? (
+                  <>
+                    <input
+                      className="form-control"
+                      onChange={(e) => handleChange(e)}
+                      type="text"
+                      name="name"
+                      value={form.name !== undefined ? form.name : item.name}
+                      placeholder="name"
+                    />
+                  </>
+                ) : (
+                  item.name
+                )}
+              </td>
+              <td>
+                {editId === item.id ? (
+                  <>
+                    <input
+                      className="form-control"
+                      onChange={(e) => handleChange(e)}
+                      type="number"
+                      name="credit"
+                      value={form.credit !== undefined ? form.credit : item.credit}
+                      placeholder="credit"
+                    />
+                  </>
+                ) : (
+                  item.credit
+                )}
+              </td>
+              <td>
+                {editId === item.id ? (
+                  <>
+                    <input
+                      className="form-control"
+                      onChange={(e) => handleChange(e)}
+                      type="text"
+                      name="type"
+                      value={form.type !== undefined ? form.type : item.type}
+                      placeholder="type"
+                    />
+                  </>
+                ) : (
+                  item.type
+                )}
+              </td>
+              <td>
+                {editId === item.id ? (
+                  <>
+                    <div className="form-group d-flex justify-content-between">
+                      <div className="d-inline-flex">
+                        <button className="btn1 " onClick={() => handleSave()}>
+                          <i className="fa-solid fa-floppy-disk"></i> บันทึก
+                        </button>
+                        <button
+                          className="btn1"
+                          onClick={() => {
+                            setEditId(false);
+                            setForm({});
+                          }}
+                        >
+                          <i className="fa-solid fa-ban"></i> ยกเลิก
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
                     <button className="btn1" onClick={() => handleEdit(item.id)}>
                       <i className="fa-solid fa-pencil"></i> แก้ไข
                     </button>
-                    <button className="btn1" onClick={() => handleshow(item.id)}>
+                    <button className="btn1" onClick={() => handleShowConfirmationModal(item.id)}>
                       <i className="fa-solid fa-trash"></i> ลบ
                     </button>
-                  </div>
-                </div>
+                  </>
+                )}
               </td>
               <td>
                 <div className="d-flex align-items-center">
-                  <AddCourseToTable handleCourseChange={handleCourseChange} handleAddCourse={handleAddCourse} courseForm={courseForm} item_id={item.id} />
+                  <AddCourseToTable handleCourseChange={handleCourseChange} handleAddCourse={handleAddCourse} courseForm={courseForm} item_id={item.id} />  
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
       <div className="pagination mb-3">
         <button className="btn1" onClick={handlekornpage} disabled={curpage === 1}>
           กลับ
         </button>
-        <span>{`${curpage} / ${turtlepage}`}</span>
+        <span>{` ${curpage} / ${turtlepage}`}</span>
         <button className="btn1" onClick={handleNextPage} disabled={curpage === turtlepage}>
           ถัดไป
         </button>
@@ -123,26 +216,27 @@ const DataTable = ({
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center", 
+          justifyContent: "center",
           maxHeight: 'calc(100vh - 210px)',
           overflowY: 'auto',
           overflowX: 'auto',
           padding: '10%',
-        }}>
+          }}>
           <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
-          <h5>ต้องการยืนยันการลบหรือไม่?</h5>   
+          <h5>ต้องการยืนยันใช่หรือไม่?</h5>
+
           <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
-            <Button variant="success" className="btn1" onClick={handleConfirmDeleteData}>
+            <Button variant="success" className="btn1"  onClick={handleConfirmDelete}>
               ยืนยัน
             </Button>
             <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
               ยกเลิก
             </Button>
           </div>
-        </Modal.Body>
-      </Modal>
-    </div>
-  );
-};
-
+          </Modal.Body>
+        </Modal>
+      </div>
+      );
+    };
+          
 export default DataTable;

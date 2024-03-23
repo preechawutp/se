@@ -101,7 +101,7 @@ const AddCourseTotable = ({
                 name="day"
                 style={{ width: "150px" }} 
               >
-                <option value="-">- กรุณาเลือก -</option>
+                <option value="-" disabled selected>- กรุณาเลือก -</option>
                 <option value="MON">MON</option>
                 <option value="TUE">TUE</option>
                 <option value="WED">WED</option>
@@ -143,7 +143,7 @@ const AddCourseTotable = ({
                   style={{ width: "150px" }} 
                 
                 >
-                  <option value="">- กรุณาเลือก -</option>
+                  <option value="" disabled selected>- กรุณาเลือก -</option>
                   {teachers.map((item, index) => (
                     <option key={index} value={item.firstname + ' ' + item.lastname}> {item.firstname} {item.lastname} </option>
                   ))}
@@ -161,7 +161,7 @@ const AddCourseTotable = ({
                 value={courseForm.subjecttype || ""}
                 style={{ width: "150px" }}
               >
-                <option value="-">- กรุณาเลือก -</option>
+                <option value="" disabled selected>- กรุณาเลือก -</option>
                 <option value="วิชาเฉพาะ">วิชาเฉพาะ</option>
                 <option value="วิชาเฉพาะเลือก">วิชาเฉพาะเลือก</option>
               </select>
@@ -201,7 +201,7 @@ const AddCourseTotable = ({
                 name="major"
                 style={{ width: "150px" }}
               >
-                <option value="-">- กรุณาเลือก -</option>
+                <option value="-" disabled selected>- กรุณาเลือก -</option>
                 <option value="T12">T12</option>
               </select>
             </div>
@@ -225,7 +225,7 @@ const AddCourseTotable = ({
                 name="term"
                 style={{ width: '150px' }}
               >
-                <option value="-">- กรุณาเลือก -</option>
+                <option value="-" disabled selected>- กรุณาเลือก -</option>
                 <option value="ฤดูร้อน">ฤดูร้อน</option>
                 <option value="ต้น">ต้น</option>
                 <option value="ปลาย">ปลาย</option>
