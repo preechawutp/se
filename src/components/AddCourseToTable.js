@@ -148,32 +148,9 @@ const AddCourseTotable = ({
                     <option key={index} value={item.firstname + ' ' + item.lastname}> {item.firstname} {item.lastname} </option>
                   ))}
                 </select>
-                <Button className="btn1" onClick={addTeacherDropdown}>+</Button>
                 </div>
             </div>
 
-            {selectedTeachers.map((selectedTeacher, index) => (
-              <div key={index} className="form-group mt-2 d-flex justify-content-between align-items-center">
-                <label htmlFor={`teacher${index}`}>อาจารย์</label>
-                <div className='d-flex justify-content-between'>
-                <select
-                  className="form-select"
-                  onChange={(e) => handleTeacherSelection(e, index)}
-                  value={selectedTeacher}
-                  name={`teacher${index}`}
-                  style={{ width: "150px" }} 
-                >
-                  <option value="-">- กรุณาเลือก -</option>
-                  {teachers.map((teacher, teacherIndex) => (
-                    <option key={teacherIndex} value={`${teacher.firstname} ${teacher.lastname}`}> {teacher.firstname} {teacher.lastname} </option>
-                  ))}
-                  
-                </select>
-                <Button className="btn1 " onClick={addTeacherDropdown}>+</Button>
-                <button type="button" className="btn-cancel" onClick={() => handleRemoveTeacher()}>-</button>
-              </div>     
-                
-              </div> ))}
 
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label >ประเภทวิชา</label>

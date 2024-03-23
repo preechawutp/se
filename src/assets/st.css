@@ -37,7 +37,6 @@
 }
 
 .schedule-table .cellselected {
-  border-radius: 6px !important;
   background-color: rgba(211, 224, 235, 0.448);
   padding: 5px; 
 }
