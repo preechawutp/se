@@ -7,6 +7,7 @@ import ScheduleTable from './components/ScheduleTable';
 import ShowCourse from './components/ShowCourse';
 import Result from './components/Result';
 import TeacherTable from './components/Teachertable';
+import ShowSchedule from './components/ShowSchedule'; // นำเข้า ShowSchedule component
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -15,7 +16,7 @@ const App = () => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
-      setLoading(false); //Check Login State Na
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -30,6 +31,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/show-schedule" element={<ShowSchedule />} /> 
         <Route path="/login" element={<LoginForm />} />
         {user ? (
           <>
@@ -40,7 +42,10 @@ const App = () => {
             <Route path="/teacher" element={<TeacherTable />} />
           </>
         ) : (
-          <Route path="*" element={<Navigate to="/login" />} />
+          <>
+            <Route path="/" element={<Navigate to="/show-schedule" />} /> 
+            <Route path="*" element={<Navigate to="/login" />} />
+          </>
         )}
       </Routes>
     </Router>
