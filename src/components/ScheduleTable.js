@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas'; // Import html2canvas library for converting HTML to canvas
+// import html2canvas from 'html2canvas'; // Import html2canvas library for converting HTML to canvas
 import { saveAs } from 'file-saver'; // Import file-saver library for saving canvas as PNG
 
 import '../assets/st.css';
@@ -107,7 +107,7 @@ const ScheduleTable = () => {
             return ""; // Return empty string for non-existent courses
         }
     };
-
+/* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
             canvas.toBlob((blob) => {
