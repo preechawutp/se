@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas'; // Import html2canvas library for converting HTML to canvas
+import { saveAs } from 'file-saver'; // Import file-saver library for saving canvas as PNG
+
 import '../assets/st.css';
 import Navbar from "./Navbar";
 import Dropdown from './Dropdown';
@@ -17,18 +20,18 @@ const ScheduleTable = () => {
     const [duplicateCourse, setDuplicateCourse] = useState([]);
     const [searchedCourse, setSearchedCourses] = useState([]);
     const selectedCourseRef = collection(db, 'ChooseSubject');
+    const tableRef = useRef(null);
 
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
         const startHour = Math.floor(index / 2) + 7 < 10 ? '0' + `${Math.floor(index / 2) + 7}` : `${Math.floor(index / 2) + 7}`;
         const startMinute = index % 2 === 0 ? '00' : '30';
         const endHour = Math.floor((index + 1) / 2) + 7 < 10 ? '0' + `${Math.floor((index + 1) / 2) + 7}` : `${Math.floor((index + 1) / 2) + 7}`;
         const endMinute = (index + 1) % 2 === 0 ? '00' : '30';
-
         return `${startHour}:${startMinute}-${endHour}:${endMinute}`;
     });
 
     const daysOfWeek = ['จันทร์/MON', 'อังคาร/TUE', 'พุธ/WED', 'พฤหัสบดี/THU', 'ศุกร์/FRI', 'เสาร์/SAT', 'อาทิตย์/SUN'];
-    
+        
     // This function is use for query course from search data
     const queryCourses = async ({
         teacher,
@@ -46,7 +49,7 @@ const ScheduleTable = () => {
         const coursesArray = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-          }));
+        }));
         setSearchedCourses(coursesArray);
     };
     // This function should call after query selected course
@@ -54,7 +57,6 @@ const ScheduleTable = () => {
         addDummyCourse();
         checkDuplicatedTime();
     }, [searchedCourse]);
-
     // Function to simulate adding a course to the schedule
     // This should be replaced with your actual logic to add courses
     const addDummyCourse = () => {
@@ -79,13 +81,13 @@ const ScheduleTable = () => {
 
     var dupCourse = []
     const checkDuplicatedTime = () => {
-        for (let i=0; i<searchedCourse.length - 1; i++) {
+        for (let i = 0; i < searchedCourse.length - 1; i++) {
             if (searchedCourse[i].day === searchedCourse[i + 1].day) {
                 if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStart.split('-')[0] && searchedCourse[i + 1].TimeStart.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
-                    dupCourse.push(i+1)
+                    dupCourse.push(i + 1)
                 }
                 else if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStop.split('-')[0] && searchedCourse[i + 1].TimeStop.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
-                    dupCourse.push(i+1)
+                    dupCourse.push(i + 1)
                 }
             }
 
@@ -94,26 +96,34 @@ const ScheduleTable = () => {
     };
 
     const changeColor = (course) => {
+        // Check if the course ID exists in the duplicateCourse array
         if (course) {
-            // Check if the course ID exists in the duplicateCourse array
             if (duplicateCourse.includes(course.id)) {
-                return "red"; // If it's a duplicate, return red color
+                return "red";
             } else {
-                return "base"; // If it's not a duplicate, return base color
+                return "base";
             }
         } else {
             return ""; // Return empty string for non-existent courses
         }
     };
-    
+
+    const saveAsPNG = () => {
+        html2canvas(tableRef.current).then((canvas) => {
+            canvas.toBlob((blob) => {
+                saveAs(blob, 'schedule_table.png');
+            });
+        });
+    };
+
     return (
         <div>
             <Navbar />
             <div className='container'>
-                <div className="schedule-table-container mt-5">
+                <div className="schedule-table-container mt-5" >
                     <h2>ตารางสอน</h2>
                     <Dropdown queryCourses={queryCourses} />
-                    <table className="schedule-table">
+                    <table className="schedule-table" ref={tableRef}>
                         <thead>
                             <tr>
                                 <th>Day/Time</th>
@@ -173,7 +183,6 @@ const ScheduleTable = () => {
                                                     </td>
                                                 );
                                             } else {
-                                                // If not the first cell, return a hidden cell
                                                 return <td key={timeIndex} className="hidden-cell"></td>;
                                             }
                                         } else {
@@ -184,8 +193,8 @@ const ScheduleTable = () => {
                             ))}
                         </tbody>
                     </table>
-                </div>
-                <div className="course-detail-table mt-5">
+                    <button className="btn1" onClick={saveAsPNG}>Save PNG</button></div>
+                <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 
                     <table className="table table-hover mt-4">
@@ -222,8 +231,11 @@ const ScheduleTable = () => {
                     </table>
                 </div>
             </div>
+
         </div>
     );
 };
 
 export default ScheduleTable;
+
+
