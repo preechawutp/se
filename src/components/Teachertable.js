@@ -79,9 +79,9 @@ const TeacherTable = () => {
             <table className='table table-hover' style={{ width: "50%" }}>
               <thead className="table caption-top">
                 <tr>
-                  <th>ชื่อ</th>
-                  <th>นามสกุล</th>
-                  <th>การจัดการ</th>
+                  <th style={{width : "50%"}}>ชื่อ</th>
+                  <th style={{width : "50%"}}>นามสกุล</th>
+                  <th style={{width : "25%"}}></th>
                 </tr>
               </thead>
               <tbody>
@@ -91,7 +91,7 @@ const TeacherTable = () => {
                     <td>{teacher.lastname}</td>
                     <td>
                       <button className="btn1" onClick={() => setTeacherToDelete(teacher)}>
-                        <i className="fa fa-trash"></i> ลบ
+                        <i className="fa fa-trash"></i>
                       </button>
                     </td>
                   </tr>

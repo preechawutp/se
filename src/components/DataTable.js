@@ -177,10 +177,10 @@ const DataTable = ({
                 ) : (
                   <>
                     <button className="btn1" onClick={() => handleEdit(item.id)}>
-                      <i className="fa-solid fa-pencil"></i> แก้ไข
+                      <i className="fa-solid fa-pencil"></i>
                     </button>
                     <button className="btn1" onClick={() => handleShowConfirmationModal(item.id)}>
-                      <i className="fa-solid fa-trash"></i> ลบ
+                      <i className="fa-solid fa-trash"></i>
                     </button>
                   </>
                 )}

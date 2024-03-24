@@ -21,6 +21,7 @@ import AddTeacher from './AddTeacher';
 import Upload from './Upload';
 import Course from './Course';
 import '../App.css';
+import Footer from './Footer'
 
 
 const Main = () => {
@@ -233,6 +234,7 @@ const Main = () => {
           
         />
       </div>
+      <Footer/>
     </div>
   );
 };
