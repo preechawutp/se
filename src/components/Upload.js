@@ -22,8 +22,7 @@ const Upload = () => {
     setShowConfirmationModal(false);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (file) => {
     const validFileTypes = [".xlsx", ".xls"];
     const fileType = file ? file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2) : null;
 
@@ -46,12 +45,13 @@ const Upload = () => {
         setXlData(dataFromSheet);
         setShowUploadModal(true);
         setErrorMessage(null); // Clear the error message when a valid file is selected
+        document.getElementById('instruction-text').style.display = 'none';
       }
     };
     reader.readAsBinaryString(file);
   };
 
-  const handleUpload = async () => {
+  const handleUpload = () => {
     if (!xlData) {
       setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
       return;
@@ -82,6 +82,12 @@ const Upload = () => {
     setShowUploadModal(true);
   };
 
+  const handleFileDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFileChange(file);
+  };
+
   return (
     <div className="form-group p-3">
       <Button className="btn1" onClick={handleShow}>
@@ -95,40 +101,43 @@ const Upload = () => {
         centered={true}
         scrollable={true}
         size="lg"
+        onDrop={handleFileDrop} // เพิ่มอีเวนต์ onDrop
+        onDragOver={(e) => e.preventDefault()} // เพิ่มอีเวนต์ onDragOver
       >
         <Modal.Body closeButton style={{
           maxHeight: 'calc(100vh - 210px)',
           overflowY: 'auto',
           overflowX: 'auto',
           padding: '10%',
-        }}>
+        }}
+          onDrop={handleFileDrop} // เพิ่มอีเวนต์ onDrop
+          onDragOver={(e) => e.preventDefault()} // เพิ่มอีเวนต์ onDragOver
+        >
           <h1>อัปโหลด</h1>
           <form className="row">
-            <div className="form-group mt-2">
+            <div
+              className="form-group mt-2"
+              onDrop={handleFileDrop}
+              onDragOver={(e) => e.preventDefault()}
+            >
               <input
                 className="form-control"
                 type="file"
                 accept=".xlsx, .xls"
                 id="formFile"
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e.target.files[0])}
               />
+              <p id="instruction-text" style={{ marginTop: "10px", textAlign: "left", paddingLeft: "10px" }}>*ลากไฟล์ Excel มาที่นี่หรือคลิกเพื่อเลือกไฟล์</p>
             </div>
             {xlData && (
               <div className="form-group mt-3">
                 <h6>ข้อมูลที่จะอัปโหลด</h6>
                 <Table striped bordered hover>
                   <thead>
-                    {/* <tr>
+                    <tr>
                       {Object.keys(xlData[0]).map((header, index) => (
                         <th key={index}>{header}</th>
                       ))}
-                    </tr> */}
-                    <tr>
-                      <th>รหัสวิชา</th>
-                      <th>หน่วยกิต</th>
-                      <th>หลักสูตร</th>
-                      <th>ชื่อวิชา</th>
-                      <th>ประเภท</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -164,33 +173,33 @@ const Upload = () => {
 
       {/* Confirmation Dialog Modal */}
       <Modal
-          show={showConfirmationModal}
-          onHide={handleConfirmationModalClose}
-          size="x"
-          centered
-        >
-         <Modal.Body closeButton style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center", 
-            maxHeight: 'calc(100vh - 210px)',
-            overflowY: 'auto',
-            overflowX: 'auto',
-            padding: '10%',
-          }}>
-            <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
-            <h5>ต้องการอัปโหลดใช่หรือไม่?</h5>   
-            <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
-              <Button variant="success" className="btn1"  onClick={handleConfirmUpload}>
-                ยืนยัน
-              </Button>
-              <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
-                ยกเลิก
-              </Button>
-            </div>
-          </Modal.Body>
-        </Modal>
+        show={showConfirmationModal}
+        onHide={handleConfirmationModalClose}
+        size="x"
+        centered
+      >
+        <Modal.Body closeButton style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          maxHeight: 'calc(100vh - 210px)',
+          overflowY: 'auto',
+          overflowX: 'auto',
+          padding: '10%',
+        }}>
+          <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+          <h5>ต้องการอัปโหลดใช่หรือไม่?</h5>
+          <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+            <Button variant="success" className="btn1" onClick={handleConfirmUpload}>
+              ยืนยัน
+            </Button>
+            <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+              ยกเลิก
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
