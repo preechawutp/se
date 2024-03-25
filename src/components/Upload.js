@@ -1,3 +1,5 @@
+// Upload.js
+
 import React, { useState } from "react";
 import * as XLSX from 'xlsx';
 import { collection, addDoc } from "firebase/firestore";
@@ -104,19 +106,18 @@ const Upload = () => {
         onDrop={handleFileDrop} // เพิ่มอีเวนต์ onDrop
         onDragOver={(e) => e.preventDefault()} // เพิ่มอีเวนต์ onDragOver
       >
-        <Modal.Body closeButton style={{
-          maxHeight: 'calc(100vh - 210px)',
+        <Modal.Body style={{
           overflowY: 'auto',
           overflowX: 'auto',
-          padding: '10%',
+          padding: '6%',
         }}
           onDrop={handleFileDrop} // เพิ่มอีเวนต์ onDrop
           onDragOver={(e) => e.preventDefault()} // เพิ่มอีเวนต์ onDragOver
         >
           <h1>อัปโหลด</h1>
-          <form className="row">
+          <div className="form-group">
             <div
-              className="form-group mt-2"
+              className="form-group mt-4"
               onDrop={handleFileDrop}
               onDragOver={(e) => e.preventDefault()}
             >
@@ -152,23 +153,27 @@ const Upload = () => {
                 </Table>
               </div>
             )}
-            <div className="form-group mt-2 d-flex justify-content-end">
-              <button
-                type="button"
-                id="submit"
-                className="btn1 mt-3"
-                onClick={handleUpload}
-              >
-                อัปโหลด
-              </button>
-            </div>
-          </form>
+
+          </div>
           {errorMessage && (
             <Alert variant="danger" className="mt-3">
               {errorMessage}
             </Alert>
           )}
         </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            id="submit"
+            className="btn1"
+            onClick={handleUpload}
+          >
+            อัปโหลด
+          </button>
+          <Button variant="secondary" onClick={handleUploadModalClose}>
+            ยกเลิก
+          </Button>
+        </Modal.Footer>
       </Modal>
 
       {/* Confirmation Dialog Modal */}
@@ -199,6 +204,12 @@ const Upload = () => {
             </Button>
           </div>
         </Modal.Body>
+        {/* Add footer to the confirmation modal */}
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleConfirmationModalClose}>
+            ปิด
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

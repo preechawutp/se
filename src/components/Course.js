@@ -52,7 +52,7 @@ const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
                   <th scope="col">หน่วยกิต</th>
                   <th scope="col">ประเภท</th>
                   <th scope="col">หมู่</th>
-                  <th scope="col">ลบ</th>
+                  <th scope="col"></th>
                 </tr>
               </thead>
               <tbody>
@@ -91,7 +91,7 @@ const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
             จัดข้อมูลลงตาราง
           </button>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            ยกเลิก
           </Button>
         </Modal.Footer>
       </Modal>
