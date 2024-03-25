@@ -7,8 +7,8 @@ import {
 } from 'firebase/firestore';
 import { Alert, Button, Modal } from 'react-bootstrap';
 
-const AddCourseTotable = ({ 
-  handleCourseChange, 
+const AddCourseTotable = ({
+  handleCourseChange,
   handleAddCourse,
   courseForm,
   item_id,
@@ -99,7 +99,7 @@ const AddCourseTotable = ({
                 className="form-select"
                 onChange={(e) => handleCourseChange(e)}
                 name="day"
-                style={{ width: "150px" }} 
+                style={{ width: "150px" }}
               >
                 <option value="-" disabled selected>- กรุณาเลือก -</option>
                 <option value="MON">MON</option>
@@ -128,10 +128,10 @@ const AddCourseTotable = ({
                 onChange={handleTimeChange}
                 type="time"
                 name="TimeStop"
-                style={{ width: "150px" }} 
+                style={{ width: "150px" }}
               /> </div>
-              
-           
+
+
 
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="teacher">อาจารย์</label>
@@ -140,15 +140,15 @@ const AddCourseTotable = ({
                   className="form-select "
                   onChange={(e) => handleCourseChange(e)}
                   name="teacher"
-                  style={{ width: "150px" }} 
-                
+                  style={{ width: "150px" }}
+
                 >
                   <option value="" disabled selected>- กรุณาเลือก -</option>
                   {teachers.map((item, index) => (
                     <option key={index} value={item.firstname + ' ' + item.lastname}> {item.firstname} {item.lastname} </option>
                   ))}
                 </select>
-                </div>
+              </div>
             </div>
 
 
@@ -168,8 +168,8 @@ const AddCourseTotable = ({
               </select>
             </div>
 
-            
-          
+
+
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="sec">หมู่เรียน</label>
               <input
@@ -181,8 +181,8 @@ const AddCourseTotable = ({
                 style={{ width: "150px" }} // Adjust the width as needed
                 min="0"
               />
-              </div>
-              <div className="form-group mt-2 d-flex justify-content-between align-items-center">
+            </div>
+            <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="room">ห้อง</label>
               <input
                 className="form-control"
@@ -269,27 +269,30 @@ const AddCourseTotable = ({
                 ))}
               </div>
             </div>
-            <div className="form-group mt-2 d-flex justify-content-end ">
-              <button
-                type="button"
-                className="btn1"
-                id="submit"
-                onClick={() => {
-                  handleAddCourse(item_id);
-                  handleShow();
-                  handleClose(); // Close the popup after clicking "บันทึก"
-                }}
-              >
-                บันทึก
-              </button>
-            </div>
-
-            {timeError && <Alert variant="danger" className="mt-3">
+            {timeError &&
+              <Alert variant="danger" className="mt-3">
                 เวลาต้องอยู่ระหว่าง 07:00 ถึง 20:00 และใส่นาทีได้แค่ 00, 15, 30, 45 เท่านั้น
-                </Alert>}
-
+              </Alert>
+            }
           </form>
         </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            className="btn1"
+            id="submit"
+            onClick={() => {
+              handleAddCourse(item_id);
+              handleShow();
+              handleClose(); 
+            }}
+          >
+            บันทึก
+          </button>
+          <Button variant="secondary" onClick={handleClose}>
+            ยกเลิก
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );
