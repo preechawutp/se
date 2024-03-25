@@ -122,7 +122,11 @@ const ScheduleTable = () => {
             <div className='container'>
                 <div className="schedule-table-container mt-5" >
                     <h2>ตารางสอน</h2>
-                    <Dropdown queryCourses={queryCourses} />
+                    <div className='d-flex justify-content-flex-start'>
+                        <Dropdown queryCourses={queryCourses} />
+                        <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
+                    </div>
+                    
                     <table className="schedule-table" ref={tableRef}>
                         <thead>
                             <tr>
@@ -193,7 +197,8 @@ const ScheduleTable = () => {
                             ))}
                         </tbody>
                     </table>
-                    <button className="btn1" onClick={saveAsPNG}>Save PNG</button></div>
+                    
+                    </div>
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 

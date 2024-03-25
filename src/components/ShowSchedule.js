@@ -32,7 +32,7 @@ const ScheduleTable = () => {
     });
 
     const daysOfWeek = ['จันทร์/MON', 'อังคาร/TUE', 'พุธ/WED', 'พฤหัสบดี/THU', 'ศุกร์/FRI', 'เสาร์/SAT', 'อาทิตย์/SUN'];
-        
+
     // This function is use for query course from search data
     const queryCourses = async ({
         teacher,
@@ -108,7 +108,7 @@ const ScheduleTable = () => {
             return ""; // Return empty string for non-existent courses
         }
     };
-/* global html2canvas */
+    /* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
             canvas.toBlob((blob) => {
@@ -122,8 +122,10 @@ const ScheduleTable = () => {
             <GuestNavbar />
             <div className='container'>
                 <div className="schedule-table-container mt-5" >
-                    <h2>ตารางสอน</h2>
-                    <Dropdown queryCourses={queryCourses} />
+                    <div className='d-flex justify-content-flex-start'>
+                        <Dropdown queryCourses={queryCourses} />
+                        <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
+                    </div>
                     <table className="schedule-table" ref={tableRef}>
                         <thead>
                             <tr>
@@ -194,7 +196,8 @@ const ScheduleTable = () => {
                             ))}
                         </tbody>
                     </table>
-                    <button className="btn1" onClick={saveAsPNG}>Save PNG</button></div>
+
+                </div>
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 
