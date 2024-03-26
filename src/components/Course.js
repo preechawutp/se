@@ -13,6 +13,11 @@ const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
     setSelectedCourseCount(data.length); // อัปเดตจำนวน selected courses 
   }, [data]);
 
+  const handleDeleteAllSelectedCourses = () => {
+    // ลบข้อมูลทั้งหมดที่ถูกเลือก
+    data.forEach(item => handleDeleteSelectedCourse(item.id));
+  };
+
 
   return (
     <div className="form-group col-xl-4 p-3">
@@ -85,6 +90,7 @@ const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
             onClick={async () => {
               await handleAddToTable(data);
               await copySelectedCourseToChooseSubject();
+              await handleDeleteAllSelectedCourses();
               handleClose();
             }}
           >
