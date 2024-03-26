@@ -2,34 +2,33 @@ import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { copySelectedCourseToChooseSubject } from '../firebase';
+import { Card } from 'react-bootstrap';
 
 const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [selectedCourseCount, setSelectedCourseCount] = useState(0);
+  const [expandedRow, setExpandedRow] = useState(null);
 
   useEffect(() => {
-    setSelectedCourseCount(data.length); // อัปเดตจำนวน selected courses 
+    setSelectedCourseCount(data.length);
   }, [data]);
 
   const handleDeleteAllSelectedCourses = () => {
-    // ลบข้อมูลทั้งหมดที่ถูกเลือก
     data.forEach(item => handleDeleteSelectedCourse(item.id));
   };
-
 
   return (
     <div className="form-group col-xl-4 p-3">
       <Button variant="primary" onClick={handleShow} className="btn1 position-relative">
         รายวิชาที่เลือก
         {selectedCourseCount > 0 && (
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
             {selectedCourseCount}
           </span>
         )}
       </Button>
-
 
       <Modal
         show={show}
@@ -47,35 +46,63 @@ const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
         }}>
           <h1>วิชาที่เลือก</h1>
           {Array.isArray(data) && data.length > 0 ? (
-            <table className="table table-hover">
+            <table className="table table-hover text-nowrap text-center">
               <thead>
                 <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">รหัสวิชา</th>
-                  <th scope="col">หลักสูตร</th>
-                  <th scope="col">ชื่อวิชา</th>
-                  <th scope="col">หน่วยกิต</th>
-                  <th scope="col">ประเภท</th>
-                  <th scope="col">หมู่</th>
+                  <th scope="col"><strong>ชื่อวิชา</strong></th>
+                  <th scope="col"><strong>หมู่เรียน</strong></th>
+                  <th scope="col"><strong>ประเภท</strong></th>
+                  <th scope="col"><strong>อาจารย์ผู้สอน</strong></th>
+                  <th scope="col"><strong>เวลา</strong></th>
+                  <th scope="col"><strong>หน่วยกิต</strong></th>
                   <th scope="col"></th>
                 </tr>
               </thead>
               <tbody>
                 {data.map((item, index) => (
-                  <tr key={index}>
-                    <th scope="row">{index + 1}</th>
-                    <td>{item.code}</td>
-                    <td>{item.grade}</td>
-                    <td>{item.name}</td>
-                    <td>{item.credit}</td>
-                    <td>{item.type}</td>
-                    <td>{item.sec}</td>
-                    <td>
-                      <button className="btn1" onClick={() => handleDeleteSelectedCourse(item.id)}>
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
+                  <React.Fragment key={index}>
+                    <tr onClick={() => setExpandedRow(expandedRow === index ? null : index)}>
+                      <td>{item.code}-{item.grade} {item.name}</td>
+                      <td>{item.sec}</td>
+                      <td>{item.type}</td>
+                      <td>{item.teacher}</td>
+                      <td>{item.day} {item.TimeStart} - {item.TimeStop}</td>
+                      <td>{item.credit}</td>
+                      <td>
+                        <button className="btn1" onClick={e => {
+                          e.stopPropagation();
+                          handleDeleteSelectedCourse(item.id);
+                        }}>
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    {expandedRow === index && (
+                      <tr>
+                        <td colSpan="6">
+
+                          <div className='row'>
+                            <div className='col'>
+                              <strong>ประเภทวิชา</strong> {item.subjecttype}
+                            </div>
+                            <div className='col'>
+                              <strong>นักศึกษา</strong> {item.student}
+                            </div>
+                            <div className='col'>
+                              <strong>ห้องเรียน</strong> {item.room}
+                            </div>
+                            <div className='col'>
+                              <strong>สาขา</strong> {item.major}
+                            </div>
+                            <div className='col'>
+                              <strong>ภาคเรียน</strong> {item.term}
+                            </div>
+                          </div>
+
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
@@ -90,7 +117,7 @@ const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
             onClick={async () => {
               await handleAddToTable(data);
               await copySelectedCourseToChooseSubject();
-              await handleDeleteAllSelectedCourses();
+              // await handleDeleteAllSelectedCourses();
               handleClose();
             }}
           >
