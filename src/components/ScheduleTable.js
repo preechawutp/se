@@ -23,6 +23,8 @@ const ScheduleTable = ({onClickHandler}) => {
     const [searchedCourse, setSearchedCourses] = useState([]);
     const [allCourse, setAllCourse] = useState([]);
     const [dupType, setDupType] = useState([]);
+    const [dupRoom, setDupRoom] = useState([]);
+    const [dupSec, setDupSec] = useState([]);
     const selectedCourseRef = collection(db, 'ChooseSubject');
     const tableRef = useRef(null);
 
@@ -78,7 +80,10 @@ const ScheduleTable = ({onClickHandler}) => {
         addDummyCourse();
         checkDuplicatedTime();
         checkSubjectType();
+        checkRoomOverlap();
+        checkSecOverlap();
     }, [searchedCourse]);
+    
     // Function to simulate adding a course to the schedule
     // This should be replaced with your actual logic to add courses
     const addDummyCourse = () => {
@@ -99,6 +104,7 @@ const ScheduleTable = ({onClickHandler}) => {
                 student: searchedCourse[i].student,
                 room: searchedCourse[i].room,
                 years: searchedCourse[i].years,
+                sec: searchedCourse[i].sec,
                 term: searchedCourse[i].term,
                 subjecttype: searchedCourse[i].subjecttype, //(วิชาแกน,วิชาเฉพาะเลือก,วิชาเฉพาะบังคับ)
             }]);
@@ -175,13 +181,67 @@ const ScheduleTable = ({onClickHandler}) => {
         setDupType(duplicateTypes);
     };
 
+    var duplicateRooms = [];
+    const checkRoomOverlap = () => {
+        for (let i = 0; i < allCourse.length - 1; i++) {
+            for (let j = i + 1; j < allCourse.length; j++) {
+                if (allCourse[i].day === allCourse[j].day) {
+                    const timeStart1 = allCourse[i].TimeStart.split("-")[0];
+                    const timeStop1 = allCourse[i].TimeStop.split("-")[0];
+                    const timeStart2 = allCourse[j].TimeStart.split("-")[0];
+                    const timeStop2 = allCourse[j].TimeStop.split("-")[0];
+    
+                    if (
+                        ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
+                        (timeStart1 <= timeStop2 && timeStop2 <= timeStop1)) ||
+                        ((timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
+                        (timeStart2 <= timeStop1 && timeStop1 <= timeStop2))
+                    ) {
+                        // Check for room overlap
+                        if (allCourse[i].room === allCourse[j].room) {
+                            duplicateRooms.push(allCourse[i].room);
+                        
+                        }
+                    }
+                }
+            }
+        }
+    
+        setDupRoom(duplicateRooms);
+    };
+
+    var duplicateSec = [];
+    const checkSecOverlap = () => {
+        for (let i = 0; i < allCourse.length - 1; i++) {
+            for (let j = i + 1; j < allCourse.length; j++) {
+                if (
+                    allCourse[i].name === allCourse[j].name && // Check if course names are the same
+                    allCourse[i].sec === allCourse[j].sec // Check if sections are the same
+                ) {
+                    // If sections are the same for the same course, consider it as section clash
+                    duplicateSec.push(allCourse[i].sec);
+                    console.log(allCourse[i].sec);
+                    console.log(allCourse[j].sec);
+                }
+            }
+        }
+    
+        setDupSec(duplicateSec);
+    };
+    
+
     const changeColor = (course) => {
-        // Check if the course ID exists in the duplicateCourse array
+        // Check if the course object exists
         if (course) {
+            // Check if the course ID exists in the duplicateCourse array
             if (duplicateCourse.includes(course.id)) {
                 return "red"; // If it's a duplicate, return red color
-            } else if (dupType.includes(course.course_id)) { // Change duplicateTypes to dupType
+            } else if (dupType.includes(course.course_id)) {
                 return "yellow"; // If it's overlapping, return yellow color
+            } else if (dupRoom.includes(course.room)) {
+                return "orange"; // If it's overlapping with room, return orange color
+            } else if (dupSec.includes(course.sec)) {
+                return "blue"; // If it's overlapping with sec, return blue color
             } else {
                 return "base"; // If it's not a duplicate or overlapping, return base color
             }
