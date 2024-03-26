@@ -22,3 +22,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 3-3-2024.zip
+package-lock.json
+package.json

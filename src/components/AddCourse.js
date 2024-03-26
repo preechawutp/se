@@ -1,3 +1,5 @@
+// AddCourse.js
+
 import React, { useState } from "react";
 import "../assets/AddCourse.css";
 import { Button, Modal, Alert } from "react-bootstrap";
@@ -49,11 +51,10 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
         size="s"
       >
         <Modal.Body
-          closeButton
           style={{
             overflowY: "auto",
             overflowX: "auto",
-            padding: "10%",
+            padding: "6%",
           }}
         >
           <h1>เพิ่มรายวิชา</h1>
@@ -89,9 +90,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 onChange={(e) => {
                   // Use a regular expression to allow only Thai and English characters
                   const validInput = /^[a-zA-Zก-๙\s]*$/;
-
                   if (validInput.test(e.target.value)) {
-                    // If the input is valid, update the state
                     handleChange(e);
                   }
                 }}
@@ -100,7 +99,6 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 value={form.name || ""}
               />
             </div>
-
 
             <div className="form-group mt-3 d-flex justify-content-between align-items-center">
               <label htmlFor="credit">หน่วยกิต</label>
@@ -129,17 +127,6 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
               </select>
             </div>
 
-            <div className="form-group mt-3 d-flex justify-content-end">
-              <button
-                type="button"
-                className="btn1"
-                id="submit"
-                onClick={handleSave}
-              >
-                บันทึก
-              </button>
-            </div>
-
             {/* Display validation error if exists */}
             {validationError && (
               <Alert variant="danger" className="mt-3">
@@ -148,37 +135,53 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
             )}
           </form>
         </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="button"
+            className="btn1"
+            id="submit"
+            onClick={handleSave}
+          >
+            บันทึก
+          </button>
+          <Button variant="secondary" onClick={handleClose}>
+            ยกเลิก
+          </Button>
+        </Modal.Footer>
       </Modal>
 
       {/* Confirmation Dialog Modal */}
-<Modal
-          show={showConfirmationModal}
-          onHide={handleConfirmationModalClose}
-          size="x"
-          centered
-        >
-         <Modal.Body closeButton style={{
+      <Modal
+        show={showConfirmationModal}
+        onHide={handleConfirmationModalClose}
+        size="x"
+        centered
+      >
+        <Modal.Body
+          closeButton
+          style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center", 
+            justifyContent: "center",
             maxHeight: 'calc(100vh - 210px)',
             overflowY: 'auto',
             overflowX: 'auto',
             padding: '10%',
-          }}>
-            <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
-            <h5>ต้องการยืนยันใช่หรือไม่?</h5>   
-            <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
-              <Button variant="success" className="btn1"  onClick={handleConfirmAddData}>
-                ยืนยัน
-              </Button>
-              <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
-                ยกเลิก
-              </Button>
-            </div>
-          </Modal.Body>
-        </Modal>
+          }}
+        >
+          <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+          <h5>ต้องการยืนยันใช่หรือไม่?</h5>
+          <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+            <Button variant="success" className="btn1" onClick={handleConfirmAddData}>
+              ยืนยัน
+            </Button>
+            <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+              ยกเลิก
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

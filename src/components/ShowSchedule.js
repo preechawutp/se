@@ -14,14 +14,12 @@ import {
     onSnapshot,
     and,
 } from 'firebase/firestore';
-
+import GuestNavbar from './GuestNavbar';
 
 const ScheduleTable = () => {
     const [courses, setCourses] = useState([]);
     const [duplicateCourse, setDuplicateCourse] = useState([]);
     const [searchedCourse, setSearchedCourses] = useState([]);
-    const [allCourse, setAllCourse] = useState([]);
-    const [dupType, setDupType] = useState([]);
     const selectedCourseRef = collection(db, 'ChooseSubject');
     const tableRef = useRef(null);
 
@@ -35,23 +33,6 @@ const ScheduleTable = () => {
 
     const daysOfWeek = ['จันทร์/MON', 'อังคาร/TUE', 'พุธ/WED', 'พฤหัสบดี/THU', 'ศุกร์/FRI', 'เสาร์/SAT', 'อาทิตย์/SUN'];
 
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-              const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
-              const coursesData = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }));
-              setAllCourse(coursesData);
-            } catch (error) {
-              console.error('Error fetching courses: ', error);
-            }
-          };
-    
-        fetchCourses();
-      }, []);
-    
     // This function is use for query course from search data
     const queryCourses = async ({
         teacher,
@@ -76,7 +57,6 @@ const ScheduleTable = () => {
     useEffect(() => {
         addDummyCourse();
         checkDuplicatedTime();
-        checkSubjectType();
     }, [searchedCourse]);
     // Function to simulate adding a course to the schedule
     // This should be replaced with your actual logic to add courses
@@ -85,7 +65,6 @@ const ScheduleTable = () => {
         for (let i = 0; i < searchedCourse.length; i++) {
             setCourses(prevCourses => [...prevCourses, {
                 id: prevCourses.length + 1,
-                course_id: searchedCourse[i].id,
                 code: searchedCourse[i].code,
                 curriculum: searchedCourse[i].grade,
                 name: searchedCourse[i].name,
@@ -97,9 +76,6 @@ const ScheduleTable = () => {
                 teacher: searchedCourse[i].teacher,
                 student: searchedCourse[i].student,
                 room: searchedCourse[i].room,
-                years: searchedCourse[i].years,
-                term: searchedCourse[i].term,
-                subjecttype:searchedCourse[i].subjecttype, //(วิชาแกน,วิชาเฉพาะเลือก,วิชาเฉพาะบังคับ)
             }]);
         }
     };
@@ -119,76 +95,20 @@ const ScheduleTable = () => {
         }
         setDuplicateCourse(dupCourse)
     };
-    var duplicateTypes = [];
-    const checkSubjectType = () => {
-        for (let i = 0; i < allCourse.length - 1; i++) {
-            for (let j = 0; j < allCourse.length - 1; j++) {
-                if (
-                    allCourse[i].years !== allCourse[j].years ||
-                    allCourse[i].term !== allCourse[j].term
-                ) {
-                    continue;
-                }
-                
-                if (i !== j) {
-                    if (allCourse[i].day === allCourse[j].day) {
-                        const timeStart1 = allCourse[i].TimeStart.split("-")[0];
-                        const timeStop1 = allCourse[i].TimeStop.split("-")[0];
-                        const timeStart2 = allCourse[j].TimeStart.split("-")[0];
-                        const timeStop2 = allCourse[j].TimeStop.split("-")[0];
-            
-                        if (
-                            ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
-                            (timeStart1 <= timeStop2 && timeStop2 <= timeStop1)) || 
-                            ((timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
-                            (timeStart2 <= timeStop1 && timeStop1 <= timeStop2))
-                        ) {
-                            // Check subject type rules
-                            if (allCourse[i].subjecttype === allCourse[j].subjecttype) { // Change to subjecttype here
-                                if (allCourse[i].subjecttype === "วิชาแกน") {
-                                    // วิชาแกนปีเดียวชนกันเองไม่ได้
-                                    duplicateTypes.push(allCourse[i].id);
-                                    // pairDup.push([allCourse[i].id, allCourse[j].id); // สร้าง array คู่ ไว้เช็คคู่วิชาที่ซ้ำกัน
-                                } else if (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ") {
-                                    // วิชาเฉพาะบังคับปีเดียวชนกันเองไม่ได้
-                                    duplicateTypes.push(allCourse[i].id);
-                                }
-                            } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
-                                allCourse[j].subjecttype === "วิชาแกน"
-                            ) {
-                                // วิชาเฉพาะบังคับชนวิชาแกนได้
-                                duplicateTypes.push(allCourse[i].id);
-                            } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะเลือก" &&
-                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
-                            ) {
-                                // วิชาเฉพาะเลือกชนวิชาเฉพาะบังคับไม่ได้
-                                duplicateTypes.push(allCourse[i].id);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        setDupType(duplicateTypes);
-    };
 
     const changeColor = (course) => {
         // Check if the course ID exists in the duplicateCourse array
         if (course) {
             if (duplicateCourse.includes(course.id)) {
-                return "red"; // If it's a duplicate, return red color
-            } else if (dupType.includes(course.course_id)) { // Change duplicateTypes to dupType
-                return "yellow"; // If it's overlapping, return yellow color
+                return "red";
             } else {
-                return "base"; // If it's not a duplicate or overlapping, return base color
+                return "base";
             }
         } else {
             return ""; // Return empty string for non-existent courses
         }
     };
-/* global html2canvas */
+    /* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
             canvas.toBlob((blob) => {
@@ -199,15 +119,13 @@ const ScheduleTable = () => {
 
     return (
         <div>
-            <Navbar />
+            <GuestNavbar />
             <div className='container'>
                 <div className="schedule-table-container mt-5" >
-                    <h2>ตารางสอน</h2>
                     <div className='d-flex justify-content-flex-start'>
                         <Dropdown queryCourses={queryCourses} />
                         <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
                     </div>
-                    
                     <table className="schedule-table" ref={tableRef}>
                         <thead>
                             <tr>
@@ -278,8 +196,8 @@ const ScheduleTable = () => {
                             ))}
                         </tbody>
                     </table>
-                    
-                    </div>
+
+                </div>
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 
@@ -323,3 +241,5 @@ const ScheduleTable = () => {
 };
 
 export default ScheduleTable;
+
+

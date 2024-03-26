@@ -9,7 +9,7 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  query, 
+  query,
   where,
   getDocs,
 } from 'firebase/firestore';
@@ -21,6 +21,7 @@ import AddTeacher from './AddTeacher';
 import Upload from './Upload';
 import Course from './Course';
 import '../App.css';
+import Footer from './Footer'
 
 
 const Main = () => {
@@ -34,6 +35,7 @@ const Main = () => {
 
   const roitaiRef = collection(db, 'course');
   const selectedCourseRef = collection(db, 'selected_course');
+  const allRelatedData = [...data, ...selectedCourses];
 
   useEffect(() => {
     const unsubscribe = onSnapshot(roitaiRef, (snapshot) => {
@@ -111,37 +113,37 @@ const Main = () => {
     object.grade = newItem.grade;
     object.name = newItem.name;
     object.type = newItem.type;
-    
+
     // ตรวจสอบว่ามีวิชาที่มี sec ซ้ำกันในฐานข้อมูลหรือไม่
     const q = query(selectedCourseRef, where('sec', '==', object.sec));
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-        // ถ้าพบ sec ที่ซ้ำกันอยู่แล้วในฐานข้อมูล
-        // ตรวจสอบชื่อของวิชาที่เหมือนกันด้วย
-        let isSameCourseName = false;
-        querySnapshot.forEach((doc) => {
-            const existingCourse = doc.data();
-            if (existingCourse.name === object.name) {
-                isSameCourseName = true;
-                // หยุดการทำงานของฟังก์ชันหากพบชื่อวิชาเหมือนกัน
-                console.log('This course already exists with the same section and name.');
-                return;
-            }
-        });
-        // ถ้าชื่อวิชาไม่เหมือนกัน ให้เพิ่มวิชาเข้าไปในฐานข้อมูล
-        if (!isSameCourseName) {
-            const courseItem = object; // สร้าง object สำหรับเพิ่มลงในฐานข้อมูล
-            const docRef = await addDoc(selectedCourseRef, courseItem); // เพิ่มลงในฐานข้อมูล
-            console.log(`Course added with ID: ${docRef.id}`); // แสดงข้อความยืนยัน
+      // ถ้าพบ sec ที่ซ้ำกันอยู่แล้วในฐานข้อมูล
+      // ตรวจสอบชื่อของวิชาที่เหมือนกันด้วย
+      let isSameCourseName = false;
+      querySnapshot.forEach((doc) => {
+        const existingCourse = doc.data();
+        if (existingCourse.name === object.name) {
+          isSameCourseName = true;
+          // หยุดการทำงานของฟังก์ชันหากพบชื่อวิชาเหมือนกัน
+          console.log('This course already exists with the same section and name.');
+          return;
         }
-    } else {
-        // ถ้าไม่พบ sec ที่ซ้ำกันในฐานข้อมูล ให้เพิ่มวิชาเข้าไปเลย
+      });
+      // ถ้าชื่อวิชาไม่เหมือนกัน ให้เพิ่มวิชาเข้าไปในฐานข้อมูล
+      if (!isSameCourseName) {
         const courseItem = object; // สร้าง object สำหรับเพิ่มลงในฐานข้อมูล
         const docRef = await addDoc(selectedCourseRef, courseItem); // เพิ่มลงในฐานข้อมูล
         console.log(`Course added with ID: ${docRef.id}`); // แสดงข้อความยืนยัน
+      }
+    } else {
+      // ถ้าไม่พบ sec ที่ซ้ำกันในฐานข้อมูล ให้เพิ่มวิชาเข้าไปเลย
+      const courseItem = object; // สร้าง object สำหรับเพิ่มลงในฐานข้อมูล
+      const docRef = await addDoc(selectedCourseRef, courseItem); // เพิ่มลงในฐานข้อมูล
+      console.log(`Course added with ID: ${docRef.id}`); // แสดงข้อความยืนยัน
     }
-};
+  };
 
 
   // แก้ไขข้อมูล
@@ -181,14 +183,14 @@ const Main = () => {
   const handleSave = () => {
     handleUpdate();
   };
-  
+
   const handleAddToTable = (newItem) => {
-    for (let i=0; i < newItem.length; i++) {
+    for (let i = 0; i < newItem.length; i++) {
       const itemId = newItem[i].id
       const courseRef = doc(db, 'selected_course', itemId)
-      updateDoc(courseRef, {status: "active"})
+      updateDoc(courseRef, { status: "active" })
     }
-}
+  }
 
 
   return (
@@ -210,11 +212,11 @@ const Main = () => {
             <AddCourse handleChange={handleChange} handleAddData={handleAddData} form={form} />
             <AddTeacher />
             <Upload handleChange={handleChange} handleAddData={handleAddData} />
-            <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse} handleAddToTable={handleAddToTable}/>
+            <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse} handleAddToTable={handleAddToTable} />
           </div>
         </div>
         <DataTable
-          data={data.filter((item) =>
+          data={allRelatedData.filter((item) =>
             Object.values(item).join(' ').toLowerCase().includes(searchTerm.toLowerCase())
           )}
           editId={editId}
@@ -230,9 +232,9 @@ const Main = () => {
           handleAddToTable={handleAddToTable}
           setEditId={setEditId}
           setForm={setForm}
-          
         />
       </div>
+      <Footer />
     </div>
   );
 };
