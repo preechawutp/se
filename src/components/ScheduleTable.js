@@ -12,11 +12,12 @@ import {
     where,
     getDocs,
     onSnapshot,
-    and,
+    and, doc,
+    deleteDoc,
 } from 'firebase/firestore';
 
 
-const ScheduleTable = () => {
+const ScheduleTable = ({onClickHandler}) => {
     const [courses, setCourses] = useState([]);
     const [duplicateCourse, setDuplicateCourse] = useState([]);
     const [searchedCourse, setSearchedCourses] = useState([]);
@@ -38,20 +39,20 @@ const ScheduleTable = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-              const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
-              const coursesData = querySnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }));
-              setAllCourse(coursesData);
+                const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
+                const coursesData = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setAllCourse(coursesData);
             } catch (error) {
-              console.error('Error fetching courses: ', error);
+                console.error('Error fetching courses: ', error);
             }
-          };
-    
+        };
+
         fetchCourses();
-      }, []);
-    
+    }, []);
+
     // This function is use for query course from search data
     const queryCourses = async ({
         teacher,
@@ -99,7 +100,7 @@ const ScheduleTable = () => {
                 room: searchedCourse[i].room,
                 years: searchedCourse[i].years,
                 term: searchedCourse[i].term,
-                subjecttype:searchedCourse[i].subjecttype, //(วิชาแกน,วิชาเฉพาะเลือก,วิชาเฉพาะบังคับ)
+                subjecttype: searchedCourse[i].subjecttype, //(วิชาแกน,วิชาเฉพาะเลือก,วิชาเฉพาะบังคับ)
             }]);
         }
     };
@@ -129,19 +130,19 @@ const ScheduleTable = () => {
                 ) {
                     continue;
                 }
-                
+
                 if (i !== j) {
                     if (allCourse[i].day === allCourse[j].day) {
                         const timeStart1 = allCourse[i].TimeStart.split("-")[0];
                         const timeStop1 = allCourse[i].TimeStop.split("-")[0];
                         const timeStart2 = allCourse[j].TimeStart.split("-")[0];
                         const timeStop2 = allCourse[j].TimeStop.split("-")[0];
-            
+
                         if (
                             ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
-                            (timeStart1 <= timeStop2 && timeStop2 <= timeStop1)) || 
+                                (timeStart1 <= timeStop2 && timeStop2 <= timeStop1)) ||
                             ((timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
-                            (timeStart2 <= timeStop1 && timeStop1 <= timeStop2))
+                                (timeStart2 <= timeStop1 && timeStop1 <= timeStop2))
                         ) {
                             // Check subject type rules
                             if (allCourse[i].subjecttype === allCourse[j].subjecttype) { // Change to subjecttype here
@@ -188,13 +189,23 @@ const ScheduleTable = () => {
             return ""; // Return empty string for non-existent courses
         }
     };
-/* global html2canvas */
+    /* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
             canvas.toBlob((blob) => {
                 saveAs(blob, 'schedule_table.png');
             });
         });
+    };
+
+    const deleteCourse = async (courseId) => {
+        console.log("Deleting course with ID:", courseId);
+        try {
+            const courseRef = doc(db, 'ChooseSubject', courseId);
+            await deleteDoc(courseRef);
+        } catch (error) {
+            console.error('Error deleting course: ', error);
+        }
     };
 
     return (
@@ -207,7 +218,7 @@ const ScheduleTable = () => {
                         <Dropdown queryCourses={queryCourses} />
                         <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
                     </div>
-                    
+
                     <table className="schedule-table" ref={tableRef}>
                         <thead>
                             <tr>
@@ -278,8 +289,8 @@ const ScheduleTable = () => {
                             ))}
                         </tbody>
                     </table>
-                    
-                    </div>
+
+                </div>
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 
@@ -311,6 +322,14 @@ const ScheduleTable = () => {
                                     <th scope="col">{course.student}</th>
                                     <th scope="col">{course.room}</th>
                                     <th scope="col">{course.teacher}</th>
+                                    <th scope="col">
+                                        <button className='btn1' onClick={() => {
+                                            deleteCourse(course.course_id);
+                                        }}>
+                                            ลบ
+                                        </button>
+
+                                    </th>
                                 </tr>
                             ))}
                         </tbody>
