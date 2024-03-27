@@ -256,16 +256,35 @@ const ScheduleTable = ({ onClickHandler }) => {
     useEffect(() => {
         let error = "";
         if (duplicateCourse.length > 0) {
-            error = "เวลาชน";
+            const course1 = searchedCourse[duplicateCourse[0]];
+            const course2 = searchedCourse[duplicateCourse[0] - 1];
+            if (course1 && course2) {
+                error = `เวลาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
         } else if (dupType.length > 0) {
-            error = "วิชาชน";
+            const course1 = allCourse.find(item => item.id === dupType[0]);
+            const course2 = allCourse.find(item => item.id === dupType[0] - 1);
+            if (course1 && course2) {
+                error = `วิชาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
         } else if (dupRoom.length > 0) {
-            error = "ห้องชน";
+            const course1 = allCourse.find(item => item.room === dupRoom[0]);
+            const course2 = allCourse.find(item => item.room === dupRoom[0] - 1);
+            if (course1 && course2) {
+                error = `ห้องชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
         } else if (dupSec.length > 0) {
-            error = "หมู่เรียนชน";
+            const course1 = allCourse.find(item => item.sec === dupSec[0]);
+            const course2 = allCourse.find(item => item.sec === dupSec[0] - 1);
+            if (course1 && course2) {
+                error = `หมู่เรียนชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
         }
         setValidationError(error);
     }, [duplicateCourse, dupType, dupRoom, dupSec]);
+    
+    
+    
     /* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
