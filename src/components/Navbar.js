@@ -37,7 +37,7 @@ const Mainnav = () => {
         <li><NavLink to="/result"><i className="fa-solid fa-square-poll-vertical"></i> ผลการจัดตาราง</NavLink></li>
         <li><NavLink to="/course"><i className="fa-solid fa-bookmark"></i> หลักสูตร</NavLink></li>
         <li><NavLink to="/teacher"><i className="fa-solid fa-clipboard-list"></i> รายชื่ออาจารย์</NavLink></li>
-        <li><NavLink to="/room"><i className="fa-solid fa-building"></i> ห้อง</NavLink></li>
+        <li><NavLink to="/room"><i className="fa-solid fa-building"></i> รายชื่อห้อง</NavLink></li>
       </ul>
       <ul className="navbar-menu">
         {currentUser ? (
