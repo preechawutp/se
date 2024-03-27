@@ -78,7 +78,7 @@ const ScheduleTable = ({ onClickHandler }) => {
     };
     // This function should call after query selected course
     useEffect(() => {
-        addDummyCourse();
+        AddCourseTotable();
         checkDuplicatedTime();
         checkSubjectType();
         checkRoomOverlap();
@@ -87,7 +87,7 @@ const ScheduleTable = ({ onClickHandler }) => {
 
     // Function to simulate adding a course to the schedule
     // This should be replaced with your actual logic to add courses
-    const addDummyCourse = () => {
+    const AddCourseTotable = () => {
         setCourses([]);
         for (let i = 0; i < searchedCourse.length; i++) {
             setCourses(prevCourses => [...prevCourses, {
