@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import { db } from '../firebase';
@@ -9,6 +9,19 @@ const ShowChoose = () => {
     const [allCourse, setAllCourse] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredCourses, setFilteredCourses] = useState([]);
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, 'ChooseSubject'), (querySnapshot) => {
+            const coursesData = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            coursesData.sort((a, b) => a.teacher.localeCompare(b.teacher));
+            setAllCourse(coursesData);
+            setFilteredCourses(coursesData);
+        });
+
+        return () => unsubscribe();
+    }, []);
 
     const fetchAllCourses = async () => {
         try {
@@ -24,6 +37,7 @@ const ShowChoose = () => {
             console.error('Error fetching courses: ', error);
         }
     };
+    
 
     const groupByTeacherAndYearsTerm = (courses) => {
         const groupedCourses = {};
@@ -45,6 +59,8 @@ const ShowChoose = () => {
         const filtered = allCourse.filter(course => course.teacher.toLowerCase().includes(searchTerm.toLowerCase()));
         setFilteredCourses(filtered);
     }, [searchTerm, allCourse]);
+
+
 
     return (
         <div>
