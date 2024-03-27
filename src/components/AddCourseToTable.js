@@ -13,6 +13,7 @@ const AddCourseTotable = ({
   courseForm,
   item_id,
 }) => {
+
   const teacherRef = collection(db, "teacher");
   const [teachers, setTeacher] = useState([]);
   const [timeError, setTimeError] = useState(false);
@@ -46,28 +47,12 @@ const AddCourseTotable = ({
     const [hour, minute] = value.split(':').map(Number);
     if ((hour < 7 || hour > 20) || (minute % 15 !== 0)) {
       setTimeError(true);
-      handleCourseChange({ target: { name, value: '' } }); // Clear the value
+      handleCourseChange({ target: { name, value: '' } });
     } else {
       setTimeError(false);
       handleCourseChange(e);
     }
   };
-  const [selectedTeachers, setSelectedTeachers] = useState([]);
-  const handleTeacherSelection = (e, index) => {
-    const { value } = e.target;
-    const newSelectedTeachers = [...selectedTeachers];
-    newSelectedTeachers[index] = value;
-    setSelectedTeachers(newSelectedTeachers);
-  };
-
-  const addTeacherDropdown = () => {
-    setSelectedTeachers([...selectedTeachers, '']);
-  };
-
-  const handleRemoveTeacher = (teacherIdToRemove) => {
-    setSelectedTeachers(prevTeachers => prevTeachers.filter(teacher => teacher.id !== teacherIdToRemove));
-  };
-
 
   return (
     <div className="form-group">

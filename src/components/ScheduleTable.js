@@ -17,7 +17,7 @@ import {
 } from 'firebase/firestore';
 
 
-const ScheduleTable = ({onClickHandler}) => {
+const ScheduleTable = ({ onClickHandler }) => {
     const [courses, setCourses] = useState([]);
     const [duplicateCourse, setDuplicateCourse] = useState([]);
     const [searchedCourse, setSearchedCourses] = useState([]);
@@ -83,7 +83,7 @@ const ScheduleTable = ({onClickHandler}) => {
         checkRoomOverlap();
         checkSecOverlap();
     }, [searchedCourse]);
-    
+
     // Function to simulate adding a course to the schedule
     // This should be replaced with your actual logic to add courses
     const addDummyCourse = () => {
@@ -190,7 +190,7 @@ const ScheduleTable = ({onClickHandler}) => {
                     const timeStop1 = allCourse[i].TimeStop.split("-")[0];
                     const timeStart2 = allCourse[j].TimeStart.split("-")[0];
                     const timeStop2 = allCourse[j].TimeStop.split("-")[0];
-    
+
                     if (
                         ((timeStart1 < timeStart2 && timeStart2 < timeStop1) ||
                         (timeStart1 < timeStop2 && timeStop2 < timeStop1)) ||
@@ -200,13 +200,13 @@ const ScheduleTable = ({onClickHandler}) => {
                         // Check for room overlap
                         if (allCourse[i].room === allCourse[j].room) {
                             duplicateRooms.push(allCourse[i].room);
-                        
+
                         }
                     }
                 }
             }
         }
-    
+
         setDupRoom(duplicateRooms);
     };
 
@@ -225,10 +225,10 @@ const ScheduleTable = ({onClickHandler}) => {
                 }
             }
         }
-    
+
         setDupSec(duplicateSec);
     };
-    
+
 
     const changeColor = (course) => {
         // Check if the course object exists
@@ -261,12 +261,17 @@ const ScheduleTable = ({onClickHandler}) => {
     const deleteCourse = async (courseId) => {
         console.log("Deleting course with ID:", courseId);
         try {
+            // Delete the course from the database
             const courseRef = doc(db, 'ChooseSubject', courseId);
             await deleteDoc(courseRef);
+
+            // Update the courses state to remove the deleted course
+            setCourses(prevCourses => prevCourses.filter(course => course.course_id !== courseId));
         } catch (error) {
             console.error('Error deleting course: ', error);
         }
     };
+
 
     return (
         <div>
