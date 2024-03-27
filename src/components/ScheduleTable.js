@@ -15,6 +15,7 @@ import {
     and, doc,
     deleteDoc,
 } from 'firebase/firestore';
+import ShowChoose from './ShowChoose';
 
 
 const ScheduleTable = ({ onClickHandler }) => {
@@ -282,6 +283,7 @@ const ScheduleTable = ({ onClickHandler }) => {
                     <div className='d-flex justify-content-flex-start'>
                         <Dropdown queryCourses={queryCourses} />
                         <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
+                        <ShowChoose/>
                     </div>
 
                     <table className="schedule-table" ref={tableRef}>
