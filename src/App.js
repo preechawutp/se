@@ -7,7 +7,8 @@ import ScheduleTable from './components/ScheduleTable';
 import ShowCourse from './components/ShowCourse';
 import Result from './components/Result';
 import TeacherTable from './components/Teachertable';
-import ShowSchedule from './components/ShowSchedule'; // นำเข้า ShowSchedule component
+import ShowSchedule from './components/ShowSchedule';
+import RoomTable from './components/RoomTable';
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -40,6 +41,7 @@ const App = () => {
             <Route path="/course" element={<ShowCourse />} />
             <Route path="/result" element={<Result />} />
             <Route path="/teacher" element={<TeacherTable />} />
+            <Route path="/room" element={<RoomTable />} />
           </>
         ) : (
           <>
