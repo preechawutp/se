@@ -16,6 +16,7 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 import ShowChoose from './ShowChoose';
+import { Alert } from 'react-bootstrap';
 
 
 const ScheduleTable = ({ onClickHandler }) => {
@@ -28,6 +29,7 @@ const ScheduleTable = ({ onClickHandler }) => {
     const [dupSec, setDupSec] = useState([]);
     const selectedCourseRef = collection(db, 'ChooseSubject');
     const tableRef = useRef(null);
+    const [validationError, setValidationError] = useState('');
 
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
         const startHour = Math.floor(index / 2) + 7 < 10 ? '0' + `${Math.floor(index / 2) + 7}` : `${Math.floor(index / 2) + 7}`;
@@ -156,7 +158,7 @@ const ScheduleTable = ({ onClickHandler }) => {
                                 if (allCourse[i].subjecttype === "วิชาแกน") {
                                     // วิชาแกนปีเดียวชนกันเองไม่ได้
                                     duplicateTypes.push(allCourse[i].id);
-                                    // pairDup.push([allCourse[i].id, allCourse[j].id); // สร้าง array คู่ ไว้เช็คคู่วิชาที่ซ้ำกัน
+                                    // pairDup.push([allCourse[i].id, allCourse[j].id]); // สร้าง array คู่ ไว้เช็คคู่วิชาที่ซ้ำกัน
                                 } else if (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ") {
                                     // วิชาเฉพาะบังคับปีเดียวชนกันเองไม่ได้
                                     duplicateTypes.push(allCourse[i].id);
@@ -250,6 +252,20 @@ const ScheduleTable = ({ onClickHandler }) => {
             return ""; // Return empty string for non-existent courses
         }
     };
+
+    useEffect(() => {
+        let error = "";
+        if (duplicateCourse.length > 0) {
+            error = "เวลาชน";
+        } else if (dupType.length > 0) {
+            error = "วิชาชน";
+        } else if (dupRoom.length > 0) {
+            error = "ห้องชน";
+        } else if (dupSec.length > 0) {
+            error = "หมู่เรียนชน";
+        }
+        setValidationError(error);
+    }, [duplicateCourse, dupType, dupRoom, dupSec]);
     /* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
@@ -356,8 +372,12 @@ const ScheduleTable = ({ onClickHandler }) => {
                             ))}
                         </tbody>
                     </table>
-
-                </div>
+                    </div>
+                    {validationError && (
+                <Alert variant="danger" className="mt-3">
+                    {validationError}
+                </Alert>
+            )}
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 
