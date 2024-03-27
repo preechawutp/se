@@ -15,6 +15,8 @@ const AddCourseTotable = ({
 }) => {
 
   const teacherRef = collection(db, "teacher");
+  const roomRef = collection(db, "room");
+  const [rooms, setRooms] = useState([]);
   const [teachers, setTeacher] = useState([]);
   const [timeError, setTimeError] = useState(false);
 
@@ -25,6 +27,20 @@ const AddCourseTotable = ({
         ...doc.data(),
       }));
       setTeacher(newData);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(roomRef, (snapshot) => {
+      const newData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setRooms(newData);
     });
 
     return () => {
@@ -169,14 +185,18 @@ const AddCourseTotable = ({
             </div>
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
               <label htmlFor="room">ห้อง</label>
-              <input
-                className="form-control"
+              <select
+                className="form-select "
                 onChange={(e) => handleCourseChange(e)}
-                type="number"
                 name="room"
                 style={{ width: "150px" }}
-                min="0"
-              />
+              >
+                <option value="" disabled selected>- กรุณาเลือก -</option>
+                {rooms.map((item, index) => (
+                  <option key={index} value={item.roomid}> {item.roomid} </option>
+                ))}
+              </select>
+
             </div>
 
             <div className="form-group mt-2 d-flex justify-content-between align-items-center">
@@ -269,7 +289,7 @@ const AddCourseTotable = ({
             onClick={() => {
               handleAddCourse(item_id);
               handleShow();
-              handleClose(); 
+              handleClose();
             }}
           >
             บันทึก
