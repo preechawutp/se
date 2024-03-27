@@ -192,10 +192,10 @@ const ScheduleTable = ({onClickHandler}) => {
                     const timeStop2 = allCourse[j].TimeStop.split("-")[0];
     
                     if (
-                        ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
-                        (timeStart1 <= timeStop2 && timeStop2 <= timeStop1)) ||
-                        ((timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
-                        (timeStart2 <= timeStop1 && timeStop1 <= timeStop2))
+                        ((timeStart1 < timeStart2 && timeStart2 < timeStop1) ||
+                        (timeStart1 < timeStop2 && timeStop2 < timeStop1)) ||
+                        ((timeStart2 < timeStart1 && timeStart1 < timeStop2) ||
+                        (timeStart2 < timeStop1 && timeStop1 < timeStop2))
                     ) {
                         // Check for room overlap
                         if (allCourse[i].room === allCourse[j].room) {
