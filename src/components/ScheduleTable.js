@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import html2canvas from 'html2canvas'; // Import html2canvas library for converting HTML to canvas
-import { saveAs } from 'file-saver'; // Import file-saver library for saving canvas as PNG
+import { saveAs } from 'file-saver';
 
 import '../assets/st.css';
 import Navbar from "./Navbar";
@@ -11,8 +10,7 @@ import {
     query,
     where,
     getDocs,
-    onSnapshot,
-    and, doc,
+    doc,
     deleteDoc,
 } from 'firebase/firestore';
 import ShowChoose from './ShowChoose';
