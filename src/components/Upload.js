@@ -1,10 +1,8 @@
-// Upload.js
-
 import React, { useState } from "react";
 import * as XLSX from 'xlsx';
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
-import { Button, Modal, Table, Alert } from "react-bootstrap";
+import { Button, Modal, Table, Alert, Form } from "react-bootstrap";
 
 const Upload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -12,12 +10,14 @@ const Upload = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [uploadOption, setUploadOption] = useState(null); // State for selected upload option
 
   const handleUploadModalClose = () => {
     setShowUploadModal(false);
     setSelectedFile(null);
     setXlData(null);
     setErrorMessage(null);
+    setUploadOption(null); // Reset upload option
   };
 
   const handleConfirmationModalClose = () => {
@@ -46,7 +46,7 @@ const Upload = () => {
         const dataFromSheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
         setXlData(dataFromSheet);
         setShowUploadModal(true);
-        setErrorMessage(null); // Clear the error message when a valid file is selected
+        setErrorMessage(null);
         document.getElementById('instruction-text').style.display = 'none';
       }
     };
@@ -54,20 +54,45 @@ const Upload = () => {
   };
 
   const handleUpload = () => {
-    if (!xlData) {
-      setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
+  if (!xlData) {
+    setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
+    return;
+  }
+
+  if (!uploadOption) {
+    setErrorMessage("กรุณาเลือกตัวเลือกการอัปโหลด");
+    return;
+  }
+
+  const missingFields = validateFields(xlData, uploadOption);
+  if (missingFields.length > 0) {
+    setErrorMessage(`ไม่พบฟิลด์ต่อไปนี้ในข้อมูล Excel: ${missingFields.join(", ")}`);
+    return;
+  }
+
+  setShowUploadModal(false);
+  setShowConfirmationModal(true);
+};
+
+
+  const handleConfirmUpload = async () => {
+    let collectionRef = null;
+    if (uploadOption === "course") {
+      collectionRef = "course";
+    } else if (uploadOption === "teacher") {
+      collectionRef = "teacher";
+    } else if (uploadOption === "room") {
+      collectionRef = "room";
+    }
+
+    if (!collectionRef) {
+      setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
       return;
     }
 
-    setShowUploadModal(false);
-    setShowConfirmationModal(true);
-  };
-
-  const handleConfirmUpload = async () => {
-    // Send data to Firebase Firestore
     xlData.forEach(async (item) => {
       try {
-        await addDoc(collection(db, "course"), item);
+        await addDoc(collection(db, collectionRef), item);
         console.log("Document successfully written!");
       } catch (error) {
         console.error("Error writing document: ", error);
@@ -90,6 +115,26 @@ const Upload = () => {
     handleFileChange(file);
   };
 
+  const handleCheckboxChange = (option) => {
+    setUploadOption(option);
+  };
+
+  const validateFields = (data, uploadOption) => {
+    const requiredFields = {
+      course: ["code", "credit", "grade","name", "nameTH", "type"], // เพิ่มฟิลด์ที่ต้องการตรวจสอบสำหรับแต่ละรายการ
+      teacher: ["firstname", "lastname"],
+      room: ["roomid"],
+    };
+  
+    const fieldsToCheck = requiredFields[uploadOption];
+    const xlFields = Object.keys(data[0]);
+  
+    const missingFields = fieldsToCheck.filter(field => !xlFields.includes(field));
+  
+    return missingFields;
+  };
+  
+
   return (
     <div className="form-group p-3">
       <Button className="btn1" onClick={handleShow}>
@@ -103,18 +148,41 @@ const Upload = () => {
         centered={true}
         scrollable={true}
         size="lg"
-        onDrop={handleFileDrop} // เพิ่มอีเวนต์ onDrop
-        onDragOver={(e) => e.preventDefault()} // เพิ่มอีเวนต์ onDragOver
+        onDrop={handleFileDrop}
+        onDragOver={(e) => e.preventDefault()}
       >
         <Modal.Body style={{
           overflowY: 'auto',
           overflowX: 'auto',
           padding: '6%',
         }}
-          onDrop={handleFileDrop} // เพิ่มอีเวนต์ onDrop
-          onDragOver={(e) => e.preventDefault()} // เพิ่มอีเวนต์ onDragOver
+          onDrop={handleFileDrop}
+          onDragOver={(e) => e.preventDefault()}
         >
           <h1>อัปโหลด</h1>
+          <Form.Check
+            type="checkbox"
+            label="อัปโหลดลงในรายวิชา"
+            checked={uploadOption === "course"}
+            onChange={() => handleCheckboxChange("course")}
+            className="mt-3"
+          />
+
+          <Form.Check
+            type="checkbox"
+            label="อัปโหลดรายชื่ออาจารย์"
+            checked={uploadOption === "teacher"}
+            onChange={() => handleCheckboxChange("teacher")}
+            className="mt-3"
+          />
+
+          <Form.Check
+            type="checkbox"
+            label="อัปโหลดรายชื่อห้อง"
+            checked={uploadOption === "room"}
+            onChange={() => handleCheckboxChange("room")}
+            className="mt-3"
+          />
           <div className="form-group">
             <div
               className="form-group mt-4"
@@ -160,6 +228,8 @@ const Upload = () => {
               {errorMessage}
             </Alert>
           )}
+
+        
         </Modal.Body>
         <Modal.Footer>
           <button
@@ -176,7 +246,6 @@ const Upload = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Confirmation Dialog Modal */}
       <Modal
         show={showConfirmationModal}
         onHide={handleConfirmationModalClose}
@@ -204,7 +273,6 @@ const Upload = () => {
             </Button>
           </div>
         </Modal.Body>
-        {/* Add footer to the confirmation modal */}
         <Modal.Footer>
           <Button variant="secondary" onClick={handleConfirmationModalClose}>
             ปิด
