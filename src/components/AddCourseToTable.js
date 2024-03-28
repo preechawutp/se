@@ -32,7 +32,7 @@ const AddCourseTotable = ({
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [teacherRef]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(roomRef, (snapshot) => {
@@ -46,7 +46,7 @@ const AddCourseTotable = ({
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [roomRef]);
 
 
   const [show, setShow] = useState(false);
