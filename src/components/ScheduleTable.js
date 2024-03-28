@@ -16,7 +16,7 @@ import {
     deleteDoc,
 } from 'firebase/firestore';
 import ShowChoose from './ShowChoose';
-import { Alert } from 'react-bootstrap';
+import { Alert, Button, Modal } from 'react-bootstrap';
 
 
 const ScheduleTable = ({ onClickHandler }) => {
@@ -30,6 +30,8 @@ const ScheduleTable = ({ onClickHandler }) => {
     const selectedCourseRef = collection(db, 'ChooseSubject');
     const tableRef = useRef(null);
     const [validationError, setValidationError] = useState('');
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [courseToDelete, setCourseToDelete] = useState(null);
 
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
         const startHour = Math.floor(index / 2) + 7 < 10 ? '0' + `${Math.floor(index / 2) + 7}` : `${Math.floor(index / 2) + 7}`;
@@ -196,9 +198,9 @@ const ScheduleTable = ({ onClickHandler }) => {
 
                     if (
                         ((timeStart1 < timeStart2 && timeStart2 < timeStop1) ||
-                        (timeStart1 < timeStop2 && timeStop2 < timeStop1)) ||
+                            (timeStart1 < timeStop2 && timeStop2 < timeStop1)) ||
                         ((timeStart2 < timeStart1 && timeStart1 < timeStop2) ||
-                        (timeStart2 < timeStop1 && timeStop1 < timeStop2))
+                            (timeStart2 < timeStop1 && timeStop1 < timeStop2))
                     ) {
                         // Check for room overlap
                         if (allCourse[i].room === allCourse[j].room) {
@@ -282,9 +284,9 @@ const ScheduleTable = ({ onClickHandler }) => {
         }
         setValidationError(error);
     }, [duplicateCourse, dupType, dupRoom, dupSec]);
-    
-    
-    
+
+
+
     /* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
@@ -296,24 +298,29 @@ const ScheduleTable = ({ onClickHandler }) => {
 
     const deleteCourse = async (courseId) => {
         console.log("Deleting course with ID:", courseId);
+        setCourseToDelete(courseId);
+        setShowConfirmationModal(true);
+    };
+
+    const handleConfirmDelete = async () => {
         try {
-            // Delete the course from the database
-            const courseRef = doc(db, 'ChooseSubject', courseId);
-            await deleteDoc(courseRef);
-            
-            // Update the courses state to remove the deleted course
-            setCourses(prevCourses => prevCourses.filter(course => course.id !== courseId));
-            
-            // Refresh the page after a short delay to ensure the state update is completed
+            await deleteDoc(doc(db, 'ChooseSubject', courseToDelete));
+            setCourses(prevCourses => prevCourses.filter(course => course.id !== courseToDelete));
+            setShowConfirmationModal(false);
+            setCourseToDelete(null);
+            // Refresh the page
             setTimeout(() => {
-                window.location.reload(); // This will reload the page
-            }, 500); // You can adjust the delay time if needed
+                window.location.reload();
+            }, 1000);
         } catch (error) {
             console.error('Error deleting course: ', error);
         }
     };
-    
 
+    const handleConfirmationModalClose = () => {
+        setShowConfirmationModal(false);
+        setCourseToDelete(null);
+    };
 
     return (
         <div>
@@ -324,7 +331,7 @@ const ScheduleTable = ({ onClickHandler }) => {
                     <div className='d-flex justify-content-flex-start'>
                         <Dropdown queryCourses={queryCourses} />
                         <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
-                        <ShowChoose/>
+                        <ShowChoose />
                     </div>
 
                     <table className="schedule-table" ref={tableRef}>
@@ -397,12 +404,12 @@ const ScheduleTable = ({ onClickHandler }) => {
                             ))}
                         </tbody>
                     </table>
-                    </div>
-                    {validationError && (
-                <Alert variant="danger" className="mt-3">
-                    {validationError}
-                </Alert>
-            )}
+                </div>
+                {validationError && (
+                    <Alert variant="danger" className="mt-3">
+                        {validationError}
+                    </Alert>
+                )}
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 
@@ -448,7 +455,38 @@ const ScheduleTable = ({ onClickHandler }) => {
                     </table>
                 </div>
             </div>
-
+            {/* Confirmation Dialog Modal */}
+            <Modal
+                show={showConfirmationModal}
+                onHide={handleConfirmationModalClose}
+                size="x"
+                centered
+            >
+                <Modal.Body
+                    closeButton
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        maxHeight: 'calc(100vh - 210px)',
+                        overflowY: 'auto',
+                        overflowX: 'auto',
+                        padding: '10%',
+                    }}
+                >
+                    <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+                    <h5>ต้องการยืนยันใช่หรือไม่?</h5>
+                    <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+                        <Button variant="success" className="btn1" onClick={handleConfirmDelete}>
+                            ยืนยัน
+                        </Button>
+                        <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+                            ยกเลิก
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 };
