@@ -68,10 +68,6 @@ const Dropdown = ({ queryCourses }) => {
     queryCourses({ teacher: selectedTeacher, term: selectedSemester, year: selectedYear });
   };
 
-  useEffect(() => {
-    onClickHandler();
-}, []);
-
   return (
     <div className="dropdown-container">
 
