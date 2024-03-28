@@ -42,8 +42,6 @@ const Dropdown = ({ queryCourses }) => {
       setSelectedSemester(storedSemester);
     }
 
-    // เรียกใช้ queryCourses เมื่อมีการปลี่ยนแปลง
-    
   }, []);
 
   const handleTeacherChange = (e) => {
