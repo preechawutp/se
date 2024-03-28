@@ -24,8 +24,8 @@ const App = () => {
   }, []);
 
   if (loading) {
-    return <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="loader"></div>
+    return <div className="container d-flex justify-content-center align-items-center vh-100">
+      <div className="loader"></div>
     </div>;
   }
 
