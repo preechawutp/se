@@ -21,6 +21,9 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
   const handleSave = () => {
     if (!form.code || !form.grade || !form.name || !form.credit || !form.type) {
       setValidationError("กรุณากรอกข้อมูลให้ครบ");
+      setTimeout(() => {
+        setValidationError(null);
+      }, 2000);
       return;
     }
     setValidationError(null);

@@ -60,6 +60,9 @@ const AddTeacher = () => {
   const handleAddData = async () => {
     if (!form.firstname || !form.lastname) {
       setValidationError("กรุณากรอกข้อมูลให้ครบ");
+      setTimeout(() => {
+        setValidationError(null);
+      }, 2000);
       return;
     }
     setValidationError(null);

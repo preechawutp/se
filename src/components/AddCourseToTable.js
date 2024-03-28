@@ -5,7 +5,7 @@ import {
   collection,
   onSnapshot,
 } from 'firebase/firestore';
-import { Alert, Button, Modal } from 'react-bootstrap';
+import { Alert, Button, Modal, Form } from 'react-bootstrap';
 
 const AddCourseTotable = ({
   handleCourseChange,
@@ -19,6 +19,7 @@ const AddCourseTotable = ({
   const [rooms, setRooms] = useState([]);
   const [teachers, setTeacher] = useState([]);
   const [timeError, setTimeError] = useState(false);
+  const [validationError, setValidationError] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(teacherRef, (snapshot) => {
@@ -52,6 +53,7 @@ const AddCourseTotable = ({
 
   const handleClose = () => {
     setShow(false);
+    setValidationError(null);
   };
 
   const handleShow = () => setShow(true);
@@ -62,11 +64,43 @@ const AddCourseTotable = ({
     const [hour, minute] = value.split(':').map(Number);
     if ((hour < 7 || hour > 20) || (minute % 15 !== 0)) {
       setTimeError(true);
+      setValidationError('เวลาต้องอยู่ระหว่าง 07:00 ถึง 20:00 และใส่นาทีได้แค่ 00, 15, 30, 45 เท่านั้น');
+      setTimeout(() => {
+        setValidationError(null);
+      },2000);
       handleCourseChange({ target: { name, value: '' } });
     } else {
       setTimeError(false);
+      setValidationError(null);
       handleCourseChange(e);
     }
+  };
+
+  const handleSave = () => {
+
+    if (!courseForm.day || !courseForm.TimeStart || !courseForm.TimeStop || !courseForm.teacher || !courseForm.subjecttype || !courseForm.sec || !courseForm.room || !courseForm.student || !courseForm.major || !courseForm.years || !courseForm.term || !courseForm.grade_level) {
+      setValidationError('กรุณากรอกข้อมูลให้ครบถ้วน');
+      setTimeout(() => {
+        setValidationError(null);
+      },2000);
+      return;
+    }
+ 
+    if (
+      courseForm.day === '-' || 
+      courseForm.subjecttype === '-' || 
+      courseForm.term === '-' || 
+      courseForm.grade_level.length === 0
+    ) {
+      setValidationError('กรุณาเลือกข้อมูลให้ครบถ้วน');
+      setTimeout(() => {
+        setValidationError(null);
+      },2000);
+      return;
+    }
+    setValidationError(null);
+    handleAddCourse(item_id);
+    handleClose();
   };
 
   return (
@@ -102,8 +136,9 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     name="day"
                     style={{ width: "150px" }}
+                    defaultValue="-"
                   >
-                    <option value="-" disabled selected>- กรุณาเลือก -</option>
+                    <option value="-" disabled>- กรุณาเลือก -</option>
                     <option value="MON">MON</option>
                     <option value="TUE">TUE</option>
                     <option value="WED">WED</option>
@@ -145,8 +180,9 @@ const AddCourseTotable = ({
                       onChange={(e) => handleCourseChange(e)}
                       name="teacher"
                       style={{ width: "150px" }}
+                      defaultValue=""
                     >
-                      <option value="" disabled selected>- กรุณาเลือก -</option>
+                      <option value="" disabled>- กรุณาเลือก -</option>
                       {teachers.map((item, index) => (
                         <option key={index} value={item.firstname + ' ' + item.lastname}> {item.firstname} {item.lastname} </option>
                       ))}
@@ -163,7 +199,7 @@ const AddCourseTotable = ({
                     value={courseForm.subjecttype || ""}
                     style={{ width: "150px" }}
                   >
-                    <option value="" disabled selected>- กรุณาเลือก -</option>
+                    <option value="" disabled>- กรุณาเลือก -</option>
                     <option value="วิชาแกน">วิชาแกน</option>
                     <option value="วิชาเฉพาะ">วิชาเฉพาะ</option>
                     <option value="วิชาเฉพาะเลือก">วิชาเฉพาะเลือก</option>
@@ -194,8 +230,9 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     name="room"
                     style={{ width: "150px" }}
+                    defaultValue=""
                   >
-                    <option value="" disabled selected>- กรุณาเลือก -</option>
+                    <option value="" disabled>- กรุณาเลือก -</option>
                     {rooms.map((item, index) => (
                       <option key={index} value={item.roomid}> {item.roomid} </option>
                     ))}
@@ -223,8 +260,9 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     name="major"
                     style={{ width: "150px" }}
+                    defaultValue="-"
                   >
-                    <option value="-" disabled selected>- กรุณาเลือก -</option>
+                    <option value="-" disabled>- กรุณาเลือก -</option>
                     <option value="T12">T12</option>
                   </select>
                 </div>
@@ -247,8 +285,9 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     name="term"
                     style={{ width: '150px' }}
+                    defaultValue="-"
                   >
-                    <option value="-" disabled selected>- กรุณาเลือก -</option>
+                    <option value="-" disabled>- กรุณาเลือก -</option>
                     <option value="ฤดูร้อน">ฤดูร้อน</option>
                     <option value="ต้น">ต้น</option>
                     <option value="ปลาย">ปลาย</option>
@@ -290,22 +329,18 @@ const AddCourseTotable = ({
               </form>
             </div>
           </div>
-          {timeError &&
+          {validationError && (
             <Alert variant="danger" className="mt-3">
-              เวลาต้องอยู่ระหว่าง 07:00 ถึง 20:00 และใส่นาทีได้แค่ 00, 15, 30, 45 เท่านั้น
+              {validationError}
             </Alert>
-          }
+          )}
         </Modal.Body>
         <Modal.Footer>
           <button
             type="button"
             className="btn1"
             id="submit"
-            onClick={() => {
-              handleAddCourse(item_id);
-              handleShow();
-              handleClose();
-            }}
+            onClick={handleSave}
           >
             บันทึก
           </button>
