@@ -300,13 +300,19 @@ const ScheduleTable = ({ onClickHandler }) => {
             // Delete the course from the database
             const courseRef = doc(db, 'ChooseSubject', courseId);
             await deleteDoc(courseRef);
-
+            
             // Update the courses state to remove the deleted course
-            setCourses(prevCourses => prevCourses.filter(course => course.course_id !== courseId));
+            setCourses(prevCourses => prevCourses.filter(course => course.id !== courseId));
+            
+            // Refresh the page after a short delay to ensure the state update is completed
+            setTimeout(() => {
+                window.location.reload(); // This will reload the page
+            }, 500); // You can adjust the delay time if needed
         } catch (error) {
             console.error('Error deleting course: ', error);
         }
     };
+    
 
 
     return (
