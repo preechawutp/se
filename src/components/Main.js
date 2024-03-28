@@ -93,7 +93,6 @@ const Main = () => {
   };
 
   // เพิ่มวิชาที่เลือก
-  // เพิ่มวิชาที่เลือก
   const handleAddCourse = async (id) => {
     const selectedItem = data.find((item) => item.id === id);
     if (!selectedItem) return; // หยุดการทำงานของฟังก์ชันหากไม่พบรายวิชา
@@ -113,6 +112,12 @@ const Main = () => {
     object.grade = newItem.grade;
     object.name = newItem.name;
     object.type = newItem.type;
+
+      // ตรวจสอบค่า object.sec ก่อนที่จะใช้ใน query
+    if (!object.sec) {
+      console.log('Section is missing.'); // แสดงข้อความว่า Section หายไป
+      return;
+    }
 
     // ตรวจสอบว่ามีวิชาที่มี sec ซ้ำกันในฐานข้อมูลหรือไม่
     const q = query(selectedCourseRef, where('sec', '==', object.sec));
