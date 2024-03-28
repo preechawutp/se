@@ -273,11 +273,6 @@ const Upload = () => {
             </Button>
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleConfirmationModalClose}>
-            ปิด
-          </Button>
-        </Modal.Footer>
       </Modal>
     </div>
   );
