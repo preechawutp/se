@@ -43,8 +43,8 @@ const Dropdown = ({ queryCourses }) => {
     }
 
     // เรียกใช้ queryCourses เมื่อมีการปลี่ยนแปลง
-    queryCourses({ teacher: storedTeacher, term: storedSemester, year: storedYear });
-  }, [queryCourses]);
+    
+  }, []);
 
   const handleTeacherChange = (e) => {
     const value = e.target.value;
