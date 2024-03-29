@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx'; // Import the xlsx library
 const Result = () => {
   const [searchedCourse, setSearchedCourses] = useState([]);
   const ChooseSubjectRef = collection(db, 'ChooseSubject');
+  const [totalCredits, setTotalCredits] = useState(0);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -48,82 +49,96 @@ const Result = () => {
     }));
     setSearchedCourses(coursesArray);
   };
-  
-const saveAs = () => {
-  // Extract the teacher's name from the first course in the filtered data
-  const teacherName = searchedCourse.length > 0 ? searchedCourse[0].teacher : 'unknown_teacher';
-  const year = searchedCourse.length > 0 ? searchedCourse[0].years : 'unknown_year';
-  const term = searchedCourse.length > 0 ? searchedCourse[0].term : 'unknown_term';
-  const filename = `${teacherName}.xlsx`;
 
-  // Filter and map the data to include only the specified fields and rename the headers
-  const filteredData = searchedCourse.map(course => ({
-    'รหัสวิชา': course.code,
-    'หลักสูตร': course.grade,
-    'ชื่อวิชา': course.name,
-    'ประเภท': course.type,
-    'หมู่เรียน': course.sec,
-    'วัน': course.day,
-    'เริ่ม': course.TimeStart,
-    'สิ้นสุด': course.TimeStop,
-    'ห้องเรียน': course.room,
-    'จำนวนที่เปิดรับ': course.student,
-    'อาจารย์ผู้สอน': course.teacher,
-  }));
+  const saveAs = () => {
+    const teacherName = searchedCourse.length > 0 ? searchedCourse[0].teacher : 'unknown_teacher';
+    const year = searchedCourse.length > 0 ? searchedCourse[0].years : 'unknown_year';
+    const term = searchedCourse.length > 0 ? searchedCourse[0].term : 'unknown_term';
+    const filename = `${teacherName}-${year}-${term}.xlsx`;
 
-  // Sort the filtered data by 'รหัสวิชา' field
-  filteredData.sort((a, b) => a['รหัสวิชา'].localeCompare(b['รหัสวิชา']));
+    if (searchedCourse.length === 0) {
+      console.error('No courses found.');
+      return;
+    }
 
-  // Create a new worksheet
-  const ws = XLSX.utils.json_to_sheet([[]]); // Create an empty sheet
+    const ws = XLSX.utils.aoa_to_sheet([
+      [`อาจารย์ : ${teacherName}, ปีการศึกษา : ${year}, ภาคเรียน : ${term}`],
+      ['รหัสวิชา', 'หลักสูตร', 'ชื่อวิชา', 'ประเภท', 'หมู่เรียน', 'วัน', 'เริ่ม', 'สิ้นสุด', 'ห้องเรียน', 'จำนวนที่เปิดรับ', 'อาจารย์ผู้สอน'],
+      ...searchedCourse.map(course => [
+        course.code,
+        course.grade,
+        course.name,
+        course.type,
+        course.sec,
+        course.day,
+        course.TimeStart,
+        course.TimeStop,
+        course.room,
+        course.student,
+        course.teacher
+      ])
+    ]);
 
-  // Add teacher, year, and term to the first row of the data
-  ws['A1'] = { t: 's', v: `อาจารย์ : ${teacherName}, ปีการศึกษา : ${year}, ภาคเรียน : ${term}` }; // Add firstRow to cell A1
-
-  // Convert the filtered data to worksheet starting from A2
-  const dataWs = XLSX.utils.json_to_sheet(filteredData, { origin: 'A2' });
-
-  // Merge the two worksheets
-  const finalWs = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(finalWs, ws, 'Header');
-  XLSX.utils.book_append_sheet(finalWs, dataWs, 'Filtered Data');
-
-  // Save the workbook as an XLSX file
-  XLSX.writeFile(finalWs, filename);
-};
-
-const saveAsAll = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
-    const allCoursesData = querySnapshot.docs.map(doc => doc.data());
-
-    // Map all data to include only the specified fields and rename the headers
-    const mappedData = allCoursesData.map(course => ({
-      'รหัสวิชา': course.code,
-      'หลักสูตร': course.grade,
-      'ชื่อวิชา': course.name,
-      'ประเภท': course.type,
-      'หมู่เรียน': course.sec,
-      'วัน': course.day,
-      'เริ่ม': course.TimeStart,
-      'สิ้นสุด': course.TimeStop,
-      'ห้องเรียน': course.room,
-      'จำนวนที่เปิดรับ': course.student,
-      'อาจารย์ผู้สอน': course.teacher,
-    }));
-
-    // Sort the mapped data by 'รหัสวิชา' field
-    mappedData.sort((a, b) => a['รหัสวิชา'].localeCompare(b['รหัสวิชา']));
-
-    const filename = 'AllSchedule.xlsx';
-    const ws = XLSX.utils.json_to_sheet(mappedData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'All Schedule');
+    XLSX.utils.book_append_sheet(wb, ws, 'All Data');
+
     XLSX.writeFile(wb, filename);
-  } catch (error) {
-    console.error('Error fetching all courses: ', error);
-  }
-};
+  };
+
+  const saveAsAll = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
+      const allCoursesData = querySnapshot.docs.map(doc => doc.data());
+
+      const allData = allCoursesData.reduce((accumulator, course) => {
+        const { years, term } = course;
+        const key = `${years}_${term}`;
+        if (!accumulator[key]) {
+          accumulator[key] = [];
+        }
+        accumulator[key].push(course);
+        return accumulator;
+      }, {});
+
+      const filename = 'ผลการจัดตาราง.xlsx';
+      const wb = XLSX.utils.book_new();
+
+      Object.entries(allData).forEach(([key, courses]) => {
+        const [year, term] = key.split('_');
+
+        const wsData = [
+          [`ปีการศึกษา : ${year} ภาคเรียน : ${term}`],
+          ['รหัสวิชา', 'หลักสูตร', 'ชื่อวิชา', 'ประเภท', 'หมู่เรียน', 'วัน', 'เริ่ม', 'สิ้นสุด', 'ห้องเรียน', 'จำนวนที่เปิดรับ', 'อาจารย์ผู้สอน'],
+          ...courses.map(course => [
+            course.code,
+            course.grade,
+            course.name,
+            course.type,
+            course.sec,
+            course.day,
+            course.TimeStart,
+            course.TimeStop,
+            course.room,
+            course.student,
+            course.teacher
+          ])
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        XLSX.utils.book_append_sheet(wb, ws, ` ปีการศึกษา ${year} ภาค${term}`);
+      });
+
+      XLSX.writeFile(wb, filename);
+    } catch (error) {
+      console.error('Error fetching all courses: ', error);
+    }
+  };
+
+  useEffect(() => {
+    // Calculate total credits whenever searchedCourse changes
+    const credits = searchedCourse.reduce((total, course) => total + parseInt(course.credit), 0);
+    setTotalCredits(credits);
+  }, [searchedCourse]);
 
   return (
     <div>
@@ -131,10 +146,11 @@ const saveAsAll = async () => {
       <div className='container'>
         <div className="schedule-table-container mt-5">
           <h2>ตารางสอน</h2>
-          <div className='d-flex justify-content-flex-start'>
+          <div className='d-flex justify-content-between'>
             <Dropdown queryCourses={queryCourses} />
-            <button className="btn1 m-3" onClick={saveAs}>Download</button>
-            <button className="btn1 m-3" onClick={saveAsAll}>Download All</button>
+            <div className='d-flex justify-content-end'>
+              <button className="btn1 m-3" onClick={saveAs}>ผลการจัดตาราง</button>
+            </div>
           </div>
 
           <table className="table table-hover mt-3">
@@ -143,7 +159,7 @@ const saveAsAll = async () => {
                 <th scope="col">ลำดับที่</th>
                 <th scope="col">รหัสวิชา</th>
                 <th scope="col">ชื่อวิชา</th>
-                <th scope="col">หน่วยกิต</th>
+                <th scope="col" style={{width: "10%"}}>หน่วยกิต</th>
               </tr>
             </thead>
             <tbody>
@@ -154,9 +170,18 @@ const saveAsAll = async () => {
                   <td>{searchedCourse.name}</td>
                   <td>{searchedCourse.credit}</td>
                 </tr>
+
               ))}
+              <td></td><td></td><td></td><td>รวม {totalCredits} หน่วยกิต</td>
             </tbody>
+
           </table>
+          {/* <div className='d-flex justify-content-end'>
+            <p>รวมหน่วยกิต: {totalCredits}</p>
+          </div> */}
+          <div className='d-flex justify-content-end'>
+            <button className="btn1 m-3" onClick={saveAsAll}>ผลการจัดตารางทั้งหมด</button>
+          </div>
         </div>
       </div>
     </div>
