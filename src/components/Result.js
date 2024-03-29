@@ -78,6 +78,39 @@ const saveAs = () => {
   XLSX.writeFile(wb, filename);
 };
 
+const saveAsAll = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
+    const allCoursesData = querySnapshot.docs.map(doc => doc.data());
+
+    // Map all data to include only the specified fields and rename the headers
+    const mappedData = allCoursesData.map(course => ({
+      'รหัสวิชา': course.code,
+      'หลักสูตร': course.grade,
+      'ชื่อวิชา': course.name,
+      'ประเภท': course.type,
+      'หมู่เรียน': course.sec,
+      'วัน': course.day,
+      'เริ่ม': course.TimeStart,
+      'สิ้นสุด': course.TimeStop,
+      'ห้องเรียน': course.room,
+      'จำนวนที่เปิดรับ': course.student,
+      'อาจารย์ผู้สอน': course.teacher,
+    }));
+
+    // Sort the mapped data by 'รหัสวิชา' field
+    mappedData.sort((a, b) => a['รหัสวิชา'].localeCompare(b['รหัสวิชา']));
+
+    const filename = 'AllSchedule.xlsx';
+    const ws = XLSX.utils.json_to_sheet(mappedData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'All Schedule');
+    XLSX.writeFile(wb, filename);
+  } catch (error) {
+    console.error('Error fetching all courses: ', error);
+  }
+};
+
   return (
     <div>
       <Navbar />
@@ -87,6 +120,7 @@ const saveAs = () => {
           <div className='d-flex justify-content-flex-start'>
             <Dropdown queryCourses={queryCourses} />
             <button className="btn1 m-3" onClick={saveAs}>Download</button>
+            <button className="btn1 m-3" onClick={saveAsAll}>Download All</button>
           </div>
 
           <table className="table table-hover mt-3">
