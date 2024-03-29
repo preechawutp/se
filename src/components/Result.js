@@ -54,24 +54,23 @@ const saveAs = () => {
   const teacherName = searchedCourse.length > 0 ? searchedCourse[0].teacher : 'unknown_teacher';
   const filename = `${teacherName}.xlsx`;
 
-  // Filter and map the data to include only the specified fields
+  // Filter and map the data to include only the specified fields and rename the headers
   const filteredData = searchedCourse.map(course => ({
-    code: course.code,
-    grade: course.grade,
-    name: course.name,
-    type: course.type,
-    sec: course.sec,
-    subjecttype: course.subjecttype,
-    day: course.day,
-    TimeStart: course.TimeStart,
-    TimeStop: course.TimeStop,
-    room: course.room,
-    student: course.student,
-    teacher: course.teacher,
+    'รหัสวิชา': course.code,
+    'หลักสูตร': course.grade,
+    'ชื่อวิชา': course.name,
+    'ประเภท': course.type,
+    'หมู่เรียน': course.sec,
+    'วัน': course.day,
+    'เริ่ม': course.TimeStart,
+    'สิ้นสุด': course.TimeStop,
+    'ห้องเรียน': course.room,
+    'จำนวนที่เปิดรับ': course.student,
+    'อาจารย์ผู้สอน': course.teacher,
   }));
 
-  // Sort the filtered data by 'code' field
-  filteredData.sort((a, b) => a.code.localeCompare(b.code));
+  // Sort the filtered data by 'รหัสวิชา' field
+  filteredData.sort((a, b) => a['รหัสวิชา'].localeCompare(b['รหัสวิชา']));
 
   const ws = XLSX.utils.json_to_sheet(filteredData);
   const wb = XLSX.utils.book_new();
