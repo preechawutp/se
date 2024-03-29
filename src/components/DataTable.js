@@ -20,7 +20,7 @@ const DataTable = ({
   handleDeleteAll
 }) => {
   const [curpage, setcurpage] = useState(1);
-  const courseperpage = 20;  //เปลี่ยนเอา
+  const courseperpage = 20;
 
   const indexlast = curpage * courseperpage;
   const indexfirst = indexlast - courseperpage;
@@ -40,27 +40,37 @@ const DataTable = ({
     }
   };
 
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
 
-  const handleShowConfirmationModal = (itemId) => {
-    setShowConfirmationModal(true);
+  const handleShowDeleteModal = (itemId) => {
+    setShowDeleteModal(true);
     setItemToDelete(itemId);
   };
 
-  const handleConfirmationModalClose = () => {
-    setShowConfirmationModal(false);
+  const handleDeleteModalClose = () => {
+    setShowDeleteModal(false);
+    setItemToDelete(null);
+  };
+
+  const handleShowDeleteAllModal = () => {
+    setShowDeleteAllModal(true);
+  };
+
+  const handleDeleteAllModalClose = () => {
+    setShowDeleteAllModal(false);
     setItemToDelete(null);
   };
 
   const handleConfirmDelete = () => {
     handleDelete(itemToDelete);
-    handleConfirmationModalClose();
+    handleDeleteModalClose();
   };
 
   const handleConfirmDeleteAll = () => {
     handleDeleteAll();
-    handleConfirmationModalClose();
+    handleDeleteAllModalClose();
   };
 
   return (
@@ -185,7 +195,7 @@ const DataTable = ({
                     <button className="btn1" onClick={() => handleEdit(item.id)}>
                       <i className="fa-solid fa-pencil"></i>
                     </button>
-                    <button className="btn1" onClick={() => handleShowConfirmationModal(item.id)}>
+                    <button className="btn1" onClick={() => handleShowDeleteModal(item.id)}>
                       <i className="fa-solid fa-trash"></i>
                     </button>
                   </>
@@ -201,7 +211,8 @@ const DataTable = ({
         </tbody>
       </table>
       <div className="row">
-        <div className="col"></div>
+        <div className="col">
+        </div>
         <div className="col">
           <div className="pagination mb-3">
             <button className="btn1" onClick={handlekornpage} disabled={curpage === 1}>
@@ -216,7 +227,7 @@ const DataTable = ({
         <div className="col mb-3 mt-2 d-flex justify-content-end">
           <button
             className="btn-cancel"
-            onClick={() => {setShowConfirmationModal(true);}}
+            onClick={handleShowDeleteAllModal}
           >
             ลบข้อมูลทั้งหมด
           </button>
@@ -224,8 +235,8 @@ const DataTable = ({
       </div>
       {/* Confirmation Dialog Modal */}
       <Modal
-        show={showConfirmationModal}
-        onHide={handleConfirmationModalClose}
+        show={showDeleteModal}
+        onHide={handleDeleteModalClose}
         size="x"
         centered
       >
@@ -246,7 +257,7 @@ const DataTable = ({
             <Button variant="success" className="btn1" onClick={handleConfirmDelete}>
               ยืนยัน
             </Button>
-            <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+            <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleDeleteModalClose}>
               ยกเลิก
             </Button>
           </div>
@@ -254,8 +265,8 @@ const DataTable = ({
       </Modal>
 
       <Modal
-        show={showConfirmationModal}
-        onHide={handleConfirmationModalClose}
+        show={showDeleteAllModal}
+        onHide={handleDeleteAllModalClose}
         size="x"
         centered
       >
@@ -276,7 +287,7 @@ const DataTable = ({
             <Button variant="success" className="btn1" onClick={handleConfirmDeleteAll}>
               ยืนยัน
             </Button>
-            <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+            <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleDeleteAllModalClose}>
               ยกเลิก
             </Button>
           </div>
