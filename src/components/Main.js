@@ -245,6 +245,7 @@ const Main = () => {
           handleAddToTable={handleAddToTable}
           setEditId={setEditId}
           setForm={setForm}
+          handleDeleteAll={handleDeleteAll}
         />
       </div>
 
