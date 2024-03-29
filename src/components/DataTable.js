@@ -14,9 +14,10 @@ const DataTable = ({
   handleEdit,
   handleDelete,
   handleAddCourse,
-  setEditId, 
+  setEditId,
   setForm,
   handleCourseChange,
+  handleDeleteAll
 }) => {
   const [curpage, setcurpage] = useState(1);
   const courseperpage = 20;  //เปลี่ยนเอา
@@ -32,7 +33,7 @@ const DataTable = ({
       setcurpage((kornpage) => kornpage + 1);
     }
   };
-  
+
   const handlekornpage = () => {
     if (curpage > 1) {
       setcurpage((kornpage) => kornpage - 1);
@@ -54,6 +55,11 @@ const DataTable = ({
 
   const handleConfirmDelete = () => {
     handleDelete(itemToDelete);
+    handleConfirmationModalClose();
+  };
+
+  const handleConfirmDeleteAll = () => {
+    handleDeleteAll();
     handleConfirmationModalClose();
   };
 
@@ -187,24 +193,35 @@ const DataTable = ({
               </td>
               <td>
                 <div className="d-flex align-items-center">
-                  <AddCourseToTable handleCourseChange={handleCourseChange} handleAddCourse={handleAddCourse} courseForm={courseForm} item_id={item.id} />  
+                  <AddCourseToTable handleCourseChange={handleCourseChange} handleAddCourse={handleAddCourse} courseForm={courseForm} item_id={item.id} />
                 </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      <div className="pagination mb-3">
-        <button className="btn1" onClick={handlekornpage} disabled={curpage === 1}>
-          กลับ
-        </button>
-        <span>{` ${curpage} / ${turtlepage}`}</span>
-        <button className="btn1" onClick={handleNextPage} disabled={curpage === turtlepage}>
-          ถัดไป
-        </button>
+      <div className="row">
+        <div className="col"></div>
+        <div className="col">
+          <div className="pagination mb-3">
+            <button className="btn1" onClick={handlekornpage} disabled={curpage === 1}>
+              กลับ
+            </button>
+            <span>{` ${curpage} / ${turtlepage}`}</span>
+            <button className="btn1" onClick={handleNextPage} disabled={curpage === turtlepage}>
+              ถัดไป
+            </button>
+          </div>
+        </div>
+        <div className="col mb-3 mt-2 d-flex justify-content-end">
+          <button
+            className="btn-cancel"
+            onClick={() => {setShowConfirmationModal(true);}}
+          >
+            ลบข้อมูลทั้งหมด
+          </button>
+        </div>
       </div>
-
       {/* Confirmation Dialog Modal */}
       <Modal
         show={showConfirmationModal}
@@ -221,22 +238,52 @@ const DataTable = ({
           overflowY: 'auto',
           overflowX: 'auto',
           padding: '10%',
-          }}>
+        }}>
           <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
           <h5>ต้องการยืนยันใช่หรือไม่?</h5>
 
           <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
-            <Button variant="success" className="btn1"  onClick={handleConfirmDelete}>
+            <Button variant="success" className="btn1" onClick={handleConfirmDelete}>
               ยืนยัน
             </Button>
             <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
               ยกเลิก
             </Button>
           </div>
-          </Modal.Body>
-        </Modal>
-      </div>
-      );
-    };
-          
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={showConfirmationModal}
+        onHide={handleConfirmationModalClose}
+        size="x"
+        centered
+      >
+        <Modal.Body closeButton style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          maxHeight: 'calc(100vh - 210px)',
+          overflowY: 'auto',
+          overflowX: 'auto',
+          padding: '10%',
+        }}>
+          <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+          <h5>ต้องการยืนยันใช่หรือไม่?</h5>
+
+          <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+            <Button variant="success" className="btn1" onClick={handleConfirmDeleteAll}>
+              ยืนยัน
+            </Button>
+            <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+              ยกเลิก
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </div>
+  );
+};
+
 export default DataTable;

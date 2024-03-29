@@ -113,7 +113,7 @@ const Main = () => {
     object.name = newItem.name;
     object.type = newItem.type;
 
-      // ตรวจสอบค่า object.sec ก่อนที่จะใช้ใน query
+    // ตรวจสอบค่า object.sec ก่อนที่จะใช้ใน query
     if (!object.sec) {
       console.log('Section is missing.'); // แสดงข้อความว่า Section หายไป
       return;
@@ -176,6 +176,14 @@ const Main = () => {
     await deleteDoc(docRef).catch((err) => console.log(err));
   };
 
+  // ลบข้อมูลทั้งหมด
+  const handleDeleteAll = async () => {
+    const querySnapshot = await getDocs(collection(db, 'course'));
+    querySnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref).catch((err) => console.log(err));
+    });
+  };
+
 
   const handleDeleteSelectedCourse = async (id) => {
     const courseRef = doc(db, 'selected_course', id);
@@ -215,11 +223,11 @@ const Main = () => {
           </div>
           <div className="d-flex">
             <AddCourse handleChange={handleChange} handleAddData={handleAddData} form={form} />
-            <AddTeacher />
             <Upload handleChange={handleChange} handleAddData={handleAddData} />
             <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse} handleAddToTable={handleAddToTable} />
           </div>
         </div>
+
         <DataTable
           data={allRelatedData.filter((item) =>
             Object.values(item).join(' ').toLowerCase().includes(searchTerm.toLowerCase())
@@ -239,6 +247,7 @@ const Main = () => {
           setForm={setForm}
         />
       </div>
+
       <Footer />
     </div>
   );
