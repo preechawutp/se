@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as XLSX from 'xlsx';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Button, Modal, Table, Alert, Form } from "react-bootstrap";
 
@@ -53,30 +53,70 @@ const Upload = () => {
     reader.readAsBinaryString(file);
   };
 
-  const handleUpload = () => {
-  if (!xlData) {
-    setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
-    return;
-  }
-
-  if (!uploadOption) {
-    setErrorMessage("กรุณาเลือกตัวเลือกการอัปโหลด");
-    return;
-  }
-
-  const missingFields = validateFields(xlData, uploadOption);
-  if (missingFields.length > 0) {
-    setErrorMessage(`ไม่พบฟิลด์ต่อไปนี้ในข้อมูล Excel: ${missingFields.join(", ")}`);
-    return;
-  }
-
-  setShowUploadModal(false);
-  setShowConfirmationModal(true);
-};
-
+  const handleUpload = async () => {
+    if (!xlData) {
+      setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
+      return;
+    }
+  
+    if (!uploadOption) {
+      setErrorMessage("กรุณาเลือกตัวเลือกการอัปโหลด");
+      return;
+    }
+  
+    let collectionRef = null;
+    let uniqueFields = null;
+    let existingDocs = {};
+  
+    if (uploadOption === "course") {
+      collectionRef = "course";
+      uniqueFields = ["code", "grade"];
+    } else if (uploadOption === "teacher") {
+      collectionRef = "teacher";
+      uniqueFields = ["firstname", "lastname"];
+    } else if (uploadOption === "room") {
+      collectionRef = "room";
+      uniqueFields = ["roomid"];
+    }
+  
+    if (!collectionRef || !uniqueFields) {
+      setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
+      return;
+    }
+  
+    const querySnapshot = await getDocs(collection(db, collectionRef));
+    querySnapshot.forEach((doc) => {
+      let uniqueKey = "";
+      uniqueFields.forEach(field => {
+        uniqueKey += doc.data()[field];
+      });
+      existingDocs[uniqueKey] = true;
+    });
+  
+    const duplicateEntries = [];
+    xlData.forEach((item) => {
+      let uniqueKey = "";
+      uniqueFields.forEach(field => {
+        uniqueKey += item[field];
+      });
+      if (existingDocs[uniqueKey]) {
+        duplicateEntries.push(uniqueKey);
+      }
+    });
+  
+    if (duplicateEntries.length > 0) {
+      setErrorMessage(`ข้อมูลที่ซ้ำ: ${duplicateEntries.join(", ")}`);
+      return;
+    }
+  
+    setShowUploadModal(false);
+    setShowConfirmationModal(true);
+  };
+  
 
   const handleConfirmUpload = async () => {
     let collectionRef = null;
+  
     if (uploadOption === "course") {
       collectionRef = "course";
     } else if (uploadOption === "teacher") {
@@ -84,7 +124,7 @@ const Upload = () => {
     } else if (uploadOption === "room") {
       collectionRef = "room";
     }
-
+  
     if (!collectionRef) {
       setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
       return;
@@ -118,22 +158,6 @@ const Upload = () => {
   const handleCheckboxChange = (option) => {
     setUploadOption(option);
   };
-
-  const validateFields = (data, uploadOption) => {
-    const requiredFields = {
-      course: ["code", "credit", "grade","name", "nameTH", "type"], // เพิ่มฟิลด์ที่ต้องการตรวจสอบสำหรับแต่ละรายการ
-      teacher: ["firstname", "lastname"],
-      room: ["roomid"],
-    };
-  
-    const fieldsToCheck = requiredFields[uploadOption];
-    const xlFields = Object.keys(data[0]);
-  
-    const missingFields = fieldsToCheck.filter(field => !xlFields.includes(field));
-  
-    return missingFields;
-  };
-  
 
   return (
     <div className="form-group p-3">
@@ -198,6 +222,7 @@ const Upload = () => {
               />
               <p id="instruction-text" style={{ marginTop: "10px", textAlign: "left", paddingLeft: "10px" }}>*ลากไฟล์ Excel มาที่นี่หรือคลิกเพื่อเลือกไฟล์</p>
             </div>
+
             {xlData && (
               <div className="form-group mt-3">
                 <h6>ข้อมูลที่จะอัปโหลด</h6>
