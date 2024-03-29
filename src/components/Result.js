@@ -9,7 +9,7 @@ import {
   where,
   getDocs,
 } from 'firebase/firestore';
-
+import * as XLSX from 'xlsx'; // Import the xlsx library
 
 const Result = () => {
   const [searchedCourse, setSearchedCourses] = useState([]);
@@ -48,7 +48,36 @@ const Result = () => {
     }));
     setSearchedCourses(coursesArray);
   };
+  
+const saveAs = () => {
+  // Extract the teacher's name from the first course in the filtered data
+  const teacherName = searchedCourse.length > 0 ? searchedCourse[0].teacher : 'unknown_teacher';
+  const filename = `${teacherName}.xlsx`;
 
+  // Filter and map the data to include only the specified fields
+  const filteredData = searchedCourse.map(course => ({
+    code: course.code,
+    grade: course.grade,
+    name: course.name,
+    type: course.type,
+    sec: course.sec,
+    subjecttype: course.subjecttype,
+    day: course.day,
+    TimeStart: course.TimeStart,
+    TimeStop: course.TimeStop,
+    room: course.room,
+    student: course.student,
+    teacher: course.teacher,
+  }));
+
+  // Sort the filtered data by 'code' field
+  filteredData.sort((a, b) => a.code.localeCompare(b.code));
+
+  const ws = XLSX.utils.json_to_sheet(filteredData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Filtered Data');
+  XLSX.writeFile(wb, filename);
+};
 
   return (
     <div>
@@ -56,7 +85,11 @@ const Result = () => {
       <div className='container'>
         <div className="schedule-table-container mt-5">
           <h2>ตารางสอน</h2>
-          <Dropdown queryCourses={queryCourses} />
+          <div className='d-flex justify-content-flex-start'>
+            <Dropdown queryCourses={queryCourses} />
+            <button className="btn1 m-3" onClick={saveAs}>Download</button>
+          </div>
+
           <table className="table table-hover mt-3">
             <thead className="thead-light">
               <tr>
