@@ -212,11 +212,11 @@ const Main = () => {
       <div className="container-sm mt-5">
         <h2>รายวิชา</h2>
         <div className="d-flex justify-content-between" style={{ width: '100%' }}>
-          <div className="input-group mb-3 mt-3" style={{ width: '40%' }}>
+          <div className="input-group mb-3 mt-3" style={{ width: '50%' }}>
             <input
               type="text"
               className="form-control"
-              placeholder="Search..."
+              placeholder="ค้นหารายวิชา..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -249,7 +249,7 @@ const Main = () => {
         />
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

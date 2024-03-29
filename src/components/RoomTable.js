@@ -82,7 +82,7 @@ const RoomTable = () => {
                     <div className="d-flex justify-content-center align-items-center mb-3">
                         <input
                             type='text'
-                            placeholder='ค้นหา ID ห้อง...'
+                            placeholder='ค้นหาเลขห้อง...'
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className='form-control rounded'
@@ -95,7 +95,7 @@ const RoomTable = () => {
                         <table className='table table-hover' style={{ width: "50%" }}>
                             <thead className="table caption-top">
                                 <tr>
-                                    <th style={{ width: "45%" }}>ID ห้อง</th>
+                                    <th style={{ width: "45%" }}>เลขห้อง</th>
                                     <th style={{ width: "5%" }}></th>
                                 </tr>
                             </thead>
