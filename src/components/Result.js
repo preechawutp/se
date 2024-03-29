@@ -52,6 +52,8 @@ const Result = () => {
 const saveAs = () => {
   // Extract the teacher's name from the first course in the filtered data
   const teacherName = searchedCourse.length > 0 ? searchedCourse[0].teacher : 'unknown_teacher';
+  const year = searchedCourse.length > 0 ? searchedCourse[0].years : 'unknown_year';
+  const term = searchedCourse.length > 0 ? searchedCourse[0].term : 'unknown_term';
   const filename = `${teacherName}.xlsx`;
 
   // Filter and map the data to include only the specified fields and rename the headers
@@ -72,10 +74,22 @@ const saveAs = () => {
   // Sort the filtered data by 'รหัสวิชา' field
   filteredData.sort((a, b) => a['รหัสวิชา'].localeCompare(b['รหัสวิชา']));
 
-  const ws = XLSX.utils.json_to_sheet(filteredData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Filtered Data');
-  XLSX.writeFile(wb, filename);
+  // Create a new worksheet
+  const ws = XLSX.utils.json_to_sheet([[]]); // Create an empty sheet
+
+  // Add teacher, year, and term to the first row of the data
+  ws['A1'] = { t: 's', v: `อาจารย์ : ${teacherName}, ปีการศึกษา : ${year}, ภาคเรียน : ${term}` }; // Add firstRow to cell A1
+
+  // Convert the filtered data to worksheet starting from A2
+  const dataWs = XLSX.utils.json_to_sheet(filteredData, { origin: 'A2' });
+
+  // Merge the two worksheets
+  const finalWs = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(finalWs, ws, 'Header');
+  XLSX.utils.book_append_sheet(finalWs, dataWs, 'Filtered Data');
+
+  // Save the workbook as an XLSX file
+  XLSX.writeFile(finalWs, filename);
 };
 
 const saveAsAll = async () => {
