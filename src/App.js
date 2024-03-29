@@ -32,7 +32,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/show-schedule" element={<ShowSchedule />} /> 
+        <Route path="/show-schedule" element={<ShowSchedule />} />
         <Route path="/login" element={<LoginForm />} />
         {user ? (
           <>
@@ -45,7 +45,7 @@ const App = () => {
           </>
         ) : (
           <>
-            <Route path="/" element={<Navigate to="/show-schedule" />} /> 
+            <Route path="/" element={<Navigate to="/show-schedule" />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </>
         )}

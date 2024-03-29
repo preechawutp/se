@@ -37,7 +37,7 @@ const ShowChoose = () => {
             console.error('Error fetching courses: ', error);
         }
     };
-    
+
 
     const groupByTeacherAndYearsTerm = (courses) => {
         const groupedCourses = {};
@@ -77,7 +77,7 @@ const ShowChoose = () => {
                             padding: '3%'
                         }}>
                         <div className="mb-3">
-                        <h3>รายวิชาทั้งหมดที่ถูกจัด</h3>
+                            <h3>รายวิชาทั้งหมดที่ถูกจัด</h3>
                             <input
                                 type="text"
                                 className="form-control"

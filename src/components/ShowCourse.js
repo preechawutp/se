@@ -66,7 +66,7 @@ const ShowCourse = () => {
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
         saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `course_${grade}.xlsx`);
     };
-    
+
 
     const getLastUpdateTime = async () => {
         const docSnap = await getDoc(doc(db, 'timestamp', 'xHT6YRaTiOlpbFCQhKj4')); // Replace 'your_document_id' with the actual document ID

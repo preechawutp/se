@@ -67,7 +67,7 @@ const AddCourseTotable = ({
       setValidationError('เวลาต้องอยู่ระหว่าง 07:00 ถึง 20:00 และใส่นาทีได้แค่ 00, 15, 30, 45 เท่านั้น');
       setTimeout(() => {
         setValidationError(null);
-      },2000);
+      }, 2000);
       handleCourseChange({ target: { name, value: '' } });
     } else {
       setTimeError(false);
@@ -82,20 +82,20 @@ const AddCourseTotable = ({
       setValidationError('กรุณากรอกข้อมูลให้ครบถ้วน');
       setTimeout(() => {
         setValidationError(null);
-      },2000);
+      }, 2000);
       return;
     }
- 
+
     if (
-      courseForm.day === '-' || 
-      courseForm.subjecttype === '-' || 
-      courseForm.term === '-' || 
+      courseForm.day === '-' ||
+      courseForm.subjecttype === '-' ||
+      courseForm.term === '-' ||
       courseForm.grade_level.length === 0
     ) {
       setValidationError('กรุณาเลือกข้อมูลให้ครบถ้วน');
       setTimeout(() => {
         setValidationError(null);
-      },2000);
+      }, 2000);
       return;
     }
     setValidationError(null);
@@ -166,7 +166,7 @@ const AddCourseTotable = ({
                     type="time"
                     name="TimeStop"
                     style={{ width: "150px" }}
-                  /> 
+                  />
                 </div>
               </form>
             </div>
@@ -238,16 +238,16 @@ const AddCourseTotable = ({
                     ))}
                   </select>
                   <div className="form-group mt-2">
-                  <label htmlFor="student">จำนวนนิสิต</label>
-                  <input
-                    className="form-control"
-                    onChange={(e) => handleCourseChange(e)}
-                    type="number"
-                    name="student"
-                    style={{ width: "150px" }}
-                    min="0"
-                  />
-                </div>
+                    <label htmlFor="student">จำนวนนิสิต</label>
+                    <input
+                      className="form-control"
+                      onChange={(e) => handleCourseChange(e)}
+                      type="number"
+                      name="student"
+                      style={{ width: "150px" }}
+                      min="0"
+                    />
+                  </div>
                 </div>
               </form>
             </div>
@@ -299,9 +299,9 @@ const AddCourseTotable = ({
           <div className="row">
             <div className="col-md-6">
               <form>
-                <div 
-                className="form-group mt-2"
-                style={{ marginLeft: "12%"}}
+                <div
+                  className="form-group mt-2"
+                  style={{ marginLeft: "12%" }}
                 >
                   <label htmlFor="grade_level">ชั้นปี</label>
                   <div className="d-flex">

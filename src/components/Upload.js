@@ -58,16 +58,16 @@ const Upload = () => {
       setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
       return;
     }
-  
+
     if (!uploadOption) {
       setErrorMessage("กรุณาเลือกตัวเลือกการอัปโหลด");
       return;
     }
-  
+
     let collectionRef = null;
     let uniqueFields = null;
     let existingDocs = {};
-  
+
     if (uploadOption === "course") {
       collectionRef = "course";
       uniqueFields = ["code", "grade"];
@@ -78,12 +78,12 @@ const Upload = () => {
       collectionRef = "room";
       uniqueFields = ["roomid"];
     }
-  
+
     if (!collectionRef || !uniqueFields) {
       setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
       return;
     }
-  
+
     const querySnapshot = await getDocs(collection(db, collectionRef));
     querySnapshot.forEach((doc) => {
       let uniqueKey = "";
@@ -92,7 +92,7 @@ const Upload = () => {
       });
       existingDocs[uniqueKey] = true;
     });
-  
+
     const duplicateEntries = [];
     xlData.forEach((item) => {
       let uniqueKey = "";
@@ -103,20 +103,20 @@ const Upload = () => {
         duplicateEntries.push(uniqueKey);
       }
     });
-  
+
     if (duplicateEntries.length > 0) {
       setErrorMessage(`ข้อมูลที่ซ้ำ: ${duplicateEntries.join(", ")}`);
       return;
     }
-  
+
     setShowUploadModal(false);
     setShowConfirmationModal(true);
   };
-  
+
 
   const handleConfirmUpload = async () => {
     let collectionRef = null;
-  
+
     if (uploadOption === "course") {
       collectionRef = "course";
     } else if (uploadOption === "teacher") {
@@ -124,7 +124,7 @@ const Upload = () => {
     } else if (uploadOption === "room") {
       collectionRef = "room";
     }
-  
+
     if (!collectionRef) {
       setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
       return;
@@ -186,7 +186,7 @@ const Upload = () => {
           <h1>อัปโหลด</h1>
           <Form.Check
             type="checkbox"
-            label="อัปโหลดลงในรายวิชา"
+            label="อัปโหลดรายวิชา"
             checked={uploadOption === "course"}
             onChange={() => handleCheckboxChange("course")}
             className="mt-3"
@@ -254,7 +254,7 @@ const Upload = () => {
             </Alert>
           )}
 
-        
+
         </Modal.Body>
         <Modal.Footer>
           <button

@@ -20,7 +20,7 @@ const Mainnav = () => {
 
   const handleLogout = async () => {
     try {
-      await auth.signOut(); 
+      await auth.signOut();
     } catch (error) {
       console.error(error.message);
     }
