@@ -3,9 +3,6 @@ import * as XLSX from 'xlsx';
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Button, Modal, Table, Alert, Form } from "react-bootstrap";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-
 
 const Upload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
