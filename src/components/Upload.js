@@ -3,6 +3,9 @@ import * as XLSX from 'xlsx';
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { Button, Modal, Table, Alert, Form } from "react-bootstrap";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+
 
 const Upload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -11,6 +14,34 @@ const Upload = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [uploadOption, setUploadOption] = useState(null); // State for selected upload option
+
+  const [showInfoModalS, setShowInfoModalS] = useState(false);
+  const [showInfoModalT, setShowInfoModalT] = useState(false);
+  const [showInfoModalR, setShowInfoModalR] = useState(false);
+
+  const handleShowInfoS = () => {
+    setShowInfoModalS(true); // Function to show the info modal
+  };
+
+  const handleCloseInfoS = () => {
+    setShowInfoModalS(false); // Function to close the info modal
+  };
+
+  const handleShowInfoT = () => {
+    setShowInfoModalT(true); // Function to show the info modal
+  };
+
+  const handleCloseInfoT = () => {
+    setShowInfoModalT(false); // Function to close the info modal
+  };
+
+  const handleShowInfoR = () => {
+    setShowInfoModalR(true); // Function to show the info modal
+  };
+
+  const handleCloseInfoR = () => {
+    setShowInfoModalR(false); // Function to close the info modal
+  };
 
   const handleUploadModalClose = () => {
     setShowUploadModal(false);
@@ -58,16 +89,16 @@ const Upload = () => {
       setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
       return;
     }
-  
+
     if (!uploadOption) {
       setErrorMessage("กรุณาเลือกตัวเลือกการอัปโหลด");
       return;
     }
-  
+
     let collectionRef = null;
     let uniqueFields = null;
     let existingDocs = {};
-  
+
     if (uploadOption === "course") {
       collectionRef = "course";
       uniqueFields = ["code", "grade"];
@@ -78,12 +109,12 @@ const Upload = () => {
       collectionRef = "room";
       uniqueFields = ["roomid"];
     }
-  
+
     if (!collectionRef || !uniqueFields) {
       setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
       return;
     }
-  
+
     const querySnapshot = await getDocs(collection(db, collectionRef));
     querySnapshot.forEach((doc) => {
       let uniqueKey = "";
@@ -92,7 +123,7 @@ const Upload = () => {
       });
       existingDocs[uniqueKey] = true;
     });
-  
+
     const invalidEntries = [];
     xlData.forEach((item) => {
       let isValid = true;
@@ -105,14 +136,14 @@ const Upload = () => {
         invalidEntries.push(item);
       }
     });
-  
+
     if (invalidEntries.length > 0) {
       const requiredFields = uniqueFields.join(", ");
       setErrorMessage(`ไฟล์ Excel ไม่ตรงกับฟิลด์ที่ต้องการ กรุณาใช้ ${requiredFields}`);
       return;
     }
-    
-  
+
+
     const duplicateEntries = [];
     xlData.forEach((item) => {
       let uniqueKey = "";
@@ -123,16 +154,16 @@ const Upload = () => {
         duplicateEntries.push(uniqueKey);
       }
     });
-  
+
     if (duplicateEntries.length > 0) {
       setErrorMessage(`ข้อมูลที่ซ้ำ: ${duplicateEntries.join(", ")}`);
       return;
     }
-  
+
     setShowUploadModal(false);
     setShowConfirmationModal(true);
   };
-  
+
 
 
   const handleConfirmUpload = async () => {
@@ -205,29 +236,78 @@ const Upload = () => {
           onDragOver={(e) => e.preventDefault()}
         >
           <h1>อัปโหลด</h1>
-          <Form.Check
-            type="checkbox"
-            label="อัปโหลดรายวิชา"
-            checked={uploadOption === "course"}
-            onChange={() => handleCheckboxChange("course")}
-            className="mt-3"
-          />
+          <div>
+            <Form.Check
+              type="checkbox"
+              label="อัปโหลดรายวิชา"
+              checked={uploadOption === "course"}
+              onChange={() => handleCheckboxChange("course")}
+              className="mt-3 d-inline-block mr-2"
+            />
+            <Button
+              variant="link"
+              onClick={handleShowInfoS}
+              className="mb-2 p-0"
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                boxShadow: 'none',
+                marginLeft: '10px',
+                textDecoration: 'none' // Added to remove underline
+              }}
+            >
+              ?
+            </Button>
+          </div>
 
-          <Form.Check
-            type="checkbox"
-            label="อัปโหลดรายชื่ออาจารย์"
-            checked={uploadOption === "teacher"}
-            onChange={() => handleCheckboxChange("teacher")}
-            className="mt-3"
-          />
+          <div>
+            <Form.Check
+              type="checkbox"
+              label="อัปโหลดรายชื่ออาจารย์"
+              checked={uploadOption === "teacher"}
+              onChange={() => handleCheckboxChange("teacher")}
+              className="mt-3 d-inline-block mr-2"
+            />
+            <Button
+              variant="link"
+              onClick={handleShowInfoT}
+              className="mb-2 p-0"
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                boxShadow: 'none',
+                marginLeft: '10px',
+                textDecoration: 'none' // Added to remove underline
+              }}
+            >
+              ?
+            </Button>
+          </div>
 
-          <Form.Check
-            type="checkbox"
-            label="อัปโหลดรายชื่อห้อง"
-            checked={uploadOption === "room"}
-            onChange={() => handleCheckboxChange("room")}
-            className="mt-3"
-          />
+          <div>
+            <Form.Check
+              type="checkbox"
+              label="อัปโหลดรายชื่อห้อง"
+              checked={uploadOption === "room"}
+              onChange={() => handleCheckboxChange("room")}
+              className="mt-3 d-inline-block mr-2"
+            />
+            <Button
+              variant="link"
+              onClick={handleShowInfoR}
+              className="mb-2 p-0"
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                boxShadow: 'none',
+                marginLeft: '10px',
+                textDecoration: 'none' // Added to remove underline
+              }}
+            >
+              ?
+            </Button>
+          </div>
+
           <div className="form-group">
             <div
               className="form-group mt-4"
@@ -289,6 +369,48 @@ const Upload = () => {
           <Button variant="secondary" onClick={handleUploadModalClose}>
             ยกเลิก
           </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showInfoModalS} onHide={handleCloseInfoS} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>แบบฟอร์มการอัปโหลดรายวิชา</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <a href={`${process.env.PUBLIC_URL}/Subject.xlsx`} download="Subject.xlsx">
+            Download
+          </a>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseInfoS}>ยกเลิก</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showInfoModalT} onHide={handleCloseInfoT} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>แบบฟอร์มการอัปโหลดรายชื่ออาจารย์</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <a href={`${process.env.PUBLIC_URL}/Teacher.xlsx`} download="Teacher.xlsx">
+            Download
+          </a>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseInfoT}>ยกเลิก</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showInfoModalR} onHide={handleCloseInfoR} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>แบบฟอร์มการอัปโหลดรายชื่อห้อง</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <a href={`${process.env.PUBLIC_URL}/Room.xlsx`} download="Room.xlsx">
+            Download
+          </a>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseInfoR}>ยกเลิก</Button>
         </Modal.Footer>
       </Modal>
 
