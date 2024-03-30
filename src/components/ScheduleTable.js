@@ -54,6 +54,7 @@ const ScheduleTable = ({ onClickHandler }) => {
                 console.error('Error fetching courses: ', error);
             }
         };
+
         fetchCourses();
     }, []);
 
@@ -128,56 +129,61 @@ const ScheduleTable = ({ onClickHandler }) => {
         }
         setDuplicateCourse(dupCourse)
     };
-
     var duplicateTypes = [];
     const checkSubjectType = () => {
         for (let i = 0; i < allCourse.length - 1; i++) {
-            for (let j = i + 1; j < allCourse.length; j++) {
+            for (let j = 0; j < allCourse.length - 1; j++) {
                 if (
-                    allCourse[i].years === allCourse[j].years &&
-                    allCourse[i].term === allCourse[j].term &&
-                    allCourse[i].day === allCourse[j].day
+                    allCourse[i].years !== allCourse[j].years ||
+                    allCourse[i].term !== allCourse[j].term
                 ) {
-                    const timeStart1 = parseInt(allCourse[i].TimeStart.split("-")[0]);
-                    const timeStop1 = parseInt(allCourse[i].TimeStop.split("-")[0]);
-                    const timeStart2 = parseInt(allCourse[j].TimeStart.split("-")[0]);
-                    const timeStop2 = parseInt(allCourse[j].TimeStop.split("-")[0]);
-    
-                    if (
-                        (timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
-                        (timeStart1 <= timeStop2 && timeStop2 <= timeStop1) ||
-                        (timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
-                        (timeStart2 <= timeStop1 && timeStop1 <= timeStop2)
-                    ) {
-                        // Check subject type rules
-                        if (allCourse[i].subjecttype === "วิชาแกน") {
-                            // วิชาแกนปีเดียวชนกันเองไม่ได้
-                            duplicateTypes.push(allCourse[i].id);
-                        } else if (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ") {
-                            // วิชาเฉพาะบังคับปีเดียวชนกันเองไม่ได้
-                            duplicateTypes.push(allCourse[i].id);
-                        } else if (
-                            allCourse[i].subjecttype === "วิชาเฉพาะเลือก" &&
-                            allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+                    continue;
+                }
+
+                if (i !== j) {
+                    if (allCourse[i].day === allCourse[j].day) {
+                        const timeStart1 = allCourse[i].TimeStart.split("-")[0];
+                        const timeStop1 = allCourse[i].TimeStop.split("-")[0];
+                        const timeStart2 = allCourse[j].TimeStart.split("-")[0];
+                        const timeStop2 = allCourse[j].TimeStop.split("-")[0];
+
+                        if (
+                            ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
+                                (timeStart1 <= timeStop2 && timeStop2 <= timeStop1)) ||
+                            ((timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
+                                (timeStart2 <= timeStop1 && timeStop1 <= timeStop2))
                         ) {
-                            // วิชาเฉพาะเลือกชนวิชาเฉพาะบังคับไม่ได้
-                            duplicateTypes.push(allCourse[i].id);
-                        } else if (
-                            allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
-                            allCourse[j].subjecttype === "วิชาแกน"
-                        ) {
-                            // วิชาเฉพาะบังคับชนวิชาแกนได้
-                            duplicateTypes.push(allCourse[i].id);
+                            // Check subject type rules
+                            if (allCourse[i].subjecttype === allCourse[j].subjecttype) { // Change to subjecttype here
+                                if (allCourse[i].subjecttype === "วิชาแกน") {
+                                    // วิชาแกนปีเดียวชนกันเองไม่ได้
+                                    duplicateTypes.push(allCourse[i].id);
+                                    // pairDup.push([allCourse[i].id, allCourse[j].id]); // สร้าง array คู่ ไว้เช็คคู่วิชาที่ซ้ำกัน
+                                } else if (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ") {
+                                    // วิชาเฉพาะบังคับปีเดียวชนกันเองไม่ได้
+                                    duplicateTypes.push(allCourse[i].id);
+                                }
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
+                                allCourse[j].subjecttype === "วิชาแกน"
+                            ) {
+                                // วิชาเฉพาะบังคับชนวิชาแกนได้
+                                duplicateTypes.push(allCourse[i].id);
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาเฉพาะเลือก" &&
+                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+                            ) {
+                                // วิชาเฉพาะเลือกชนวิชาเฉพาะบังคับไม่ได้
+                                duplicateTypes.push(allCourse[i].id);
+                            }
                         }
-                        console.log(allCourse[i],allCourse[j])
                     }
                 }
             }
         }
         setDupType(duplicateTypes);
     };
-    
-    
+
     var duplicateRooms = [];
     const checkRoomOverlap = () => {
         for (let i = 0; i < allCourse.length - 1; i++) {
@@ -199,7 +205,6 @@ const ScheduleTable = ({ onClickHandler }) => {
                             duplicateRooms.push(allCourse[i].room);
 
                         }
-                        console.log(allCourse[i],allCourse[j])
                     }
                 }
             }
@@ -218,7 +223,8 @@ const ScheduleTable = ({ onClickHandler }) => {
                 ) {
                     // If sections are the same for the same course, consider it as section clash
                     duplicateSec.push(allCourse[i].sec);
-                    console.log(allCourse[i],allCourse[j])
+                    console.log(allCourse[i].sec);
+                    console.log(allCourse[j].sec);
                 }
             }
         }
@@ -228,25 +234,24 @@ const ScheduleTable = ({ onClickHandler }) => {
 
 
     const changeColor = (course) => {
-        // ตรวจสอบว่ามีวิชาหรือไม่
+        // Check if the course object exists
         if (course) {
-            // ตรวจสอบว่า ID ของวิชามีในอาเรย์ของวิชาที่ซ้ำซ้อนหรือไม่
+            // Check if the course ID exists in the duplicateCourse array
             if (duplicateCourse.includes(course.id)) {
-                return "red"; // ถ้าเป็นซ้ำซ้อน สีเป็นสีแดง
+                return "red"; // If it's a duplicate, return red color
             } else if (dupType.includes(course.course_id)) {
-                return "yellow"; // ถ้าซ้ำซ้อน สีเป็นสีเหลือง
+                return "yellow"; // If it's overlapping, return yellow color
             } else if (dupRoom.includes(course.room)) {
-                return "orange"; // ถ้าซ้ำซ้อนกับห้อง สีเป็นสีส้ม
+                return "orange"; // If it's overlapping with room, return orange color
             } else if (dupSec.includes(course.sec)) {
-                return "blue"; // ถ้าซ้ำซ้อนกับหมู่เรียน สีเป็นสีน้ำเงิน
+                return "blue"; // If it's overlapping with sec, return blue color
             } else {
-                return "base"; // ถ้าไม่ซ้ำซ้อนหรือข้อขัดแย้ง สีเป็นสีเริ่มต้น
+                return "base"; // If it's not a duplicate or overlapping, return base color
             }
         } else {
-            return ""; // สีว่างสำหรับวิชาที่ไม่มีอยู่
+            return ""; // Return empty string for non-existent courses
         }
     };
-    
 
     useEffect(() => {
         let error = "";
