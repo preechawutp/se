@@ -78,6 +78,7 @@ const ScheduleTable = ({ onClickHandler }) => {
         setSearchedCourses(coursesArray);
     };
     // This function should call after query selected course
+    
     useEffect(() => {
         AddCourseTotable();
         checkDuplicatedTime();
@@ -168,8 +169,14 @@ const ScheduleTable = ({ onClickHandler }) => {
                         ) {
                             // วิชาเฉพาะบังคับชนวิชาแกนได้
                             duplicateTypes.push(allCourse[i].id);
+                        } else if (
+                            (allCourse[i].subjecttype === "วิชาแกน" && allCourse[j].subjecttype === "วิชาเฉพาะบังคับ") ||
+                            (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" && allCourse[j].subjecttype === "วิชาแกน")
+                        ) {
+                            // วิชาแกนและวิชาเฉพาะบังคับสามารถชนกันได้
+                            duplicateTypes.push(allCourse[i].id);
                         }
-                        console.log(allCourse[i],allCourse[j])
+                        console.log(allCourse[i], allCourse[j]);
                     }
                 }
             }
@@ -187,27 +194,27 @@ const ScheduleTable = ({ onClickHandler }) => {
                     const timeStop1 = allCourse[i].TimeStop.split("-")[0];
                     const timeStart2 = allCourse[j].TimeStart.split("-")[0];
                     const timeStop2 = allCourse[j].TimeStop.split("-")[0];
-
+    
                     if (
-                        ((timeStart1 < timeStart2 && timeStart2 < timeStop1) ||
-                            (timeStart1 < timeStop2 && timeStop2 < timeStop1)) ||
-                        ((timeStart2 < timeStart1 && timeStart1 < timeStop2) ||
-                            (timeStart2 < timeStop1 && timeStop1 < timeStop2))
+                        ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
+                        (timeStart1 <= timeStop2 && timeStop2 <= timeStop1)) ||
+                        ((timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
+                        (timeStart2 <= timeStop1 && timeStop1 <= timeStop2))
                     ) {
                         // Check for room overlap
                         if (allCourse[i].room === allCourse[j].room) {
                             duplicateRooms.push(allCourse[i].room);
-
+                        
                         }
-                        console.log(allCourse[i],allCourse[j])
                     }
                 }
             }
         }
-
+    
         setDupRoom(duplicateRooms);
     };
 
+    
     var duplicateSec = [];
     const checkSecOverlap = () => {
         for (let i = 0; i < allCourse.length - 1; i++) {
@@ -218,7 +225,7 @@ const ScheduleTable = ({ onClickHandler }) => {
                 ) {
                     // If sections are the same for the same course, consider it as section clash
                     duplicateSec.push(allCourse[i].sec);
-                    console.log(allCourse[i],allCourse[j])
+                   
                 }
             }
         }
