@@ -58,16 +58,16 @@ const Upload = () => {
       setErrorMessage("กรุณาใส่ไฟล์ Excel ก่อนกดอัปโหลด");
       return;
     }
-
+  
     if (!uploadOption) {
       setErrorMessage("กรุณาเลือกตัวเลือกการอัปโหลด");
       return;
     }
-
+  
     let collectionRef = null;
     let uniqueFields = null;
     let existingDocs = {};
-
+  
     if (uploadOption === "course") {
       collectionRef = "course";
       uniqueFields = ["code", "grade"];
@@ -78,21 +78,39 @@ const Upload = () => {
       collectionRef = "room";
       uniqueFields = ["roomid"];
     }
-
+  
     if (!collectionRef || !uniqueFields) {
       setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
       return;
     }
-
-    const querySnapshot = await getDocs(collection(db, collectionRef));
-    querySnapshot.forEach((doc) => {
+  
+    const databaseSnapshot = await getDocs(collection(db, collectionRef)); // เปลี่ยนชื่อตัวแปรเป็น databaseSnapshot
+    const databaseFields = databaseSnapshot.empty ? [] : Object.keys(databaseSnapshot.docs[0].data());
+  
+    const missingFields = uniqueFields.filter(field => !databaseFields.includes(field));
+    if (missingFields.length > 0) {
+      setErrorMessage(`ไฟล์ Excel ไม่มีฟิลด์: ${missingFields.join(", ")}`);
+      return;
+    }
+  
+    // เช็คว่าฟิลด์ใน Excel ตรงกับฐานข้อมูลหรือไม่
+    const xlFields = Object.keys(xlData[0]);
+    const invalidFields = xlFields.filter(field => !uniqueFields.includes(field));
+    if (invalidFields.length > 0) {
+      setErrorMessage(`ไฟล์ Excel มีฟิลด์ที่ไม่ตรงกับฐานข้อมูล: ${invalidFields.join(", ")}`);
+      return;
+    }
+  
+    existingDocs = {}; // เปลี่ยนแปลงตัวแปร querySnapshot เป็น existingDocs
+  
+    databaseSnapshot.forEach((doc) => { // เปลี่ยนแปลงตัวแปร querySnapshot เป็น databaseSnapshot
       let uniqueKey = "";
       uniqueFields.forEach(field => {
         uniqueKey += doc.data()[field];
       });
       existingDocs[uniqueKey] = true;
     });
-
+  
     const duplicateEntries = [];
     xlData.forEach((item) => {
       let uniqueKey = "";
@@ -103,15 +121,17 @@ const Upload = () => {
         duplicateEntries.push(uniqueKey);
       }
     });
-
+  
     if (duplicateEntries.length > 0) {
       setErrorMessage(`ข้อมูลที่ซ้ำ: ${duplicateEntries.join(", ")}`);
       return;
     }
-
+  
     setShowUploadModal(false);
     setShowConfirmationModal(true);
   };
+  
+  
 
 
   const handleConfirmUpload = async () => {
