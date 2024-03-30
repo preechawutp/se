@@ -108,7 +108,7 @@ const Dropdown = ({ queryCourses }) => {
   ];
 
   const semesterOptions = [
-    { value: "", label: "กรุณาเลือก", isDisabled: true }, // ตัวเลือกแรก ทำให้ disabled
+    { value: "", label: "- กรุณาเลือก -"},
     { value: "ฤดูร้อน", label: "ฤดูร้อน" },
     { value: "ต้น", label: "ต้น" },
     { value: "ปลาย", label: "ปลาย" }
