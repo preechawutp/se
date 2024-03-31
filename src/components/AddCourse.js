@@ -3,11 +3,20 @@
 import React, { useState } from "react";
 import "../assets/AddCourse.css";
 import { Button, Modal, Alert } from "react-bootstrap";
+import Select from 'react-select';
+
+const options = [
+  { value: '- กรุณาเลือก -', label: '- กรุณาเลือก -' },
+  { value: 'บรรยาย', label: 'บรรยาย' },
+  { value: 'ปฎิบัติ', label: 'ปฎิบัติ' }
+];
 
 const AddCourse = ({ handleChange, handleAddData, form }) => {
   const [show, setShow] = useState(false);
   const [validationError, setValidationError] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+  const selectedOption = options.find(option => option.value === form.type);
 
   const handleClose = () => {
     setShow(false);
@@ -38,6 +47,29 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
   };
 
   const handleConfirmationModalClose = () => setShowConfirmationModal(false);
+
+  const customStyles2 = {
+    control: (provided, state) => ({
+      ...provided,
+      width: 170, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      width: 170, // ความกว้างของเมนูตรงกับ control
+      minHeight: '100px', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
+    }),
+  };
+
+  const handleCreditChange = (e) => {
+    // ตรวจสอบว่าค่าที่ป้อนไม่เกิน 6
+    if (parseInt(e.target.value) <= 6) {
+      handleChange(e);
+    } else {
+      // แสดงข้อความแจ้งเตือนถ้าเกินค่าสูงสุด
+      alert('ค่าหน่วยกิตต้องไม่เกิน 6');
+    }
+  };
 
   return (
     <div className="form-group p-3">
@@ -107,27 +139,26 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
               <label htmlFor="credit">หน่วยกิต</label>
               <input
                 className="form-control"
-                onChange={(e) => handleChange(e)}
+                onChange={handleCreditChange}
                 type="number"
                 name="credit"
                 value={form.credit || ""}
                 style={{ width: '30%' }}
                 required
                 min="0"
+                max="6" // กำหนดค่าสูงสุดเป็น 6
               />
 
               <label htmlFor="type">ประเภท</label>
-              <select
-                className="form-select"
-                onChange={(e) => handleChange(e)}
-                name="type"
-                value={form.type || ""}
-                style={{ width: '38%' }}
-              >
-                <option value="" disabled selected>- กรุณาเลือก -</option>
-                <option value="บรรยาย">บรรยาย</option>
-                <option value="ปฎิบัติ">ปฎิบัติ</option>
-              </select>
+              <Select
+                options={options}
+                onChange={(selectedOption) => handleChange({ target: { name: 'type', value: selectedOption.value } })}
+                value={selectedOption}
+                placeholder="- กรุณาเลือก -"
+                isSearchable={true}
+                styles={customStyles2}
+              />
+
             </div>
 
             {/* Display validation error if exists */}
