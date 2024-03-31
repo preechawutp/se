@@ -6,6 +6,37 @@ import {
   onSnapshot,
 } from 'firebase/firestore';
 import { Alert, Button, Modal, Form } from 'react-bootstrap';
+import Select from 'react-select';
+
+const optionsDay = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'MON', label: 'MON' },
+  { value: 'TUE', label: 'TUE' },
+  { value: 'WED', label: 'WED' },
+  { value: 'THU', label: 'THU' },
+  { value: 'FRI', label: 'FRI' },
+  { value: 'SAT', label: 'SAT' },
+  { value: 'SUN', label: 'SUN' }
+];
+
+const optionsType = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'วิชาแกน', label: 'วิชาแกน' },
+  { value: 'วิชาเฉพาะ', label: 'วิชาเฉพาะ' },
+  { value: 'วิชาเฉพาะเลือก', label: 'วิชาเฉพาะเลือก' },
+];
+
+const optionsTerm = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'ฤดูร้อน', label: 'ฤดูร้อน' },
+  { value: 'ต้น', label: 'ต้น' },
+  { value: 'ปลาย', label: 'ปลาย' },
+];
+
+const optionsMajor = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'T12', label: 'T12' },
+];
 
 const AddCourseTotable = ({
   handleCourseChange,
@@ -21,6 +52,22 @@ const AddCourseTotable = ({
   const [timeError, setTimeError] = useState(false);
   const [validationError, setValidationError] = useState(null);
 
+  const optionsRoom = [
+    { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+    ...rooms.map((item) => ({
+      value: item.roomid,
+      label: item.roomid
+    }))
+  ];
+
+  const optionsTeacher = [
+    { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+    ...teachers.map((item) => ({
+      value: item.firstname + ' ' + item.lastname,
+      label: `${item.firstname} ${item.lastname}`
+    }))
+  ];
+  
   useEffect(() => {
     const unsubscribe = onSnapshot(teacherRef, (snapshot) => {
       const newData = snapshot.docs.map((doc) => ({
@@ -67,7 +114,7 @@ const AddCourseTotable = ({
       setValidationError('เวลาต้องอยู่ระหว่าง 07:00 ถึง 20:00 และใส่นาทีได้แค่ 00, 15, 30, 45 เท่านั้น');
       setTimeout(() => {
         setValidationError(null);
-      }, 2000);
+      }, 5000);
       handleCourseChange({ target: { name, value: '' } });
     } else {
       setTimeError(false);
@@ -82,7 +129,7 @@ const AddCourseTotable = ({
       setValidationError('กรุณากรอกข้อมูลให้ครบถ้วน');
       setTimeout(() => {
         setValidationError(null);
-      }, 2000);
+      }, 5000);
       return;
     }
 
@@ -95,13 +142,41 @@ const AddCourseTotable = ({
       setValidationError('กรุณาเลือกข้อมูลให้ครบถ้วน');
       setTimeout(() => {
         setValidationError(null);
-      }, 2000);
+      }, 5000);
       return;
     }
     setValidationError(null);
     handleAddCourse(item_id);
     handleClose();
   };
+
+  const customStyles1 = {
+    control: (provided, state) => ({
+      ...provided,
+      width: 150, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      width: 150, // ความกว้างของเมนูตรงกับ control
+      minHeight: '100px', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
+    }),
+  };
+
+  const customStyles2 = {
+    control: (provided, state) => ({
+      ...provided,
+      width: 150, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      width: 200, // ความกว้างของเมนูตรงกับ control
+      minHeight: '100px', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
+    }),
+  };
+
+  const selectedOption = options.find(option => option.value === courseForm.subjecttype);
 
   return (
     <div className="form-group">
@@ -131,22 +206,13 @@ const AddCourseTotable = ({
               <form>
                 <div className="form-group mt-2">
                   <label htmlFor="day">วันที่ต้องการสอน</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="day"
-                    style={{ width: "150px" }}
-                    defaultValue="-"
-                  >
-                    <option value="-" disabled>- กรุณาเลือก -</option>
-                    <option value="MON">MON</option>
-                    <option value="TUE">TUE</option>
-                    <option value="WED">WED</option>
-                    <option value="THU">THU</option>
-                    <option value="FRI">FRI</option>
-                    <option value="SAT">SAT</option>
-                    <option value="SUN">SUN</option>
-                  </select>
+                  <Select
+                    options={optionsDay}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'day', value: selectedOption.value } })}
+                    placeholder="กรุณาเลือก"
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
 
                 <div className="form-group mt-2">
@@ -175,35 +241,26 @@ const AddCourseTotable = ({
                 <div className="form-group mt-2">
                   <label htmlFor="teacher">อาจารย์</label>
                   <div className='d-flex justify-content-between'>
-                    <select
-                      className="form-select "
-                      onChange={(e) => handleCourseChange(e)}
-                      name="teacher"
-                      style={{ width: "150px" }}
-                      defaultValue=""
-                    >
-                      <option value="" disabled>- กรุณาเลือก -</option>
-                      {teachers.map((item, index) => (
-                        <option key={index} value={item.firstname + ' ' + item.lastname}> {item.firstname} {item.lastname} </option>
-                      ))}
-                    </select>
+                    <Select
+                      options={optionsTeacher}
+                      onChange={(selectedOption) => handleCourseChange({ target: { name: 'teacher', value: selectedOption.value } })}
+                      placeholder="กรุณาเลือก"
+                      isSearchable={true}
+                      styles={customStyles2}
+                    />
                   </div>
                 </div>
 
                 <div className="form-group mt-2">
                   <label >ประเภทวิชา</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="subjecttype"
-                    value={courseForm.subjecttype || ""}
-                    style={{ width: "150px" }}
-                  >
-                    <option value="" disabled>- กรุณาเลือก -</option>
-                    <option value="วิชาแกน">วิชาแกน</option>
-                    <option value="วิชาเฉพาะ">วิชาเฉพาะ</option>
-                    <option value="วิชาเฉพาะเลือก">วิชาเฉพาะเลือก</option>
-                  </select>
+                  <Select
+                    options={optionsType}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'subjecttype', value: selectedOption.value } })}
+                    value={selectedOption}
+                    placeholder="กรุณาเลือก"
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
               </form>
             </div>
@@ -225,18 +282,13 @@ const AddCourseTotable = ({
                 </div>
                 <div className="form-group mt-2">
                   <label htmlFor="room">ห้อง</label>
-                  <select
-                    className="form-select "
-                    onChange={(e) => handleCourseChange(e)}
-                    name="room"
-                    style={{ width: "150px" }}
-                    defaultValue=""
-                  >
-                    <option value="" disabled>- กรุณาเลือก -</option>
-                    {rooms.map((item, index) => (
-                      <option key={index} value={item.roomid}> {item.roomid} </option>
-                    ))}
-                  </select>
+                  <Select
+                    options={optionsRoom}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'room', value: selectedOption.value } })}
+                    placeholder="กรุณาเลือก"
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                   <div className="form-group mt-2">
                     <label htmlFor="student">จำนวนนิสิต</label>
                     <input
@@ -255,16 +307,13 @@ const AddCourseTotable = ({
               <form>
                 <div className="form-group mt-2">
                   <label htmlFor="major">สาขา</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="major"
-                    style={{ width: "150px" }}
-                    defaultValue="-"
-                  >
-                    <option value="-" disabled>- กรุณาเลือก -</option>
-                    <option value="T12">T12</option>
-                  </select>
+                  <Select
+                    options={optionsMajor}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'major', value: selectedOption.value } })}
+                    placeholder="กรุณาเลือก"
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
 
                 <div className="form-group mt-2">
@@ -280,18 +329,13 @@ const AddCourseTotable = ({
                 </div>
                 <div className="form-group mt-2">
                   <label htmlFor="term">ภาคเรียน</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="term"
-                    style={{ width: '150px' }}
-                    defaultValue="-"
-                  >
-                    <option value="-" disabled>- กรุณาเลือก -</option>
-                    <option value="ฤดูร้อน">ฤดูร้อน</option>
-                    <option value="ต้น">ต้น</option>
-                    <option value="ปลาย">ปลาย</option>
-                  </select>
+                  <Select
+                    options={optionsTerm}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'term', value: selectedOption.value } })}
+                    placeholder="กรุณาเลือก"
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
               </form>
             </div>
