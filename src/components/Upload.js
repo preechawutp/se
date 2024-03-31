@@ -11,6 +11,7 @@ const Upload = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [uploadOption, setUploadOption] = useState(null); // State for selected upload option
+  const [renamedData, setRenamedData] = useState([]); // State for storing renamed data
 
   const [showInfoModalS, setShowInfoModalS] = useState(false);
   const [showInfoModalT, setShowInfoModalT] = useState(false);
@@ -92,76 +93,57 @@ const Upload = () => {
       return;
     }
 
+    // เปลี่ยนชื่อคีย์ตามแผนที่การแมปที่กำหนด
+    const newRenamedData = renameKeys(xlData, keyMappings[uploadOption]);
+    setRenamedData(newRenamedData);
+
     let collectionRef = null;
     let uniqueFields = null;
-    let existingDocs = {};
 
-    if (uploadOption === "course") {
-      collectionRef = "course";
-      uniqueFields = ["code", "grade"];
-    } else if (uploadOption === "teacher") {
-      collectionRef = "teacher";
-      uniqueFields = ["firstname", "lastname"];
-    } else if (uploadOption === "room") {
-      collectionRef = "room";
-      uniqueFields = ["roomid"];
+    switch (uploadOption) {
+      case "course":
+        collectionRef = "course";
+        uniqueFields = ["code", "grade"];
+        break;
+      case "teacher":
+        collectionRef = "teacher";
+        uniqueFields = ["firstname", "lastname"];
+        break;
+      case "room":
+        collectionRef = "room";
+        uniqueFields = ["roomid"];
+        break;
+      default:
+        setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
+        return;
     }
 
-    if (!collectionRef || !uniqueFields) {
-      setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
-      return;
-    }
-
-    const querySnapshot = await getDocs(collection(db, collectionRef));
-    querySnapshot.forEach((doc) => {
-      let uniqueKey = "";
-      uniqueFields.forEach(field => {
-        uniqueKey += doc.data()[field];
-      });
-      existingDocs[uniqueKey] = true;
-    });
-
-    const invalidEntries = [];
-    xlData.forEach((item) => {
-      let isValid = true;
-      uniqueFields.forEach(field => {
-        if (!item.hasOwnProperty(field)) {
-          isValid = false;
-        }
-      });
-      if (!isValid) {
-        invalidEntries.push(item);
-      }
-    });
-
+    // ตรวจสอบความถูกต้องของรายการใหม่หลังจากเปลี่ยนชื่อคีย์
+    const invalidEntries = newRenamedData.filter(item => !uniqueFields.every(field => field in item));
     if (invalidEntries.length > 0) {
       const requiredFields = uniqueFields.join(", ");
       setErrorMessage(`ไฟล์ Excel ไม่ตรงกับฟิลด์ที่ต้องการ กรุณาใช้ ${requiredFields}`);
       return;
     }
 
-
-    const duplicateEntries = [];
-    xlData.forEach((item) => {
-      let uniqueKey = "";
-      uniqueFields.forEach(field => {
-        uniqueKey += item[field];
-      });
-      if (existingDocs[uniqueKey]) {
-        duplicateEntries.push(uniqueKey);
-      }
+    // ตรวจสอบความซ้ำซ้อนของข้อมูล
+    const existingDocs = new Set();
+    const querySnapshot = await getDocs(collection(db, collectionRef));
+    querySnapshot.forEach(doc => {
+      const uniqueKey = uniqueFields.map(field => doc.data()[field]).join("_");
+      existingDocs.add(uniqueKey);
     });
 
+    const duplicateEntries = newRenamedData.filter(item => existingDocs.has(uniqueFields.map(field => item[field]).join("_")));
     if (duplicateEntries.length > 0) {
-      setErrorMessage(`ข้อมูลที่ซ้ำ: ${duplicateEntries.join(", ")}`);
+      const duplicatesList = duplicateEntries.map(item => uniqueFields.map(field => item[field]).join(", ")).join("; ");
+      setErrorMessage(`ข้อมูลที่ซ้ำ: ${duplicatesList}`);
       return;
     }
 
     setShowUploadModal(false);
     setShowConfirmationModal(true);
   };
-
-
 
   const handleConfirmUpload = async () => {
     let collectionRef = null;
@@ -179,9 +161,9 @@ const Upload = () => {
       return;
     }
 
-    xlData.forEach(async (item) => {
+    renamedData.forEach(async (item) => {
       try {
-        await addDoc(collection(db, collectionRef), item);
+        await addDoc(collection(db, uploadOption), item);
         console.log("Document successfully written!");
       } catch (error) {
         console.error("Error writing document: ", error);
@@ -207,6 +189,35 @@ const Upload = () => {
   const handleCheckboxChange = (option) => {
     setUploadOption(option);
   };
+
+  const keyMappings = {
+    course: {
+      'รหัสวิชา': 'code',
+      'หน่วยกิต': 'credit',
+      'หลักสูตร': 'grade',
+      'ชื่อ ภาษาไทย': 'nameTH',
+      'ชื่อ ภาษาอังกฤษ': 'name',
+      'หมู่เรียน': 'type',
+    },
+    teacher: {
+      'ชื่อ': 'firstname',
+      'นามสกุล': 'lastname',
+    },
+    room: {
+      'หมายเลขห้อง': 'roomid',
+    }
+  };
+
+  const renameKeys = (data, keyMap) => {
+    return data.map(item => {
+      const newItem = {};
+      Object.keys(item).forEach(key => {
+        newItem[keyMap[key] || key] = item[key];
+      });
+      return newItem;
+    });
+  };
+
 
   return (
     <div className="form-group p-3">
@@ -374,9 +385,16 @@ const Upload = () => {
           <Modal.Title>แบบฟอร์มการอัปโหลดรายวิชา</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <a href={`${process.env.PUBLIC_URL}/Subject.xlsx`} download="Subject.xlsx">
-            Download
-          </a>
+          ตัวอย่างรูปแบบการนำเข้ารายวิชา
+          <div>
+            <img src={`${process.env.PUBLIC_URL}\Ex_subject.png`} alt="ตัวอย่างรายวิชา" style={{ maxWidth: "100%", height: "auto" }} />
+          </div>
+          <div>
+            ดาวน์โหลดแบบฟอร์มได้
+            <a href={`${process.env.PUBLIC_URL}/Subject.xlsx`} download="Subject.xlsx">
+              ที่นี่
+            </a>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseInfoS}>ยกเลิก</Button>
@@ -388,9 +406,16 @@ const Upload = () => {
           <Modal.Title>แบบฟอร์มการอัปโหลดรายชื่ออาจารย์</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <a href={`${process.env.PUBLIC_URL}/Teacher.xlsx`} download="Teacher.xlsx">
-            Download
-          </a>
+          ตัวอย่างรูปแบบการนำเข้ารายชื่ออาจารย์
+          <div>
+            <img src={`${process.env.PUBLIC_URL}\Ex_teacher.png`} alt="ตัวอย่างรายชื่ออาจารย์" style={{ maxWidth: "100%", height: "auto" }} />
+          </div>
+          <div>
+            ดาวน์โหลดแบบฟอร์มได้
+            <a href={`${process.env.PUBLIC_URL}/Teacher.xlsx`} download="Teacher.xlsx">
+              ที่นี่
+            </a>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseInfoT}>ยกเลิก</Button>
@@ -402,9 +427,16 @@ const Upload = () => {
           <Modal.Title>แบบฟอร์มการอัปโหลดรายชื่อห้อง</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <a href={`${process.env.PUBLIC_URL}/Room.xlsx`} download="Room.xlsx">
-            Download
-          </a>
+          ตัวอย่างรูปแบบการนำเข้ารายชื่อห้อง
+          <div>
+            <img src={`${process.env.PUBLIC_URL}\Ex_room.png`} alt="ตัวอย่างรายชื่อห้อง" style={{ maxWidth: "100%", height: "auto" }} />
+          </div>
+          <div>
+            ดาวน์โหลดแบบฟอร์มได้
+            <a href={`${process.env.PUBLIC_URL}/Room.xlsx`} download="Room.xlsx">
+              ที่นี่
+            </a>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseInfoR}>ยกเลิก</Button>
