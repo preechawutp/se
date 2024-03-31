@@ -15,6 +15,8 @@ import {
 } from 'firebase/firestore';
 import ShowChoose from './ShowChoose';
 import { Alert, Button, Modal } from 'react-bootstrap';
+import EditCourseInTable from "./EditCourseInTable";
+
 
 
 const ScheduleTable = ({ onClickHandler }) => {
@@ -438,12 +440,14 @@ const ScheduleTable = ({ onClickHandler }) => {
                                     <th scope="col">{course.room}</th>
                                     <th scope="col">{course.teacher}</th>
                                     <th scope="col">
-                                        <button className='btn1' onClick={() => {
-                                            deleteCourse(course.course_id);
-                                        }}>
-                                            ลบ
-                                        </button>
-
+                                        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+                                            <button className='btn1' onClick={() => {
+                                                deleteCourse(course.course_id);
+                                            }} style={{ marginRight: '5px' }}> {/* Adjust marginRight to control space */}
+                                                ลบ
+                                            </button>
+                                            <EditCourseInTable item_id={course.course_id} />
+                                        </div>
                                     </th>
                                 </tr>
                             ))}
