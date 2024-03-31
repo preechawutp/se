@@ -1,5 +1,3 @@
-// AddCourse.js
-
 import React, { useState } from "react";
 import "../assets/AddCourse.css";
 import { Button, Modal, Alert } from "react-bootstrap";
