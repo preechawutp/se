@@ -166,12 +166,27 @@ const ScheduleTable = ({ onClickHandler }) => {
                             } else if (
                                 allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
                                 allCourse[j].subjecttype === "วิชาแกน"
+                                
+                            ) {
+                                // Core courses can clash with elective courses
+                                duplicateTypes.push(allCourse[i].id);
+                                
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาแกน" &&
+                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+                                
                             ) {
                                 // Core courses can clash with elective courses
                                 duplicateTypes.push(allCourse[i].id);
                             } else if (
                                 allCourse[i].subjecttype === "วิชาเฉพาะเลือก" &&
                                 allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+                            ) {
+                                // Required elective courses should not clash with core courses
+                                duplicateTypes.push(allCourse[i].id);
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
+                                allCourse[j].subjecttype === "วิชาเฉพาะเลือก"
                             ) {
                                 // Required elective courses should not clash with core courses
                                 duplicateTypes.push(allCourse[i].id);

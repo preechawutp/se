@@ -73,7 +73,7 @@ const Dropdown = ({ queryCourses }) => {
     menu: (provided, state) => ({
       ...provided,
       width: 250, // ความกว้างของเมนูตรงกับ control
-      minHeight: '120px', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      minHeight: 'auto', // กำหนดความสูงขั้นต่ำสำหรับเมนู
       maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
     }),
   };
@@ -86,7 +86,7 @@ const Dropdown = ({ queryCourses }) => {
     menu: (provided, state) => ({
       ...provided,
       width: 150, // ความกว้างของเมนูตรงกับ control
-      minHeight: '120px', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      minHeight: 'auto', // กำหนดความสูงขั้นต่ำสำหรับเมนู
       maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
     }),
   };
