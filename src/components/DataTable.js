@@ -1,7 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import "../assets/DataTable.css"; // เชื่อมต่อไฟล์ CSS
 import AddCourseToTable from "./AddCourseToTable";
 import { Modal, Button } from "react-bootstrap";
+import { db } from '../firebase';
+
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
+
 
 const DataTable = ({
   data,
@@ -19,14 +33,31 @@ const DataTable = ({
   handleCourseChange,
   handleDeleteAll
 }) => {
+  const [data2, setData2] = useState([]);
+  const roitaiRef = collection(db, 'course');
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(roitaiRef, (snapshot) => {
+      const newData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setData2(newData);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const [curpage, setcurpage] = useState(1);
   const courseperpage = 20;
 
   const indexlast = curpage * courseperpage;
   const indexfirst = indexlast - courseperpage;
-  const currentItems = data.slice(indexfirst, indexlast);
+  const currentItems = data2.slice(indexfirst, indexlast);
 
-  const turtlepage = Math.ceil(data.length / courseperpage);
+  const turtlepage = Math.ceil(data2.length / courseperpage);
 
   const handleNextPage = () => {
     if (curpage < turtlepage) {
