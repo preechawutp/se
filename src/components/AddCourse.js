@@ -4,7 +4,7 @@ import { Button, Modal, Alert } from "react-bootstrap";
 import Select from 'react-select';
 
 const options = [
-  { value: '- กรุณาเลือก -', label: '- กรุณาเลือก -' },
+  { value: '- กรุณาเลือก -', label: '- กรุณาเลือก -', isDisabled: true  },
   { value: 'บรรยาย', label: 'บรรยาย' },
   { value: 'ปฎิบัติ', label: 'ปฎิบัติ' }
 ];
@@ -47,6 +47,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
   const handleConfirmationModalClose = () => setShowConfirmationModal(false);
 
   const customStyles2 = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
     control: (provided, state) => ({
       ...provided,
       width: 170, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
@@ -155,6 +156,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 placeholder="- กรุณาเลือก -"
                 isSearchable={true}
                 styles={customStyles2}
+                menuPortalTarget={document.body}
               />
 
             </div>

@@ -261,7 +261,7 @@ const EditCourseInTable = ({
                   >
                     <option value="" disabled>- กรุณาเลือก -</option>
                     <option value="วิชาแกน">วิชาแกน</option>
-                    <option value="วิชาเฉพาะ">วิชาเฉพาะ</option>
+                    <option value="วิชาเฉพาะบังคับ">วิชาเฉพาะบังคับ</option>
                     <option value="วิชาเฉพาะเลือก">วิชาเฉพาะเลือก</option>
                   </select>
                 </div>

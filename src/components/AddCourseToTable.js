@@ -22,7 +22,7 @@ const optionsDay = [
 const optionsType = [
   { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
   { value: 'วิชาแกน', label: 'วิชาแกน' },
-  { value: 'วิชาเฉพาะ', label: 'วิชาเฉพาะ' },
+  { value: 'วิชาเฉพาะบังคับ', label: 'วิชาเฉพาะบังคับ' },
   { value: 'วิชาเฉพาะเลือก', label: 'วิชาเฉพาะเลือก' },
 ];
 
@@ -151,6 +151,7 @@ const AddCourseTotable = ({
   };
 
   const customStyles1 = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
     control: (provided, state) => ({
       ...provided,
       width: 150, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
@@ -164,6 +165,7 @@ const AddCourseTotable = ({
   };
 
   const customStyles2 = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
     control: (provided, state) => ({
       ...provided,
       width: 150, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
@@ -212,6 +214,7 @@ const AddCourseTotable = ({
                     placeholder="กรุณาเลือก"
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                 </div>
 
@@ -247,6 +250,7 @@ const AddCourseTotable = ({
                       placeholder="กรุณาเลือก"
                       isSearchable={true}
                       styles={customStyles2}
+                      menuPortalTarget={document.body}
                     />
                   </div>
                 </div>
@@ -260,6 +264,7 @@ const AddCourseTotable = ({
                     placeholder="กรุณาเลือก"
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                 </div>
               </form>
@@ -288,6 +293,7 @@ const AddCourseTotable = ({
                     placeholder="กรุณาเลือก"
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                   <div className="form-group mt-2">
                     <label htmlFor="student">จำนวนนิสิต</label>
@@ -313,6 +319,7 @@ const AddCourseTotable = ({
                     placeholder="กรุณาเลือก"
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                 </div>
 
@@ -334,7 +341,8 @@ const AddCourseTotable = ({
                     onChange={(selectedOption) => handleCourseChange({ target: { name: 'term', value: selectedOption.value } })}
                     placeholder="กรุณาเลือก"
                     isSearchable={true}
-                    styles={customStyles1}
+                    styles={customStyles1} 
+                    menuPortalTarget={document.body}
                   />
                 </div>
               </form>
