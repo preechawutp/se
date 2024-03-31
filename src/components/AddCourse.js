@@ -4,7 +4,7 @@ import { Button, Modal, Alert } from "react-bootstrap";
 import Select from 'react-select';
 
 const options = [
-  { value: '- กรุณาเลือก -', label: '- กรุณาเลือก -', isDisabled: true  },
+  { value: '- กรุณาเลือก -', label: '- กรุณาเลือก -', isDisabled: true },
   { value: 'บรรยาย', label: 'บรรยาย' },
   { value: 'ปฎิบัติ', label: 'ปฎิบัติ' }
 ];
@@ -13,6 +13,12 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
   const [show, setShow] = useState(false);
   const [validationError, setValidationError] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+  const [courseCode, setCourseCode] = useState("");
+  const [courseGrade, setCourseGrade] = useState("");
+  const [courseName, setCourseName] = useState("");
+  const [courseCredit, setCourseCredit] = useState("");
+  const [courseType, setCourseType] = useState("");
 
   const selectedOption = options.find(option => option.value === form.type);
 
@@ -64,6 +70,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
     // ตรวจสอบว่าค่าที่ป้อนไม่เกิน 6
     if (parseInt(e.target.value) <= 6) {
       handleChange(e);
+      setCourseCredit(e.target.value);
     } else {
       // แสดงข้อความแจ้งเตือนถ้าเกินค่าสูงสุด
       alert('ค่าหน่วยกิตต้องไม่เกิน 6');
@@ -97,7 +104,10 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
               <label htmlFor="code">รหัสวิชา</label>
               <input
                 className="form-control"
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => {
+                  handleChange(e); // เรียกใช้ handleChange เพื่ออัปเดต form
+                  setCourseCode(e.target.value); // เรียกใช้ setCourseCode เพื่ออัปเดต courseCode
+                }}
                 type="number"
                 name="code"
                 value={form.code || ""}
@@ -109,7 +119,10 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
               <label htmlFor="grade">หลักสูตร</label>
               <input
                 className="form-control"
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => {
+                  handleChange(e); // เรียกใช้ handleChange เพื่ออัปเดต form
+                  setCourseGrade(e.target.value); // เรียกใช้ setCourseCode เพื่ออัปเดต courseCode
+                }}
                 type="number"
                 name="grade"
                 value={form.grade || ""}
@@ -126,6 +139,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                   const validInput = /^[a-zA-Zก-๙\s]*$/;
                   if (validInput.test(e.target.value)) {
                     handleChange(e);
+                    setCourseName(e.target.value);
                   }
                 }}
                 type="text"
@@ -151,7 +165,10 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
               <label htmlFor="type">ประเภท</label>
               <Select
                 options={options}
-                onChange={(selectedOption) => handleChange({ target: { name: 'type', value: selectedOption.value } })}
+                onChange={(selectedOption) => {
+                  handleChange({ target: { name: 'type', value: selectedOption.value } }); // เรียกใช้ handleChange เพื่ออัปเดต form
+                  setCourseType(selectedOption.value); // เรียกใช้ setCourseType เพื่ออัปเดต courseType
+                }} 
                 value={selectedOption}
                 placeholder="- กรุณาเลือก -"
                 isSearchable={true}
@@ -206,6 +223,15 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
         >
           <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
           <h5>ต้องการยืนยันใช่หรือไม่?</h5>
+          <div>
+            รหัสวิชา: {courseCode}-{courseGrade}
+          </div>
+          <div>
+            ชื่อวิชา: {courseName}
+          </div>
+          <div>
+            ประเภท: {courseType}
+          </div>
           <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
             <Button variant="success" className="btn1" onClick={handleConfirmAddData}>
               ยืนยัน
