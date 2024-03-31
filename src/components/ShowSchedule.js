@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { saveAs } from 'file-saver'; // Import file-saver library for saving canvas as PNG
 
 import '../assets/st.css';
-import Navbar from "./Navbar";
 import Dropdown from './Dropdown';
 import { db } from '../firebase';
 import {
@@ -16,12 +15,19 @@ import {
 } from 'firebase/firestore';
 import GuestNavbar from './GuestNavbar';
 
-const ScheduleTable = () => {
+const ScheduleTable = ({ onClickHandler }) => {
     const [courses, setCourses] = useState([]);
     const [duplicateCourse, setDuplicateCourse] = useState([]);
     const [searchedCourse, setSearchedCourses] = useState([]);
+    const [allCourse, setAllCourse] = useState([]);
+    const [dupType, setDupType] = useState([]);
+    const [dupRoom, setDupRoom] = useState([]);
+    const [dupSec, setDupSec] = useState([]);
     const selectedCourseRef = collection(db, 'ChooseSubject');
     const tableRef = useRef(null);
+    const [validationError, setValidationError] = useState('');
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+    const [courseToDelete, setCourseToDelete] = useState(null);
 
     const timeSlots = Array.from({ length: 26 }, (_, index) => {
         const startHour = Math.floor(index / 2) + 7 < 10 ? '0' + `${Math.floor(index / 2) + 7}` : `${Math.floor(index / 2) + 7}`;
@@ -32,6 +38,22 @@ const ScheduleTable = () => {
     });
 
     const daysOfWeek = ['จันทร์/MON', 'อังคาร/TUE', 'พุธ/WED', 'พฤหัสบดี/THU', 'ศุกร์/FRI', 'เสาร์/SAT', 'อาทิตย์/SUN'];
+
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'ChooseSubject'));
+                const coursesData = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                setAllCourse(coursesData);
+            } catch (error) {
+                console.error('Error fetching courses: ', error);
+            }
+        };
+        fetchCourses();
+    }, []);
 
     // This function is use for query course from search data
     const queryCourses = async ({
@@ -54,17 +76,23 @@ const ScheduleTable = () => {
         setSearchedCourses(coursesArray);
     };
     // This function should call after query selected course
+
     useEffect(() => {
-        addDummyCourse();
+        AddCourseTotable();
         checkDuplicatedTime();
+        checkSubjectType();
+        checkRoomOverlap();
+        checkSecOverlap();
     }, [searchedCourse]);
+
     // Function to simulate adding a course to the schedule
     // This should be replaced with your actual logic to add courses
-    const addDummyCourse = () => {
+    const AddCourseTotable = () => {
         setCourses([]);
         for (let i = 0; i < searchedCourse.length; i++) {
             setCourses(prevCourses => [...prevCourses, {
                 id: prevCourses.length + 1,
+                course_id: searchedCourse[i].id,
                 code: searchedCourse[i].code,
                 curriculum: searchedCourse[i].grade,
                 name: searchedCourse[i].name,
@@ -76,6 +104,10 @@ const ScheduleTable = () => {
                 teacher: searchedCourse[i].teacher,
                 student: searchedCourse[i].student,
                 room: searchedCourse[i].room,
+                years: searchedCourse[i].years,
+                sec: searchedCourse[i].sec,
+                term: searchedCourse[i].term,
+                subjecttype: searchedCourse[i].subjecttype, //(วิชาแกน,วิชาเฉพาะเลือก,วิชาเฉพาะบังคับ)
             }]);
         }
     };
@@ -96,18 +128,174 @@ const ScheduleTable = () => {
         setDuplicateCourse(dupCourse)
     };
 
+    var duplicateTypes = [];
+    const checkSubjectType = () => {
+        for (let i = 0; i < allCourse.length; i++) {
+            for (let j = 0; j < allCourse.length; j++) {
+                if (i !== j && !duplicateTypes.includes(allCourse[i].id)) {
+                    if (
+                        allCourse[i].years !== allCourse[j].years ||
+                        allCourse[i].term !== allCourse[j].term
+                    ) {
+                        continue;
+                    }
+                    if (allCourse[i].day === allCourse[j].day) {
+                        const timeStart1 = allCourse[i].TimeStart.split("-")[0];
+                        const timeStop1 = allCourse[i].TimeStop.split("-")[0];
+                        const timeStart2 = allCourse[j].TimeStart.split("-")[0];
+                        const timeStop2 = allCourse[j].TimeStop.split("-")[0];
+                        if (
+                            (timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
+                            (timeStart1 <= timeStop2 && timeStop2 <= timeStop1) ||
+                            (timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
+                            (timeStart2 <= timeStop1 && timeStop1 <= timeStop2)
+                        ) {
+                            // Check subject type rules
+                            if (allCourse[i].subjecttype === allCourse[j].subjecttype) {
+                                if (allCourse[i].subjecttype === "วิชาแกน") {
+                                    // Core courses of the same year should not clash
+                                    duplicateTypes.push(allCourse[i].id);
+                                } else if (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ") {
+                                    // Core courses should not clash with required elective courses
+                                    duplicateTypes.push(allCourse[i].id);
+                                }
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
+                                allCourse[j].subjecttype === "วิชาแกน"
+
+                            ) {
+                                // Core courses can clash with elective courses
+                                duplicateTypes.push(allCourse[i].id);
+
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาแกน" &&
+                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+
+                            ) {
+                                // Core courses can clash with elective courses
+                                duplicateTypes.push(allCourse[i].id);
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาเฉพาะเลือก" &&
+                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+                            ) {
+                                // Required elective courses should not clash with core courses
+                                duplicateTypes.push(allCourse[i].id);
+                            } else if (
+                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
+                                allCourse[j].subjecttype === "วิชาเฉพาะเลือก"
+                            ) {
+                                // Required elective courses should not clash with core courses
+                                duplicateTypes.push(allCourse[i].id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        setDupType(duplicateTypes);
+    };
+
+
+    var duplicateRooms = [];
+    const checkRoomOverlap = () => {
+        for (let i = 0; i < allCourse.length; i++) {
+            for (let j = 0; j < allCourse.length; j++) {
+                if (i !== j && !duplicateRooms.includes(allCourse[i].id)) {
+                    if (allCourse[i].year === allCourse[j].year && // Check for same year
+                        allCourse[i].day === allCourse[j].day &&
+                        allCourse[i].room === allCourse[j].room) {
+                        const timeStart1 = parseInt(allCourse[i].TimeStart.split("-")[0]);
+                        const timeStop1 = parseInt(allCourse[i].TimeStop.split("-")[0]);
+                        const timeStart2 = parseInt(allCourse[j].TimeStart.split("-")[0]);
+                        const timeStop2 = parseInt(allCourse[j].TimeStop.split("-")[0]);
+
+                        // Check for time overlap
+                        if ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
+                            (timeStart1 <= timeStop2 && timeStop2 <= timeStop1) ||
+                            (timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
+                            (timeStart2 <= timeStop1 && timeStop1 <= timeStop2)) {
+                            duplicateRooms.push(allCourse[i].room);
+                        }
+                    }
+                }
+            }
+        }
+        setDupRoom(duplicateRooms);
+    };
+
+    var duplicateSec = [];
+    const checkSecOverlap = () => {
+        for (let i = 0; i < allCourse.length; i++) {
+            for (let j = 0; j < allCourse.length; j++) {
+                if (i !== j && !duplicateSec.includes(allCourse[i].id)) {
+                    if (
+                        allCourse[i].name === allCourse[j].name && // Check if course names are the same
+                        allCourse[i].sec === allCourse[j].sec // Check if sections are the same
+                    ) {
+                        // If sections are the same for the same course, consider it as section clash
+                        duplicateSec.push(allCourse[i].sec);
+                    }
+                }
+            }
+        }
+
+        setDupSec(duplicateSec);
+    };
+
     const changeColor = (course) => {
-        // Check if the course ID exists in the duplicateCourse array
+        // ตรวจสอบว่ามีวิชาหรือไม่
         if (course) {
+            // ตรวจสอบว่า ID ของวิชามีในอาเรย์ของวิชาที่ซ้ำซ้อนหรือไม่
             if (duplicateCourse.includes(course.id)) {
-                return "red";
+                return "red"; // ถ้าเป็นซ้ำซ้อน สีเป็นสีแดง
+            } else if (dupType.includes(course.course_id)) {
+                return "yellow"; // ถ้าซ้ำซ้อน สีเป็นสีเหลือง
+            } else if (dupRoom.includes(course.room)) {
+                return "orange"; // ถ้าซ้ำซ้อนกับห้อง สีเป็นสีส้ม
+            } else if (dupSec.includes(course.sec)) {
+                return "blue"; // ถ้าซ้ำซ้อนกับหมู่เรียน สีเป็นสีน้ำเงิน
             } else {
-                return "base";
+                return "base"; // ถ้าไม่ซ้ำซ้อนหรือข้อขัดแย้ง สีเป็นสีเริ่มต้น
             }
         } else {
-            return ""; // Return empty string for non-existent courses
+            return ""; // สีว่างสำหรับวิชาที่ไม่มีอยู่
         }
     };
+
+
+    useEffect(() => {
+        let error = "";
+        if (duplicateCourse.length > 0) {
+            const course1 = searchedCourse[duplicateCourse[0]];
+            const course2 = searchedCourse[duplicateCourse[0] - 1];
+            if (course1 && course2) {
+                error = `เวลาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
+        } else if (dupType.length > 0) {
+            const course1 = allCourse.find(item => item.id === dupType[0]);
+            const course2 = allCourse.find(item => item.id === dupType[0] - 1);
+            if (course1 && course2) {
+                error = `วิชาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
+        } else if (dupRoom.length > 0) {
+            const course1 = allCourse.find(item => item.room === dupRoom[0]);
+            const course2 = allCourse.find(item => item.room === dupRoom[0] - 1);
+            if (course1 && course2) {
+                error = `ห้องชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
+        } else if (dupSec.length > 0) {
+            const course1 = allCourse.find(item => item.sec === dupSec[0]);
+            const course2 = allCourse.find(item => item.sec === dupSec[0] - 1);
+            if (course1 && course2) {
+                error = `หมู่เรียนชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+            }
+        }
+        console.log(error)
+        setValidationError(error);
+    }, [duplicateCourse, dupType, dupRoom, dupSec]); //1.ทำ forloop 2.เอา else ออก ให้เหลือ if 3.เเก้ฟังก์ชันให้หมดควรโชว์ทั้งหมดไม่ใช่โชว์เเค่2ตัวเช่นเวลาชน sec ชนต้องโชว์ทั้งหมด
+
+
+
     /* global html2canvas */
     const saveAsPNG = () => {
         html2canvas(tableRef.current).then((canvas) => {
@@ -122,10 +310,12 @@ const ScheduleTable = () => {
             <GuestNavbar />
             <div className='container'>
                 <div className="schedule-table-container mt-5" >
+                    <h2>ตารางสอน</h2>
                     <div className='d-flex justify-content-flex-start'>
                         <Dropdown queryCourses={queryCourses} />
                         <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
                     </div>
+
                     <table className="schedule-table" ref={tableRef}>
                         <thead>
                             <tr>
@@ -196,7 +386,6 @@ const ScheduleTable = () => {
                             ))}
                         </tbody>
                     </table>
-
                 </div>
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
