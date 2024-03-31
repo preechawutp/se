@@ -9,6 +9,37 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { Alert, Button, Modal, Form } from 'react-bootstrap';
+import Select from 'react-select';
+
+const daysOptions = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'MON', label: 'MON' },
+  { value: 'TUE', label: 'TUE' },
+  { value: 'WED', label: 'WED' },
+  { value: 'THU', label: 'THU' },
+  { value: 'FRI', label: 'FRI' },
+  { value: 'SAT', label: 'SAT' },
+  { value: 'SUN', label: 'SUN' }
+];
+
+const optionsType = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'วิชาแกน', label: 'วิชาแกน' },
+  { value: 'วิชาเฉพาะบังคับ', label: 'วิชาเฉพาะบังคับ' },
+  { value: 'วิชาเฉพาะเลือก', label: 'วิชาเฉพาะเลือก' },
+];
+
+const optionsTerm = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'ฤดูร้อน', label: 'ฤดูร้อน' },
+  { value: 'ต้น', label: 'ต้น' },
+  { value: 'ปลาย', label: 'ปลาย' },
+];
+
+const optionsMajor = [
+  { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+  { value: 'T12', label: 'T12' },
+];
 
 const EditCourseInTable = ({
   item_id
@@ -20,6 +51,22 @@ const EditCourseInTable = ({
   const [teachers, setTeacher] = useState([]);
   const [timeError, setTimeError] = useState(false);
   const [validationError, setValidationError] = useState(null);
+
+  const optionsTeacher = [
+    { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+    ...teachers.map((item) => ({
+      value: item.firstname + ' ' + item.lastname,
+      label: `${item.firstname} ${item.lastname}`
+    }))
+  ];
+
+  const optionsRoom = [
+    { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
+    ...rooms.map((item) => ({
+      value: item.roomid,
+      label: item.roomid
+    }))
+  ];
 
   const [courseForm, setCourseForm] = useState({
     day: "",
@@ -57,7 +104,7 @@ const EditCourseInTable = ({
     const fetchCourseData = async () => {
       const docRef = doc(db, "ChooseSubject", item_id);
       const docSnap = await getDoc(docRef);
-  
+
       if (docSnap.exists()) {
         const docData = docSnap.data();
         // ตรวจสอบและแปลงข้อมูลที่นี่
@@ -160,6 +207,44 @@ const EditCourseInTable = ({
     handleClose(); // ปิด Modal หลังจากอัปเดตข้อมูล
   };
 
+  const customStyles1 = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
+    control: (provided, state) => ({
+      ...provided,
+      width: 150, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      width: 150, // ความกว้างของเมนูตรงกับ control
+      minHeight: 'auto', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
+    }),
+  };
+
+  const customStyles2 = {
+    menuPortal: base => ({ ...base, zIndex: 9999 }),
+    control: (provided, state) => ({
+      ...provided,
+      width: 150, // กำหนดความกว้างเป็น 200px หรือตามที่คุณต้องการ
+    }),
+    menu: (provided, state) => ({
+      ...provided,
+      width: 200, // ความกว้างของเมนูตรงกับ control
+      minHeight: 'auto', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
+    }),
+  };
+
+  const selectedOptionTeacher = optionsTeacher.find(option => option.value === courseForm.teacher);
+
+  const selectedOptionSub = optionsType.find(option => option.value === courseForm.subjecttype);
+
+  const selectedOptionRoom = optionsRoom.find(option => option.value === courseForm.room);
+
+  const selectedOptionMajor = optionsMajor.find(option => option.value === courseForm.major);
+
+  const selectedOptionTerm = optionsTerm.find(option => option.value === courseForm.term);
+
   return (
     <div className="form-group">
       <Button className="btn1" onClick={handleShow}>
@@ -189,22 +274,13 @@ const EditCourseInTable = ({
               <form>
                 <div className="form-group mt-2">
                   <label htmlFor="day">วันที่ต้องการสอน</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="day"
-                    style={{ width: "150px" }}
-                    value={courseForm.day}
-                  >
-                    <option value="-" disabled>- กรุณาเลือก -</option>
-                    <option value="MON">MON</option>
-                    <option value="TUE">TUE</option>
-                    <option value="WED">WED</option>
-                    <option value="THU">THU</option>
-                    <option value="FRI">FRI</option>
-                    <option value="SAT">SAT</option>
-                    <option value="SUN">SUN</option>
-                  </select>
+                  <Select
+                    options={daysOptions}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'day', value: selectedOption.value } })}
+                    value={daysOptions.find(option => option.value === courseForm.day)}
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
 
                 <div className="form-group mt-2">
@@ -235,35 +311,25 @@ const EditCourseInTable = ({
                 <div className="form-group mt-2">
                   <label htmlFor="teacher">อาจารย์</label>
                   <div className='d-flex justify-content-between'>
-                    <select
-                      className="form-select "
-                      onChange={(e) => handleCourseChange(e)}
-                      name="teacher"
-                      style={{ width: "150px" }}
-                      value={courseForm.teacher} // ใช้ค่าจาก state ที่เก็บข้อมูล teacher
-                    >
-                      <option value="" disabled>- กรุณาเลือก -</option>
-                      {teachers.map((item, index) => (
-                        <option key={index} value={item.firstname + ' ' + item.lastname}> {item.firstname} {item.lastname} </option>
-                      ))}
-                    </select>
+                    <Select
+                      options={optionsTeacher}
+                      onChange={(selectedOption) => handleCourseChange({ target: { name: 'teacher', value: selectedOption ? selectedOption.value : '' } })}
+                      value={selectedOptionTeacher}
+                      isSearchable={true}
+                      styles={customStyles2}
+                    />
                   </div>
                 </div>
 
                 <div className="form-group mt-2">
                   <label >ประเภทวิชา</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="subjecttype"
-                    style={{ width: "150px" }}
-                    value={courseForm.subjecttype} // ใช้ค่าจาก state ที่เก็บข้อมูล teacher
-                  >
-                    <option value="" disabled>- กรุณาเลือก -</option>
-                    <option value="วิชาแกน">วิชาแกน</option>
-                    <option value="วิชาเฉพาะบังคับ">วิชาเฉพาะบังคับ</option>
-                    <option value="วิชาเฉพาะเลือก">วิชาเฉพาะเลือก</option>
-                  </select>
+                  <Select
+                    options={optionsType}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'subjecttype', value: selectedOption.value } })}
+                    value={selectedOptionSub}
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
               </form>
             </div>
@@ -285,18 +351,14 @@ const EditCourseInTable = ({
                 </div>
                 <div className="form-group mt-2">
                   <label htmlFor="room">ห้อง</label>
-                  <select
-                    className="form-select "
-                    onChange={(e) => handleCourseChange(e)}
-                    name="room"
-                    style={{ width: "150px" }}
-                    value={courseForm.room}
-                  >
-                    <option value="" disabled>- กรุณาเลือก -</option>
-                    {rooms.map((item, index) => (
-                      <option key={index} value={item.roomid}> {item.roomid} </option>
-                    ))}
-                  </select>
+                  <Select
+                    options={optionsRoom}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'room', value: selectedOption ? selectedOption.value : '' } })}
+                    placeholder="- กรุณาเลือก -"
+                    value={selectedOptionRoom || ''}
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                   <div className="form-group mt-2">
                     <label htmlFor="student">จำนวนนิสิต</label>
                     <input
@@ -316,16 +378,14 @@ const EditCourseInTable = ({
               <form>
                 <div className="form-group mt-2">
                   <label htmlFor="major">สาขา</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="major"
-                    style={{ width: "150px" }}
-                    value={courseForm.major}
-                  >
-                    <option value="-" disabled>- กรุณาเลือก -</option>
-                    <option value="T12">T12</option>
-                  </select>
+                  <Select
+                    options={optionsMajor}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'major', value: selectedOption ? selectedOption.value : '' } })}
+                    placeholder="- กรุณาเลือก -"
+                    value={selectedOptionMajor || ''}
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
 
                 <div className="form-group mt-2">
@@ -342,18 +402,14 @@ const EditCourseInTable = ({
                 </div>
                 <div className="form-group mt-2">
                   <label htmlFor="term">ภาคเรียน</label>
-                  <select
-                    className="form-select"
-                    onChange={(e) => handleCourseChange(e)}
-                    name="term"
-                    style={{ width: '150px' }}
-                    value={courseForm.term}
-                  >
-                    <option value="-" disabled>- กรุณาเลือก -</option>
-                    <option value="ฤดูร้อน">ฤดูร้อน</option>
-                    <option value="ต้น">ต้น</option>
-                    <option value="ปลาย">ปลาย</option>
-                  </select>
+                  <Select
+                    options={optionsTerm}
+                    onChange={(selectedOption) => handleCourseChange({ target: { name: 'term', value: selectedOption ? selectedOption.value : '' } })}
+                    placeholder="- กรุณาเลือก -"
+                    value={selectedOptionTerm || ''}
+                    isSearchable={true}
+                    styles={customStyles1}
+                  />
                 </div>
               </form>
             </div>
