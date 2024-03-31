@@ -280,6 +280,7 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     type="number"
                     name="sec"
+                    placeholder='Ex. 800'
                     value={courseForm.sec || ""}
                     style={{ width: "150px" }} // Adjust the width as needed
                     min="0"
@@ -301,6 +302,7 @@ const AddCourseTotable = ({
                       className="form-control"
                       onChange={(e) => handleCourseChange(e)}
                       type="number"
+                      placeholder='1 - 300'
                       name="student"
                       style={{ width: "150px" }}
                       min="0"
@@ -330,6 +332,7 @@ const AddCourseTotable = ({
                     onChange={(e) => handleCourseChange(e)}
                     type="number"
                     name="years"
+                    placeholder='Ex. 2565'
                     style={{ width: "150px" }}
                     min="0"
                   />

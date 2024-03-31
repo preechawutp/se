@@ -110,6 +110,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 }}
                 type="number"
                 name="code"
+                placeholder="Ex. 03603111"
                 value={form.code || ""}
                 min="0"
               />
@@ -125,6 +126,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 }}
                 type="number"
                 name="grade"
+                placeholder="Ex. 64"
                 value={form.grade || ""}
                 min="0"
               />
@@ -142,6 +144,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                     setCourseName(e.target.value);
                   }
                 }}
+                placeholder="Ex. Programming Fundamentals I"
                 type="text"
                 name="name"
                 value={form.name || ""}
@@ -157,6 +160,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 name="credit"
                 value={form.credit || ""}
                 style={{ width: '30%' }}
+                placeholder="1 - 6"
                 required
                 min="0"
                 max="6" // กำหนดค่าสูงสุดเป็น 6
