@@ -248,7 +248,7 @@ const EditCourseInTable = ({
   return (
     <div className="form-group">
       <Button className="btn1" onClick={handleShow}>
-        แก้ไข
+        <i className="fa-solid fa-pencil"></i>
       </Button>
 
       <Modal

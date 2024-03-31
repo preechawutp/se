@@ -58,7 +58,7 @@ const ScheduleTable = ({ onClickHandler }) => {
         };
         fetchCourses();
     }, []);
-    
+
     // This function is use for query course from search data
     const queryCourses = async ({
         teacher,
@@ -80,7 +80,7 @@ const ScheduleTable = ({ onClickHandler }) => {
         setSearchedCourses(coursesArray);
     };
     // This function should call after query selected course
-    
+
     useEffect(() => {
         AddCourseTotable();
         checkDuplicatedTime();
@@ -131,12 +131,12 @@ const ScheduleTable = ({ onClickHandler }) => {
         }
         setDuplicateCourse(dupCourse)
     };
-    
+
     var duplicateTypes = [];
     const checkSubjectType = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
-                if (i !== j && !duplicateTypes.includes(allCourse[i].id)){
+                if (i !== j && !duplicateTypes.includes(allCourse[i].id)) {
                     if (
                         allCourse[i].years !== allCourse[j].years ||
                         allCourse[i].term !== allCourse[j].term
@@ -166,15 +166,15 @@ const ScheduleTable = ({ onClickHandler }) => {
                             } else if (
                                 allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
                                 allCourse[j].subjecttype === "วิชาแกน"
-                                
+
                             ) {
                                 // Core courses can clash with elective courses
                                 duplicateTypes.push(allCourse[i].id);
-                                
+
                             } else if (
                                 allCourse[i].subjecttype === "วิชาแกน" &&
                                 allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
-                                
+
                             ) {
                                 // Core courses can clash with elective courses
                                 duplicateTypes.push(allCourse[i].id);
@@ -204,15 +204,15 @@ const ScheduleTable = ({ onClickHandler }) => {
     const checkRoomOverlap = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
-                if (i !== j && !duplicateRooms.includes(allCourse[i].id)){
+                if (i !== j && !duplicateRooms.includes(allCourse[i].id)) {
                     if (allCourse[i].year === allCourse[j].year && // Check for same year
-                        allCourse[i].day === allCourse[j].day && 
+                        allCourse[i].day === allCourse[j].day &&
                         allCourse[i].room === allCourse[j].room) {
                         const timeStart1 = parseInt(allCourse[i].TimeStart.split("-")[0]);
                         const timeStop1 = parseInt(allCourse[i].TimeStop.split("-")[0]);
                         const timeStart2 = parseInt(allCourse[j].TimeStart.split("-")[0]);
                         const timeStop2 = parseInt(allCourse[j].TimeStop.split("-")[0]);
-        
+
                         // Check for time overlap
                         if ((timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
                             (timeStart1 <= timeStop2 && timeStop2 <= timeStop1) ||
@@ -226,12 +226,12 @@ const ScheduleTable = ({ onClickHandler }) => {
         }
         setDupRoom(duplicateRooms);
     };
-    
+
     var duplicateSec = [];
     const checkSecOverlap = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
-                if (i !== j && !duplicateSec.includes(allCourse[i].id)){
+                if (i !== j && !duplicateSec.includes(allCourse[i].id)) {
                     if (
                         allCourse[i].name === allCourse[j].name && // Check if course names are the same
                         allCourse[i].sec === allCourse[j].sec // Check if sections are the same
@@ -242,7 +242,7 @@ const ScheduleTable = ({ onClickHandler }) => {
                 }
             }
         }
-    
+
         setDupSec(duplicateSec);
     };
 
@@ -265,7 +265,7 @@ const ScheduleTable = ({ onClickHandler }) => {
             return ""; // สีว่างสำหรับวิชาที่ไม่มีอยู่
         }
     };
-    
+
 
     useEffect(() => {
         let error = "";
@@ -456,12 +456,12 @@ const ScheduleTable = ({ onClickHandler }) => {
                                     <th scope="col">{course.teacher}</th>
                                     <th scope="col">
                                         <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+                                            <EditCourseInTable item_id={course.course_id} />
                                             <button className='btn1' onClick={() => {
                                                 deleteCourse(course.course_id);
                                             }} style={{ marginRight: '5px' }}> {/* Adjust marginRight to control space */}
-                                                ลบ
+                                                <i className="fa-solid fa-trash"></i>
                                             </button>
-                                            <EditCourseInTable item_id={course.course_id} />
                                         </div>
                                     </th>
                                 </tr>
