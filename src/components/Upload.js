@@ -117,50 +117,6 @@ const Upload = () => {
         setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
         return;
     }
-<<<<<<< HEAD
-  
-    if (!collectionRef || !uniqueFields) {
-      setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
-      return;
-    }
-  
-    const databaseSnapshot = await getDocs(collection(db, collectionRef)); // เปลี่ยนชื่อตัวแปรเป็น databaseSnapshot
-    const databaseFields = databaseSnapshot.empty ? [] : Object.keys(databaseSnapshot.docs[0].data());
-  
-    const missingFields = uniqueFields.filter(field => !databaseFields.includes(field));
-    if (missingFields.length > 0) {
-      setErrorMessage(`ไฟล์ Excel ไม่มีฟิลด์: ${missingFields.join(", ")}`);
-      return;
-    }
-  
-    // เช็คว่าฟิลด์ใน Excel ตรงกับฐานข้อมูลหรือไม่
-    const xlFields = Object.keys(xlData[0]);
-    const invalidFields = xlFields.filter(field => !uniqueFields.includes(field));
-    if (invalidFields.length > 0) {
-      setErrorMessage(`ไฟล์ Excel มีฟิลด์ที่ไม่ตรงกับฐานข้อมูล: ${invalidFields.join(", ")}`);
-      return;
-    }
-  
-    existingDocs = {}; // เปลี่ยนแปลงตัวแปร querySnapshot เป็น existingDocs
-  
-    databaseSnapshot.forEach((doc) => { // เปลี่ยนแปลงตัวแปร querySnapshot เป็น databaseSnapshot
-      let uniqueKey = "";
-      uniqueFields.forEach(field => {
-        uniqueKey += doc.data()[field];
-      });
-      existingDocs[uniqueKey] = true;
-    });
-  
-    const duplicateEntries = [];
-    xlData.forEach((item) => {
-      let uniqueKey = "";
-      uniqueFields.forEach(field => {
-        uniqueKey += item[field];
-      });
-      if (existingDocs[uniqueKey]) {
-        duplicateEntries.push(uniqueKey);
-      }
-=======
 
     // ตรวจสอบความถูกต้องของรายการใหม่หลังจากเปลี่ยนชื่อคีย์
     const invalidEntries = newRenamedData.filter(item => !uniqueFields.every(field => field in item));
@@ -176,7 +132,6 @@ const Upload = () => {
     querySnapshot.forEach(doc => {
       const uniqueKey = uniqueFields.map(field => doc.data()[field]).join("_");
       existingDocs.add(uniqueKey);
->>>>>>> 6dcb0511b6a9905c62bfde67584bcb021ad4c262
     });
 
     const duplicateEntries = newRenamedData.filter(item => existingDocs.has(uniqueFields.map(field => item[field]).join("_")));
@@ -189,12 +144,6 @@ const Upload = () => {
     setShowUploadModal(false);
     setShowConfirmationModal(true);
   };
-<<<<<<< HEAD
-  
-  
-
-=======
->>>>>>> 6dcb0511b6a9905c62bfde67584bcb021ad4c262
 
   const handleConfirmUpload = async () => {
     let collectionRef = null;
