@@ -55,7 +55,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
     menu: (provided, state) => ({
       ...provided,
       width: 170, // ความกว้างของเมนูตรงกับ control
-      minHeight: '100px', // กำหนดความสูงขั้นต่ำสำหรับเมนู
+      minHeight: 'auto', // กำหนดความสูงขั้นต่ำสำหรับเมนู
       maxHeight: '400px', // กำหนดความสูงสูงสุด สำหรับการเลื่อนภายในเมนู
     }),
   };
