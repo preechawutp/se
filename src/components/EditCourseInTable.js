@@ -280,6 +280,7 @@ const EditCourseInTable = ({
                     value={daysOptions.find(option => option.value === courseForm.day)}
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                 </div>
 
@@ -317,6 +318,7 @@ const EditCourseInTable = ({
                       value={selectedOptionTeacher}
                       isSearchable={true}
                       styles={customStyles2}
+                      menuPortalTarget={document.body}
                     />
                   </div>
                 </div>
@@ -329,6 +331,7 @@ const EditCourseInTable = ({
                     value={selectedOptionSub}
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                 </div>
               </form>
@@ -358,6 +361,7 @@ const EditCourseInTable = ({
                     value={selectedOptionRoom || ''}
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                   <div className="form-group mt-2">
                     <label htmlFor="student">จำนวนนิสิต</label>
@@ -385,6 +389,7 @@ const EditCourseInTable = ({
                     value={selectedOptionMajor || ''}
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                 </div>
 
@@ -409,6 +414,7 @@ const EditCourseInTable = ({
                     value={selectedOptionTerm || ''}
                     isSearchable={true}
                     styles={customStyles1}
+                    menuPortalTarget={document.body}
                   />
                 </div>
               </form>
