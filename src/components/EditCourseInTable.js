@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore';
 import { Alert, Button, Modal, Form } from 'react-bootstrap';
 import Select from 'react-select';
+import Dropdown from './Dropdown';
 
 const daysOptions = [
   { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
@@ -42,7 +43,8 @@ const optionsMajor = [
 ];
 
 const EditCourseInTable = ({
-  item_id
+  item_id,
+  queryCourses,
 }) => {
 
   const teacherRef = collection(db, "teacher");
@@ -202,6 +204,16 @@ const EditCourseInTable = ({
     } catch (error) {
       console.error("Error updating document: ", error);
       setValidationError('มีบางอย่างผิดพลาดในการอัปเดตข้อมูล');
+    }
+
+    try {
+      const docRef = doc(db, 'checkSerch', 'ibxgkBDV1OdKSnAC44Y7');
+      await updateDoc(docRef, {
+        check: 1
+      });
+      console.log('Data updated successfully. check 1 edit');
+    } catch (error) {
+      console.error('Error updating data: ', error);
     }
 
     handleClose(); // ปิด Modal หลังจากอัปเดตข้อมูล

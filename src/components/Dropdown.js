@@ -3,6 +3,9 @@ import fetchTeachers from './FetchTeachers';
 import '../assets/Dropdown.css';
 import FetchYear from './FetchYear';
 import Select from 'react-select';
+import { updateDoc, doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+
 
 
 const Dropdown = ({ queryCourses }) => {
@@ -65,6 +68,30 @@ const Dropdown = ({ queryCourses }) => {
     queryCourses({ teacher: selectedTeacher, term: selectedSemester, year: selectedYear });
   };
 
+  useEffect(() => {
+    const checkAndUpdate = async () => {
+      try {
+        const docRef = doc(db, 'checkSerch', 'ibxgkBDV1OdKSnAC44Y7');
+        const docSnap = await getDoc(docRef); // เปลี่ยนจาก doc.get เป็น getDoc
+        const data = docSnap.data();
+        if (data.check === 1) {
+          // เรียกใช้ onClickHandler 1 ครั้งเมื่อค่าใน Firebase เป็น 1
+          onClickHandler();
+
+          // เปลี่ยนค่าใน Firebase เป็น 0
+          await updateDoc(docRef, {
+            check: 0
+          });
+          console.log('Data updated successfully. check 0');
+        }
+      } catch (error) {
+        console.error('Error checking and updating data: ', error);
+      }
+    };
+
+    checkAndUpdate();
+  }, [onClickHandler]);
+
   const customStyles = {
     control: (provided, state) => ({
       ...provided,
@@ -92,7 +119,7 @@ const Dropdown = ({ queryCourses }) => {
   };
 
   const teacherOptions = [
-    { value: "", label: "- กรุณาเลือก -" }, // เพิ่มตัวเลือกนี้เป็นตัวแรก
+    { value: "", label: "- กรุณาเลือก -", isDisabled: true }, // เพิ่มตัวเลือกนี้เป็นตัวแรก
     ...teachers.map((teacher) => ({
       value: teacher.firstname + ' ' + teacher.lastname,
       label: teacher.firstname + ' ' + teacher.lastname,
@@ -100,7 +127,7 @@ const Dropdown = ({ queryCourses }) => {
   ];
 
   const yearOptions = [
-    { value: "", label: "- กรุณาเลือก -" }, // ตัวเลือกแรกสำหรับคำแนะนำให้เลือก
+    { value: "", label: "- กรุณาเลือก -", isDisabled: true  }, // ตัวเลือกแรกสำหรับคำแนะนำให้เลือก
     ...[...new Set(year.map(year => year.years))].map(year => ({
       value: year, // ตัวเลือก 'value' เก็บค่าปี
       label: year // ตัวเลือก 'label' สำหรับแสดง
@@ -108,7 +135,7 @@ const Dropdown = ({ queryCourses }) => {
   ];
 
   const semesterOptions = [
-    { value: "", label: "- กรุณาเลือก -"},
+    { value: "", label: "- กรุณาเลือก -", isDisabled: true },
     { value: "ฤดูร้อน", label: "ฤดูร้อน" },
     { value: "ต้น", label: "ต้น" },
     { value: "ปลาย", label: "ปลาย" }

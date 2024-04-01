@@ -12,6 +12,7 @@ import {
     getDocs,
     doc,
     deleteDoc,
+    updateDoc,
 } from 'firebase/firestore';
 import ShowChoose from './ShowChoose';
 import { Alert, Button, Modal } from 'react-bootstrap';
@@ -315,6 +316,18 @@ const ScheduleTable = ({ onClickHandler }) => {
         setShowConfirmationModal(true);
     };
 
+    const handleConfirmEdit = async () => {
+        try {
+            const docRef = doc(db, 'checkSerch', 'ibxgkBDV1OdKSnAC44Y7');
+            await updateDoc(docRef, {
+                check: 1
+            });
+            console.log('Data updated successfully.');
+        } catch (error) {
+            console.error('Error updating data: ', error);
+        }
+    }
+
     const handleConfirmDelete = async () => {
         try {
             await deleteDoc(doc(db, 'ChooseSubject', courseToDelete));
@@ -323,10 +336,20 @@ const ScheduleTable = ({ onClickHandler }) => {
             setCourseToDelete(null);
             // Refresh the page
             setTimeout(() => {
-                window.location.reload();
+                //window.location.reload();
             }, 1000);
         } catch (error) {
             console.error('Error deleting course: ', error);
+        }
+
+        try {
+            const docRef = doc(db, 'checkSerch', 'ibxgkBDV1OdKSnAC44Y7');
+            await updateDoc(docRef, {
+                check: 1
+            });
+            console.log('Data updated successfully.');
+        } catch (error) {
+            console.error('Error updating data: ', error);
         }
     };
 
@@ -456,7 +479,10 @@ const ScheduleTable = ({ onClickHandler }) => {
                                     <th scope="col">{course.teacher}</th>
                                     <th scope="col">
                                         <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-                                            <EditCourseInTable item_id={course.course_id} />
+                                            <EditCourseInTable
+                                                item_id={course.course_id}
+                                                queryCourses={queryCourses}
+                                            />
                                             <button className='btn1' onClick={() => {
                                                 deleteCourse(course.course_id);
                                             }} style={{ marginRight: '5px' }}> {/* Adjust marginRight to control space */}
