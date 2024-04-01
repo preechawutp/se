@@ -124,24 +124,13 @@ const ScheduleTable = ({ onClickHandler }) => {
     var dupCourse = []
     var pair_dupCourse = []
     const checkDuplicatedTime = () => {
-        for (let i = 0; i < allCourse.length; i++) {
-            for (let j = 0; j < allCourse.length; j++) {
-                if (i !== j && !dupCourse.includes(i+1)) {
-                    const timeStart1 = allCourse[i].TimeStart.split("-")[0];
-                    const timeStop1 = allCourse[i].TimeStop.split("-")[0];
-                    const timeStart2 = allCourse[j].TimeStart.split("-")[0];
-                    const timeStop2 = allCourse[j].TimeStop.split("-")[0];
-                    if (
-                        (timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
-                        (timeStart1 <= timeStop2 && timeStop2 <= timeStop1) ||
-                        (timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
-                        (timeStart2 <= timeStop1 && timeStop1 <= timeStop2)
-                    ) {
-                        dupCourse.push(i + 1)
-                        if (!pair_dupCourse.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
-                            pair_dupCourse.push([allCourse[i], allCourse[j]]);
-                        }
-                    }
+        for (let i = 0; i < searchedCourse.length - 1; i++) {
+            if (searchedCourse[i].day === searchedCourse[i + 1].day) {
+                if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStart.split('-')[0] && searchedCourse[i + 1].TimeStart.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
+                    dupCourse.push(i + 1)
+                }
+                else if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStop.split('-')[0] && searchedCourse[i + 1].TimeStop.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
+                    dupCourse.push(i + 1)
                 }
             }
         }

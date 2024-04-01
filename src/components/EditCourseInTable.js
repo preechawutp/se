@@ -215,7 +215,9 @@ const EditCourseInTable = ({
     } catch (error) {
       console.error('Error updating data: ', error);
     }
-
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
     handleClose(); // ปิด Modal หลังจากอัปเดตข้อมูล
   };
 

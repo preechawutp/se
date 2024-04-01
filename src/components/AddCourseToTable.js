@@ -35,7 +35,7 @@ const optionsTerm = [
 
 const optionsMajor = [
   { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
-  { value: 'T12', label: 'T12' },
+  { value: 'T12', label: 'T12' },{ value: 'T13', label: 'T13' }
 ];
 
 const AddCourseTotable = ({
@@ -313,6 +313,7 @@ const AddCourseTotable = ({
             </div>
             <div className="col-md-6 d-flex justify-content-center">
               <form>
+                
                 <div className="form-group mt-2">
                   <label htmlFor="major">สาขา</label>
                   <Select
