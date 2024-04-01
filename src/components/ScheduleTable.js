@@ -177,7 +177,7 @@ const ScheduleTable = ({ onClickHandler }) => {
                                     }
                                 }
                             } else if (
-                                (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" && allCourse[j].subjecttype === "วิชาแกน") || 
+                                (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" && allCourse[j].subjecttype === "วิชาแกน") ||
                                 (allCourse[i].subjecttype === "วิชาแกน" && allCourse[j].subjecttype === "วิชาเฉพาะบังคับ")
                             ) {
                                 // Core courses can clash with elective courses
@@ -402,10 +402,11 @@ const ScheduleTable = ({ onClickHandler }) => {
             <div className='container'>
                 <div className="schedule-table-container mt-5" >
                     <h2>ตารางสอน</h2>
-                    <div className='d-flex justify-content-flex-start'>
+                    <div className='d-flex justify-content-between'>
                         <Dropdown queryCourses={queryCourses} />
-                        <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
-                        <ShowChoose />
+                        <div className='d-flex justify-content-end mb-3'>
+                            <ShowChoose />
+                        </div>
                     </div>
 
                     <table className="schedule-table" ref={tableRef}>
@@ -485,8 +486,10 @@ const ScheduleTable = ({ onClickHandler }) => {
                     </Alert>
                 ))}
                 <div className="course-detail-table mt-3">
-                    <h2>รายละเอียดรายวิชา</h2>
-
+                    <div className='d-flex'>
+                        <h2 className="mb-3 mt-3">รายละเอียดรายวิชา</h2>
+                            <button className="btn1 m-3" onClick={saveAsPNG}>บันทึกเป็นรูปภาพ</button>
+                    </div>
                     <table className="table table-hover mt-4">
                         <thead>
                             <tr>
