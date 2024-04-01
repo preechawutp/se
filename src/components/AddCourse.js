@@ -117,19 +117,6 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
     }),
   };
 
-  const handleCreditChange = (e) => {
-    // Convert the value to an integer
-    const creditValue = parseInt(e.target.value);
-  
-    // Check if the value is within the allowed range
-    if (creditValue >= 0 && creditValue <= 6) {
-      handleChange({ ...e, target: { ...e.target, value: creditValue } }); // Update the form state
-    } else {
-      // Display an alert if the value is out of range
-      alert('ค่าหน่วยกิตต้องอยู่ในช่วง 0 ถึง 6');
-    }
-  };
-
   return (
     <div className="form-group p-3">
       <Button className="btn1" onClick={handleShow}>
@@ -208,7 +195,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
               <label htmlFor="credit">หน่วยกิต</label>
               <input
                 className="form-control"
-                onChange={handleCreditChange}
+                onChange={(e) => handleChange(e)}
                 type="number"
                 name="credit"
                 value={form.credit || ""}
