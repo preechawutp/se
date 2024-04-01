@@ -99,19 +99,23 @@ const Upload = () => {
 
     let collectionRef = null;
     let uniqueFields = null;
+    let uniqueFieldsTH = null;
 
     switch (uploadOption) {
       case "course":
         collectionRef = "course";
         uniqueFields = ["code", "grade", "credit", "nameTH", "name", "type"];
+        uniqueFieldsTH = ["รหัสวิชา", "หน่วยกิต", "หลักสูตร", "ชื่อ ภาษาไทย", "ชื่อ ภาษาอังกฤษ", "หมู่เรียน"];
         break;
       case "teacher":
         collectionRef = "teacher";
         uniqueFields = ["firstname", "lastname"];
+        uniqueFieldsTH = ["ชื่อ", "นามสกุล"];
         break;
       case "room":
         collectionRef = "room";
         uniqueFields = ["roomid"];
+        uniqueFieldsTH = ["หมายเลขห้อง"];
         break;
       default:
         setErrorMessage("ไม่พบตัวเลือกการอัปโหลดที่ถูกต้อง");
@@ -121,7 +125,7 @@ const Upload = () => {
     // ตรวจสอบความถูกต้องของรายการใหม่หลังจากเปลี่ยนชื่อคีย์
     const invalidEntries = newRenamedData.filter(item => !uniqueFields.every(field => field in item));
     if (invalidEntries.length > 0) {
-      const requiredFields = uniqueFields.join(", ");
+      const requiredFields = uniqueFieldsTH.join(", ");
       setErrorMessage(`ไฟล์ Excel ไม่ตรงกับฟิลด์ที่ต้องการ กรุณาใช้ ${requiredFields}`);
       return;
     }

@@ -210,17 +210,9 @@ const Main = () => {
     <div>
       <Navbar />
       <div className="container-sm mt-5">
-        <h2>รายวิชา</h2>
+        
         <div className="d-flex justify-content-between" style={{ width: '100%' }}>
-          <div className="input-group mb-3 mt-3" style={{ width: '50%' }}>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="ค้นหารายวิชา..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+        <h2 className="mb-3 mt-3">รายวิชา</h2>
           <div className="d-flex">
             <AddCourse handleChange={handleChange} handleAddData={handleAddData} form={form} />
             <Upload handleChange={handleChange} handleAddData={handleAddData} />

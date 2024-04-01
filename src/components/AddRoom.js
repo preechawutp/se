@@ -113,12 +113,13 @@ const AddRoom = () => {
           >
             <h1>เพิ่มห้อง</h1>
             <div className="form-group">
-              <label htmlFor="roomid">Room ID</label> {/* Updated label */}
+              <label htmlFor="roomid">เลขห้อง</label> {/* Updated label */}
               <input
                 className={`form-control ${errors.roomid ? "is-invalid" : ""}`}
                 onChange={(e) => handleChange(e)}
                 type="text"
                 name="roomid"
+                placeholder="Ex. 17305"
                 value={form.roomid}
               />
             </div>

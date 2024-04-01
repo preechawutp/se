@@ -132,6 +132,7 @@ const AddTeacher = () => {
                 onChange={(e) => handleChange(e)}
                 type="text"
                 name="firstname"
+                placeholder="Ex. กาญจนา"
                 value={form.firstname}
               />
 
@@ -145,6 +146,7 @@ const AddTeacher = () => {
                 onChange={(e) => handleChange(e)}
                 type="text"
                 name="lastname"
+                placeholder="Ex. เอี่ยมสอาด"
                 value={form.lastname}
               />
 
