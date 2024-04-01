@@ -35,20 +35,31 @@ const DataTable = ({
 }) => {
   const [data2, setData2] = useState([]);
   const roitaiRef = collection(db, 'course');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const unsubscribe = onSnapshot(roitaiRef, (snapshot) => {
-      const newData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const newData = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .filter(item => {
+          return (
+            item.code.toString().includes(searchTerm) ||
+            item.grade.toString().includes(searchTerm) ||
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.credit.toString().includes(searchTerm) ||
+            item.type.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        });
       setData2(newData);
     });
-
+  
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [searchTerm]);
 
   const [curpage, setcurpage] = useState(1);
   const courseperpage = 20;
@@ -74,7 +85,6 @@ const DataTable = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const handleShowDeleteModal = (itemId) => {
     setShowDeleteModal(true);
@@ -105,20 +115,15 @@ const DataTable = ({
     handleDeleteAllModalClose();
   };
 
-  const filteredItems = currentItems.filter((item) =>
-    Object.values(item).join(' ').toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <div>
-      <div className="input-group mb-2 mt-2">
+      <div className="input-group mb-3 mt-3" style={{ width: '50%' }}>
         <input
           type="text"
           className="form-control"
           placeholder="ค้นหารายวิชา..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ height: '50px' }}
         />
       </div>
       <table className="table table-hover">
@@ -129,12 +134,12 @@ const DataTable = ({
             <th scope="col">ชื่อวิชา</th>
             <th scope="col">หน่วยกิต</th>
             <th scope="col">ประเภท</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
+            <th scope="col">การจัดการ</th>
+            <th scope="col">เลือก</th>
           </tr>
         </thead>
         <tbody>
-          {filteredItems.map((item, index) => (
+          {currentItems.map((item, index) => (
             <tr key={index}>
               <td>
                 {editId === item.id ? (
