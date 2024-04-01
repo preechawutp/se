@@ -94,7 +94,7 @@ const LoginForm = () => {
           <button className="btn2 mt-2" onClick={guestnavigate}>
             <i className="fa-solid fa-user"></i> เข้าสู่ระบบด้วย Guest
           </button>
-          <button className="btn2 mt-2" onClick={handleAutoLogin}>ห้ามกด</button>
+          {/* <button className="btn2 mt-2" onClick={handleAutoLogin}>ห้ามกด</button> */}
         </div>
       </div>
     </div>

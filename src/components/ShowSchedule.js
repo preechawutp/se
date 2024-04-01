@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import html2canvas from 'html2canvas'; // Import html2canvas library for converting HTML to canvas
-import { saveAs } from 'file-saver'; // Import file-saver library for saving canvas as PNG
+import { saveAs } from 'file-saver';
 
 import '../assets/st.css';
+import GuestNavbar from "./GuestNavbar";
 import Dropdown from './Dropdown';
 import { db } from '../firebase';
 import {
@@ -10,10 +10,15 @@ import {
     query,
     where,
     getDocs,
-    onSnapshot,
-    and,
+    doc,
+    deleteDoc,
+    updateDoc,
 } from 'firebase/firestore';
-import GuestNavbar from './GuestNavbar';
+import ShowChoose from './ShowChoose';
+import { Alert, Button, Modal } from 'react-bootstrap';
+import EditCourseInTable from "./EditCourseInTable";
+
+
 
 const ScheduleTable = ({ onClickHandler }) => {
     const [courses, setCourses] = useState([]);
@@ -23,6 +28,10 @@ const ScheduleTable = ({ onClickHandler }) => {
     const [dupType, setDupType] = useState([]);
     const [dupRoom, setDupRoom] = useState([]);
     const [dupSec, setDupSec] = useState([]);
+    const [pairDupType, setPairDupType] = useState([]);
+    const [pairDupRoom, setPairDupRoom] = useState([]);
+    const [pairDupSec, setPairDupSec] = useState([]);
+    const [pairDupCourse, setpairDupCourse] = useState([]);
     const selectedCourseRef = collection(db, 'ChooseSubject');
     const tableRef = useRef(null);
     const [validationError, setValidationError] = useState('');
@@ -113,6 +122,7 @@ const ScheduleTable = ({ onClickHandler }) => {
     };
 
     var dupCourse = []
+    var pair_dupCourse = []
     const checkDuplicatedTime = () => {
         for (let i = 0; i < searchedCourse.length - 1; i++) {
             if (searchedCourse[i].day === searchedCourse[i + 1].day) {
@@ -123,12 +133,13 @@ const ScheduleTable = ({ onClickHandler }) => {
                     dupCourse.push(i + 1)
                 }
             }
-
         }
         setDuplicateCourse(dupCourse)
+        setpairDupCourse(pair_dupCourse)
     };
 
     var duplicateTypes = [];
+    var pair_dupType = [];
     const checkSubjectType = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
@@ -155,37 +166,34 @@ const ScheduleTable = ({ onClickHandler }) => {
                                 if (allCourse[i].subjecttype === "วิชาแกน") {
                                     // Core courses of the same year should not clash
                                     duplicateTypes.push(allCourse[i].id);
+                                    if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                        pair_dupType.push([allCourse[i], allCourse[j]]);
+                                    }
                                 } else if (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ") {
                                     // Core courses should not clash with required elective courses
                                     duplicateTypes.push(allCourse[i].id);
+                                    if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                        pair_dupType.push([allCourse[i], allCourse[j]]);
+                                    }
                                 }
                             } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
-                                allCourse[j].subjecttype === "วิชาแกน"
-
+                                (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" && allCourse[j].subjecttype === "วิชาแกน") ||
+                                (allCourse[i].subjecttype === "วิชาแกน" && allCourse[j].subjecttype === "วิชาเฉพาะบังคับ")
                             ) {
                                 // Core courses can clash with elective courses
                                 duplicateTypes.push(allCourse[i].id);
-
+                                if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                    pair_dupType.push([allCourse[i], allCourse[j]]);
+                                }
                             } else if (
-                                allCourse[i].subjecttype === "วิชาแกน" &&
-                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
-
-                            ) {
-                                // Core courses can clash with elective courses
-                                duplicateTypes.push(allCourse[i].id);
-                            } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะเลือก" &&
-                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+                                (allCourse[i].subjecttype === "วิชาเฉพาะเลือก" && allCourse[j].subjecttype === "วิชาเฉพาะบังคับ") ||
+                                (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" && allCourse[j].subjecttype === "วิชาเฉพาะเลือก")
                             ) {
                                 // Required elective courses should not clash with core courses
                                 duplicateTypes.push(allCourse[i].id);
-                            } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
-                                allCourse[j].subjecttype === "วิชาเฉพาะเลือก"
-                            ) {
-                                // Required elective courses should not clash with core courses
-                                duplicateTypes.push(allCourse[i].id);
+                                if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                    pair_dupType.push([allCourse[i], allCourse[j]]);
+                                }
                             }
                         }
                     }
@@ -193,10 +201,11 @@ const ScheduleTable = ({ onClickHandler }) => {
             }
         }
         setDupType(duplicateTypes);
+        setPairDupType(pair_dupType);
     };
 
-
     var duplicateRooms = [];
+    var pair_dupRoom = [];
     const checkRoomOverlap = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
@@ -215,15 +224,20 @@ const ScheduleTable = ({ onClickHandler }) => {
                             (timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
                             (timeStart2 <= timeStop1 && timeStop1 <= timeStop2)) {
                             duplicateRooms.push(allCourse[i].room);
+                            if (!pair_dupRoom.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                pair_dupRoom.push([allCourse[i], allCourse[j]]);
+                            }
                         }
                     }
                 }
             }
         }
         setDupRoom(duplicateRooms);
+        setPairDupRoom(pair_dupRoom);
     };
 
     var duplicateSec = [];
+    var pair_dupSec = [];
     const checkSecOverlap = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
@@ -234,12 +248,15 @@ const ScheduleTable = ({ onClickHandler }) => {
                     ) {
                         // If sections are the same for the same course, consider it as section clash
                         duplicateSec.push(allCourse[i].sec);
+                        if (!pair_dupSec.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                            pair_dupSec.push([allCourse[i], allCourse[j]]);
+                        }
                     }
                 }
             }
         }
-
         setDupSec(duplicateSec);
+        setPairDupSec(pair_dupSec);
     };
 
     const changeColor = (course) => {
@@ -264,34 +281,60 @@ const ScheduleTable = ({ onClickHandler }) => {
 
 
     useEffect(() => {
+        var error_list = []
         let error = "";
-        if (duplicateCourse.length > 0) {
-            const course1 = searchedCourse[duplicateCourse[0]];
-            const course2 = searchedCourse[duplicateCourse[0] - 1];
-            if (course1 && course2) {
-                error = `เวลาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
-            }
-        } else if (dupType.length > 0) {
-            const course1 = allCourse.find(item => item.id === dupType[0]);
-            const course2 = allCourse.find(item => item.id === dupType[0] - 1);
-            if (course1 && course2) {
-                error = `วิชาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
-            }
-        } else if (dupRoom.length > 0) {
-            const course1 = allCourse.find(item => item.room === dupRoom[0]);
-            const course2 = allCourse.find(item => item.room === dupRoom[0] - 1);
-            if (course1 && course2) {
-                error = `ห้องชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
-            }
-        } else if (dupSec.length > 0) {
-            const course1 = allCourse.find(item => item.sec === dupSec[0]);
-            const course2 = allCourse.find(item => item.sec === dupSec[0] - 1);
-            if (course1 && course2) {
-                error = `หมู่เรียนชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+        for (let i = 0; i < pairDupCourse.length; i++) {
+            const course1 = pairDupCourse[i][0];
+            const course2 = pairDupCourse[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `เวลาวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
             }
         }
-        console.log(error)
-        setValidationError(error);
+
+        for (let i = 0; i < pairDupType.length; i++) {
+            const course1 = pairDupType[i][0];
+            const course2 = pairDupType[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `ประเภทวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
+            }
+        }
+
+        for (let i = 0; i < pairDupRoom.length; i++) {
+            const course1 = pairDupRoom[i][0];
+            const course2 = pairDupRoom[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `ห้องวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
+            }
+        }
+
+        for (let i = 0; i < pairDupSec.length; i++) {
+            const course1 = pairDupSec[i][0];
+            const course2 = pairDupSec[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `เซควิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
+            }
+        }
+        setValidationError(error_list);
     }, [duplicateCourse, dupType, dupRoom, dupSec]); //1.ทำ forloop 2.เอา else ออก ให้เหลือ if 3.เเก้ฟังก์ชันให้หมดควรโชว์ทั้งหมดไม่ใช่โชว์เเค่2ตัวเช่นเวลาชน sec ชนต้องโชว์ทั้งหมด
 
 
@@ -305,15 +348,64 @@ const ScheduleTable = ({ onClickHandler }) => {
         });
     };
 
+    const deleteCourse = async (courseId) => {
+        console.log("Deleting course with ID:", courseId);
+        setCourseToDelete(courseId);
+        setShowConfirmationModal(true);
+    };
+
+    const handleConfirmEdit = async () => {
+        try {
+            const docRef = doc(db, 'checkSerch', 'ibxgkBDV1OdKSnAC44Y7');
+            await updateDoc(docRef, {
+                check: 1
+            });
+            console.log('Data updated successfully.');
+        } catch (error) {
+            console.error('Error updating data: ', error);
+        }
+    }
+
+    const handleConfirmDelete = async () => {
+        try {
+            await deleteDoc(doc(db, 'ChooseSubject', courseToDelete));
+            setCourses(prevCourses => prevCourses.filter(course => course.id !== courseToDelete));
+            setShowConfirmationModal(false);
+            setCourseToDelete(null);
+            // Refresh the page
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (error) {
+            console.error('Error deleting course: ', error);
+        }
+
+        try {
+            const docRef = doc(db, 'checkSerch', 'ibxgkBDV1OdKSnAC44Y7');
+            await updateDoc(docRef, {
+                check: 1
+            });
+            console.log('Data updated successfully.');
+        } catch (error) {
+            console.error('Error updating data: ', error);
+        }
+    };
+
+    const handleConfirmationModalClose = () => {
+        setShowConfirmationModal(false);
+        setCourseToDelete(null);
+    };
+
     return (
         <div>
             <GuestNavbar />
             <div className='container'>
                 <div className="schedule-table-container mt-5" >
                     <h2>ตารางสอน</h2>
-                    <div className='d-flex justify-content-flex-start'>
+                    <div className='d-flex justify-content-between'>
                         <Dropdown queryCourses={queryCourses} />
-                        <button className="btn1 m-3" onClick={saveAsPNG}>Save as PNG</button>
+                        <div className='d-flex justify-content-end mb-3'>
+                        </div>
                     </div>
 
                     <table className="schedule-table" ref={tableRef}>
@@ -387,9 +479,16 @@ const ScheduleTable = ({ onClickHandler }) => {
                         </tbody>
                     </table>
                 </div>
+                {validationError && validationError.map((error, index) => (
+                    <Alert key={index} variant="danger" className="mt-3">
+                        {error}
+                    </Alert>
+                ))}
                 <div className="course-detail-table mt-3">
-                    <h2>รายละเอียดรายวิชา</h2>
-
+                    <div className='d-flex'>
+                        <h2 className="mb-3 mt-3">รายละเอียดรายวิชา</h2>
+                            <button className="btn1 m-3" onClick={saveAsPNG}>บันทึกเป็นรูปภาพ</button>
+                    </div>
                     <table className="table table-hover mt-4">
                         <thead>
                             <tr>
@@ -418,17 +517,47 @@ const ScheduleTable = ({ onClickHandler }) => {
                                     <th scope="col">{course.student}</th>
                                     <th scope="col">{course.room}</th>
                                     <th scope="col">{course.teacher}</th>
+                                    
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </div>
-
+            {/* Confirmation Dialog Modal */}
+            <Modal
+                show={showConfirmationModal}
+                onHide={handleConfirmationModalClose}
+                size="x"
+                centered
+            >
+                <Modal.Body
+                    closeButton
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        maxHeight: 'calc(100vh - 210px)',
+                        overflowY: 'auto',
+                        overflowX: 'auto',
+                        padding: '10%',
+                    }}
+                >
+                    <i className="ti ti-alert-circle mb-2" style={{ fontSize: "7em", color: "#6E2A26" }}></i>
+                    <h5>ต้องการยืนยันใช่หรือไม่?</h5>
+                    <div className="form-group mt-2" style={{ display: "flex", justifyContent: "center" }}>
+                        <Button variant="success" className="btn1" onClick={handleConfirmDelete}>
+                            ยืนยัน
+                        </Button>
+                        <Button variant="danger" className="btn-cancel" style={{ marginLeft: "20%" }} onClick={handleConfirmationModalClose}>
+                            ยกเลิก
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 };
 
 export default ScheduleTable;
-
-
