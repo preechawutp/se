@@ -10,6 +10,7 @@ import * as XLSX from 'xlsx';
 const ShowCourse = () => {
     const [year, setYear] = useState([]);
     const [totalCredits, setTotalCredits] = useState({});
+    const [totalSubject, setTotalSubjects] = useState(0);
     const [loading, setLoading] = useState(true);
     const [lastUpdateTime, setLastUpdateTime] = useState(null); // เพิ่ม state เก็บวัน/เวลาที่อัพเดทล่าสุด
 
@@ -37,6 +38,18 @@ const ShowCourse = () => {
     }, [year, uniqueGrades]);
 
     useEffect(() => {
+        // กำหนดเงื่อนไขเพื่อเรียกใช้ getTotalSubject สำหรับทุกเกรดที่มีอยู่ใน uniqueGrades
+        uniqueGrades.forEach(async (grade) => {
+            try {
+                const total = await getTotalSubject(grade);
+                setTotalSubjects(prevState => ({ ...prevState, [grade]: total })); // ใช้ prevState เพื่ออัปเดตค่า totalSubjects
+            } catch (error) {
+                console.error("Error getting total subjects:", error);
+            }
+        });
+    }, [uniqueGrades]);
+
+    useEffect(() => {
         const fetchLastUpdateTime = async () => {
             const lastUpdate = await getLastUpdateTime(); // Assume this function gets the last update time from Firebase Firestore
             setLastUpdateTime(lastUpdate);
@@ -48,24 +61,36 @@ const ShowCourse = () => {
         const querySnapshot = await getDocs(collection(db, `course_${grade}`));
         let totalCredit = 0;
         querySnapshot.forEach((doc) => {
-            totalCredit += doc.data().credit;
+            const credit = parseInt(doc.data().credit);
+            totalCredit += credit;
         });
         return totalCredit;
+    };
+
+    const getTotalSubject = async (grade) => {
+        const querySnapshot = await getDocs(collection(db, `course_${grade}`));
+        let totalSubject = 0;
+        querySnapshot.forEach((doc) => {
+            totalSubject++; // เพิ่มจำนวนวิชาทีละหนึ่งเมื่อวนลูปผ่านไป
+        });
+        return totalSubject;
     };
 
     const handleDownload = async (grade) => {
         const querySnapshot = await getDocs(collection(db, `course_${grade}`));
         const data = [];
         querySnapshot.forEach((doc) => {
-            const { code, grade, credit, name, nameTH, type } = doc.data(); // เรียงลำดับตามที่ต้องการ
-            data.push({ code, grade, credit, name, nameTH, type });
+            const { code, grade, credit, name, nameTH, type } = doc.data();
+            // เปลี่ยนการเรียงลำดับของข้อมูลตามที่ต้องการ
+            data.push({ "รหัสวิชา": code, "หลักสูตร": grade, "หน่วยกิต": credit, "ชื่อ ภาษาไทย": nameTH, "ชื่อ ภาษาอังกฤษ": name, "หมู่เรียน": type });
         });
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.utils.book_append_sheet(wb, ws, `course_${grade}`);
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
         saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `course_${grade}.xlsx`);
     };
+
 
     useEffect(() => {
         const fetchLastUpdateTime = async () => {
@@ -88,8 +113,8 @@ const ShowCourse = () => {
 
     if (loading) {
         return <div className="container d-flex justify-content-center align-items-center vh-100">
-        <div className="loader"></div>
-      </div>;
+            <div className="loader"></div>
+        </div>;
     }
 
     return (
@@ -124,6 +149,7 @@ const ShowCourse = () => {
                             <th scope="col">สาขาวิชา</th>
                             <th scope="col">ปีที่ปรับปรุง</th>
                             <th scope="col">หน่วยกิตรวม</th>
+                            <th scope="col">จำนวนวิชา</th>
                             <th scope="col">ปีที่ศึกษา</th>
                             <th scope="col">รหัสนิสิต</th>
                             <th scope="col">ดาวน์โหลดไฟล์หลักสูตร</th>
@@ -135,6 +161,7 @@ const ShowCourse = () => {
                                 <th scope="col">วิศวกรรมศาสตรบัณฑิต(วิศวกรรมคอมพิวเตอร์)</th>
                                 <th scope="col">25{grade}</th>
                                 <th scope="col">{totalCredits[grade]}</th>
+                                <th scope="col">{totalSubject[grade]}</th>
                                 <th scope="col">4</th>
                                 <th scope="col">
                                     {[...Array(5)].map((_, i) => (
@@ -156,7 +183,6 @@ const ShowCourse = () => {
                             </tr>
                         ))}
                     </tbody>
-
                 </table>
             </div>
         </div>
