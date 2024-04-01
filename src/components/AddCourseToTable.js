@@ -95,11 +95,23 @@ const AddCourseTotable = ({
     }))
   ];
 
+  const sortedTeachers = teachers.sort((a, b) => {
+    const nameA = a.firstname.toUpperCase(); // แปลงชื่อเป็นตัวพิมพ์ใหญ่เพื่อเปรียบเทียบ
+    const nameB = b.firstname.toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
+
   const optionsTeacher = [
-    { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
-    ...teachers.map((item) => ({
-      value: item.firstname + ' ' + item.lastname,
-      label: `${item.firstname} ${item.lastname}`
+    { value: "", label: "- กรุณาเลือก -", isDisabled: true }, // เพิ่มตัวเลือกนี้เป็นตัวแรก
+    ...sortedTeachers.map((teacher) => ({
+      value: teacher.firstname + ' ' + teacher.lastname,
+      label: teacher.firstname + ' ' + teacher.lastname,
     }))
   ];
 
