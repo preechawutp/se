@@ -35,7 +35,42 @@ const optionsTerm = [
 
 const optionsMajor = [
   { value: 'กรุณาเลือก', label: '- กรุณาเลือก -', isDisabled: true },
-  { value: 'T12', label: 'T12' },{ value: 'T13', label: 'T13' }
+  { value: 'G01', label: 'G01' }, { value: 'G02', label: 'G02' },
+  { value: 'M01', label: 'M01' }, { value: 'M02', label: 'M02' },
+  { value: 'M03', label: 'M03' }, { value: 'M04', label: 'M04' },
+  { value: 'M07', label: 'M07' }, { value: 'M09', label: 'M09' },
+  { value: 'R02', label: 'R02' }, { value: 'R03', label: 'R03' },
+  { value: 'R04', label: 'R04' }, { value: 'R05', label: 'R05' },
+  { value: 'R07', label: 'R07' }, { value: 'R08', label: 'R08' },
+  { value: 'R10', label: 'R10' }, { value: 'R11', label: 'R11' },
+  { value: 'R12', label: 'R12' }, { value: 'R13', label: 'R13' },
+  { value: 'R14', label: 'R14' }, { value: 'R15', label: 'R15' },
+  { value: 'R16', label: 'R16' }, { value: 'R17', label: 'R17' },
+  { value: 'R18', label: 'R18' }, { value: 'R19', label: 'R19' },
+  { value: 'R20', label: 'R20' }, { value: 'R21', label: 'R21' },
+  { value: 'R22', label: 'R22' }, { value: 'R23', label: 'R23' },
+  { value: 'R24', label: 'R24' }, { value: 'R25', label: 'R25' },
+  { value: 'R26', label: 'R26' }, { value: 'R27', label: 'R27' },
+  { value: 'R28', label: 'R28' }, { value: 'R29', label: 'R29' },
+  { value: 'R30', label: 'R30' }, { value: 'R31', label: 'R31' },
+  { value: 'R32', label: 'R32' }, { value: 'R33', label: 'R33' },
+  { value: 'S01', label: 'S01' }, { value: 'S02', label: 'S02' },
+  { value: 'S03', label: 'S03' }, { value: 'S04', label: 'S04' },
+  { value: 'S05', label: 'S05' }, { value: 'S06', label: 'S06' },
+  { value: 'S09', label: 'S09' }, { value: 'S10', label: 'S10' },
+  { value: 'S11', label: 'S11' }, { value: 'S18', label: 'S18' },
+  { value: 'S19', label: 'S19' }, { value: 'S20', label: 'S20' },
+  { value: 'T05', label: 'T05' }, { value: 'T12', label: 'T12' },
+  { value: 'T13', label: 'T13' }, { value: 'T14', label: 'T14' },
+  { value: 'T17', label: 'T17' }, { value: 'T18', label: 'T18' },
+  { value: 'T19', label: 'T19' }, { value: 'T20', label: 'T20' },
+  { value: 'T21', label: 'T21' }, { value: 'T22', label: 'T22' },
+  { value: 'T23', label: 'T23' }, { value: 'XD26', label: 'XD26' },
+  { value: 'XE28', label: 'XE28' }, { value: 'XE29', label: 'XE29' },
+  { value: 'XE55', label: 'XE55' }, { value: 'XE56', label: 'XE56' },
+  { value: 'XG65', label: 'XG65' }, { value: 'XJ01', label: 'XJ01' },
+  { value: 'XJ02', label: 'XJ02' }, { value: 'XJ60', label: 'XJ60' },
+  { value: 'XJ60R', label: 'XJ60R' }, { value: 'XS01', label: 'XS01' }
 ];
 
 const AddCourseTotable = ({
@@ -67,7 +102,7 @@ const AddCourseTotable = ({
       label: `${item.firstname} ${item.lastname}`
     }))
   ];
-  
+
   useEffect(() => {
     const unsubscribe = onSnapshot(teacherRef, (snapshot) => {
       const newData = snapshot.docs.map((doc) => ({
@@ -313,7 +348,7 @@ const AddCourseTotable = ({
             </div>
             <div className="col-md-6 d-flex justify-content-center">
               <form>
-                
+
                 <div className="form-group mt-2">
                   <label htmlFor="major">สาขา</label>
                   <Select
@@ -345,7 +380,7 @@ const AddCourseTotable = ({
                     onChange={(selectedOption) => handleCourseChange({ target: { name: 'term', value: selectedOption.value } })}
                     placeholder="กรุณาเลือก"
                     isSearchable={true}
-                    styles={customStyles1} 
+                    styles={customStyles1}
                     menuPortalTarget={document.body}
                   />
                 </div>
