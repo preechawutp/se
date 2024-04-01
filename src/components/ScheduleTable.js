@@ -17,6 +17,7 @@ import {
 import ShowChoose from './ShowChoose';
 import { Alert, Button, Modal } from 'react-bootstrap';
 import EditCourseInTable from "./EditCourseInTable";
+import Guide from './Guide';
 
 
 
@@ -401,7 +402,9 @@ const ScheduleTable = ({ onClickHandler }) => {
             <Navbar />
             <div className='container'>
                 <div className="schedule-table-container mt-5" >
-                    <h2>ตารางสอน</h2>
+                <div className='d-flex justify-content-between'>
+                    <h2>ตารางสอน</h2><Guide/>
+                </div>
                     <div className='d-flex justify-content-between'>
                         <Dropdown queryCourses={queryCourses} />
                         <div className='d-flex justify-content-end mb-3'>
