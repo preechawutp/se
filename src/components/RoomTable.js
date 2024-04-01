@@ -47,6 +47,16 @@ const RoomTable = () => {
 
     const handleConfirmationModalClose = () => setRoomToDelete(null);
 
+    const sortRoomsByNumber = (rooms) => {
+        const sortedRooms = [...rooms]; // สร้างรายการใหม่เพื่อไม่ให้เปลี่ยนแปลงรายการต้นฉบับ
+        sortedRooms.sort((a, b) => {
+            const roomNumberA = parseInt(a.roomid); // แปลงหมายเลขห้องให้เป็นจำนวนเต็ม
+            const roomNumberB = parseInt(b.roomid);
+            return roomNumberA - roomNumberB; // เรียงลำดับจำนวนเลขห้อง
+        });
+        return sortedRooms;
+    };
+
     const filteredRooms = rooms.filter(room => {
         return room.roomid && room.roomid.toLowerCase().includes(searchQuery.toLowerCase());
     });
@@ -55,7 +65,7 @@ const RoomTable = () => {
     const totalPages = Math.ceil(filteredRooms.length / roomsPerPage);
     const indexLast = curpage * roomsPerPage;
     const indexFirst = indexLast - roomsPerPage;
-    const currentItems = filteredRooms.slice(indexFirst, indexLast);
+    const currentItems = sortRoomsByNumber(filteredRooms).slice(indexFirst, indexLast);
 
     const handleNextPage = () => {
         if (curpage < totalPages) {
