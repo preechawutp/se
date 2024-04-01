@@ -54,6 +54,18 @@ const AddRoom = () => {
       setValidationError("กรุณากรอกข้อมูลให้ครบ");
       return;
     }
+  
+    // Check if the room ID already exists in the database
+    const existingRoom = data.find((room) => room.roomid === form.roomid);
+  
+    if (existingRoom) {
+      setValidationError("มีหมายเลขห้องนี้อยู่ในระบบแล้ว");
+      setTimeout(() => {
+        setValidationError(null);
+      }, 5000);
+      return;
+    }
+  
     setValidationError(null);
     setShowConfirmationModal(true);
     setShowDataEntryModal(false);

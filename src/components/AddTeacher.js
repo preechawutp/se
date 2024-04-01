@@ -62,14 +62,28 @@ const AddTeacher = () => {
       setValidationError("กรุณากรอกข้อมูลให้ครบ");
       setTimeout(() => {
         setValidationError(null);
-      }, 2000);
+      }, 5000);
       return;
     }
+    // Check if the teacher already exists in the database
+    const existingTeacher = data.find(
+      (teacher) =>
+        teacher.firstname.toLowerCase() === form.firstname.toLowerCase() &&
+        teacher.lastname.toLowerCase() === form.lastname.toLowerCase()
+    );
+
+    if (existingTeacher) {
+      setValidationError("มีรายชื่ออาจารย์ท่านนี้อยู่ในระบบแล้ว");
+      setTimeout(() => {
+        setValidationError(null);
+      }, 5000);
+      return;
+    }
+
     setValidationError(null);
     setShowConfirmationModal(true);
     setShowDataEntryModal(false);
   };
-
   const handleConfirmAddData = async () => {
     await addDoc(roitaiRefT, form)
       .then(() => {
