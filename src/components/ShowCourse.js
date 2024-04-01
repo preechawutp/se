@@ -3,7 +3,7 @@ import Navbar from "./Navbar";
 import "../assets/showCouse.css";
 import { db, copySelectedCourseToNewFirestore } from '../firebase';
 import FetchYearCourse from './FetchYearCourse';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 
@@ -67,6 +67,19 @@ const ShowCourse = () => {
         saveAs(new Blob([wbout], { type: 'application/octet-stream' }), `course_${grade}.xlsx`);
     };
 
+    useEffect(() => {
+        const fetchLastUpdateTime = async () => {
+            const lastUpdateRef = doc(db, 'timestamp', 'xHT6YRaTiOlpbFCQhKj4'); // Replace 'your_document_id' with the actual document ID
+            const unsubscribe = onSnapshot(lastUpdateRef, (doc) => {
+                if (doc.exists()) {
+                    setLastUpdateTime(doc.data().lastUpdate);
+                }
+            });
+
+            return () => unsubscribe();
+        };
+        fetchLastUpdateTime();
+    }, []);
 
     const getLastUpdateTime = async () => {
         const docSnap = await getDoc(doc(db, 'timestamp', 'xHT6YRaTiOlpbFCQhKj4')); // Replace 'your_document_id' with the actual document ID
@@ -74,7 +87,9 @@ const ShowCourse = () => {
     };
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <div className="container d-flex justify-content-center align-items-center vh-100">
+        <div className="loader"></div>
+      </div>;
     }
 
     return (
@@ -85,23 +100,22 @@ const ShowCourse = () => {
                 <h2 className="hh2">ภาษาไทย : หลักสูตรวิศวกรรมศาสตรบัณฑิต สาขาวิชาวิศวกรรมคอมพิวเตอร์</h2>
                 <h2 className="hh2">ภาษาอังกฤษ : Bachelor of Engineering Program in Computer Engineering</h2>
 
-                <div className="form-group mt-2 d-flex justify-content-end ">
+                <div className="form-group mt-2 d-flex justify-content-between ">
+                    {lastUpdateTime && (
+                        <p className="mt-3 mb-2">อัพเดทล่าสุดเมื่อ: {lastUpdateTime.toDate().toLocaleString()}</p>
+                    )}
                     <button
                         type="button"
-                        className="btn1"
+                        className="btn1 mt-3 mb-2"
                         id="submit"
                         onClick={async () => {
+                            setLoading(true);
                             await copySelectedCourseToNewFirestore();
+                            setLoading(false);
                         }}
                     >
                         อัพเดทหลักสูตร
                     </button>
-                </div>
-
-                <div className="last-update-time">
-                    {lastUpdateTime && (
-                        <p>อัพเดทล่าสุดเมื่อ: {lastUpdateTime.toDate().toLocaleString()}</p>
-                    )}
                 </div>
 
                 <table className="table table-hover mt-4">
