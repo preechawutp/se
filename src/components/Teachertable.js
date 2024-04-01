@@ -33,6 +33,24 @@ const TeacherTable = () => {
     }
   };
 
+  const sortTeachersByName = (teachers) => {
+    const sortedTeachers = [...teachers]; // สร้างรายการใหม่เพื่อไม่ให้เปลี่ยนแปลงรายการต้นฉบับ
+    sortedTeachers.sort((a, b) => {
+      // เปรียบเทียบตามชื่อ (firstname)
+      const nameA = a.firstname.toLowerCase();
+      const nameB = b.firstname.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      // ถ้าชื่อเท่ากัน ให้เปรียบเทียบตามนามสกุล (lastname)
+      const lastNameA = a.lastname.toLowerCase();
+      const lastNameB = b.lastname.toLowerCase();
+      if (lastNameA < lastNameB) return -1;
+      if (lastNameA > lastNameB) return 1;
+      return 0;
+    });
+    return sortedTeachers;
+  };
+
   const deleteAll = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, 'teacher'));
@@ -56,7 +74,7 @@ const TeacherTable = () => {
   const totalPages = Math.ceil(filteredTeachers.length / coursePerPage);
   const indexLast = curpage * coursePerPage;
   const indexFirst = indexLast - coursePerPage;
-  const currentItems = filteredTeachers.slice(indexFirst, indexLast);
+  const currentItems = sortTeachersByName(filteredTeachers).slice(indexFirst, indexLast);
 
   const handleNextPage = () => {
     if (curpage < totalPages) {
