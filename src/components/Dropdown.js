@@ -50,18 +50,21 @@ const Dropdown = ({ queryCourses }) => {
   }, []);
 
   const handleTeacherChange = (selectedOption) => {
-    // ตรวจสอบว่ามีการเลือกตัวเลือกหรือไม่ และอัปเดต state ตามค่า value ของตัวเลือกที่เลือก
+    // อัปเดต state และ localStorage ด้วยค่า value ของตัวเลือกที่เลือก
     setSelectedTeacher(selectedOption ? selectedOption.value : '');
+    localStorage.setItem('selectedTeacher', selectedOption ? selectedOption.value : '');
   };
-
+  
   const handleYearChange = (selectedOption) => {
-    // อัปเดต state ด้วยค่า value ของตัวเลือกที่เลือก หรือสตริงว่างถ้าไม่มีการเลือก
+    // อัปเดต state และ localStorage ด้วยค่า value ของตัวเลือกที่เลือก หรือสตริงว่างถ้าไม่มีการเลือก
     setSelectedYear(selectedOption ? selectedOption.value : '');
+    localStorage.setItem('selectedYear', selectedOption ? selectedOption.value : '');
   };
-
+  
   const handleSemesterChange = (selectedOption) => {
-    // อัปเดต state ด้วยค่า value ของตัวเลือกที่เลือก หรือสตริงว่างถ้าไม่มีการเลือก
+    // อัปเดต state และ localStorage ด้วยค่า value ของตัวเลือกที่เลือก หรือสตริงว่างถ้าไม่มีการเลือก
     setSelectedSemester(selectedOption ? selectedOption.value : '');
+    localStorage.setItem('selectedSemester', selectedOption ? selectedOption.value : '');
   };
 
   const onClickHandler = () => {
