@@ -214,7 +214,7 @@ const Main = () => {
         <div className="d-flex justify-content-between" style={{ width: '100%' }}>
         <h2 className="mb-3 mt-3">รายวิชา</h2>
           <div className="d-flex">
-            <AddCourse handleChange={handleChange} handleAddData={handleAddData} form={form} />
+          <AddCourse handleChange={handleChange} form={form} />
             <Upload handleChange={handleChange} handleAddData={handleAddData} />
             <Course data={selectedCourses} handleDeleteSelectedCourse={handleDeleteSelectedCourse} handleAddToTable={handleAddToTable} />
           </div>

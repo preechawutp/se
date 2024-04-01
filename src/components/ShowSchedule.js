@@ -128,9 +128,11 @@ const ScheduleTable = ({ onClickHandler }) => {
             if (searchedCourse[i].day === searchedCourse[i + 1].day) {
                 if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStart.split('-')[0] && searchedCourse[i + 1].TimeStart.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
                     dupCourse.push(i + 1)
+                    pair_dupCourse.push([searchedCourse[i], searchedCourse[i + 1]]);
                 }
                 else if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStop.split('-')[0] && searchedCourse[i + 1].TimeStop.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
                     dupCourse.push(i + 1)
+                    pair_dupCourse.push([searchedCourse[i], searchedCourse[i + 1]]);
                 }
             }
         }

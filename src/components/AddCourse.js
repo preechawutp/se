@@ -22,7 +22,7 @@ const options = [
   { value: 'ปฎิบัติ', label: 'ปฎิบัติ' }
 ];
 
-const AddCourse = ({ handleChange, handleAddData, form }) => {
+const AddCourse = ({ handleChange, form }) => {
   const [show, setShow] = useState(false);
   const [validationError, setValidationError] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -52,6 +52,45 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
     };
   }, []);
 
+  const handleAddData = async () => {
+    // ตรวจสอบและกำหนดประเภทของข้อมูลให้ถูกต้องก่อนที่จะอัพโหลดข้อมูล
+    const validatedForm = {
+      code: String(form.code),
+      name: String(form.name),
+      grade: parseInt(form.grade),
+      credit: parseInt(form.credit),
+      type: String(form.type)
+    };
+
+    // ตรวจสอบว่าข้อมูลถูกต้องหรือไม่
+    const isValid = validateData(validatedForm);
+
+    if (isValid) {
+      await addDoc(roitaiRef, validatedForm).catch((err) => console.log(err));
+    } else {
+      console.error('ข้อมูลไม่ถูกต้อง');
+    }
+  };
+
+  // ฟังก์ชันสำหรับตรวจสอบความถูกต้องของข้อมูล
+  const validateData = (data) => {
+    // ตรวจสอบว่าข้อมูลไม่มีค่าว่างหรือไม่
+    if (
+      data.code === undefined ||
+      data.name === undefined ||
+      data.grade === undefined ||
+      data.credit === undefined ||
+      data.type === undefined ||
+      isNaN(data.code) ||
+      isNaN(data.grade) ||
+      isNaN(data.credit)
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleClose = () => {
     setShow(false);
     setValidationError(null);
@@ -77,7 +116,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
     const querySnapshot = await getDocs(query(roitaiRef,
       where("code", "==", form.code),
       where("name", "==", form.name),
-      where("grade", "==", grade )
+      where("grade", "==", grade)
     ));
 
     // If duplicate entries are found, display validation error
