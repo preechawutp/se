@@ -1,7 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import "../assets/AddCourse.css";
 import { Button, Modal, Alert } from "react-bootstrap";
 import Select from 'react-select';
+import { db } from '../firebase';
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  getDocs,
+} from 'firebase/firestore';
+
 
 const options = [
   { value: '- กรุณาเลือก -', label: '- กรุณาเลือก -', isDisabled: true },
@@ -22,6 +35,23 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
 
   const selectedOption = options.find(option => option.value === form.type);
 
+  const [data, setData] = useState([]);
+  const roitaiRef = collection(db, 'course');
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(roitaiRef, (snapshot) => {
+      const newData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setData(newData);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleClose = () => {
     setShow(false);
     setValidationError(null);
@@ -31,7 +61,8 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
     setShow(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    // Check if any field is empty
     if (!form.code || !form.grade || !form.name || !form.credit || !form.type) {
       setValidationError("กรุณากรอกข้อมูลให้ครบ");
       setTimeout(() => {
@@ -39,6 +70,26 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
       }, 2000);
       return;
     }
+
+    const grade = parseInt(form.grade);
+
+    // Construct a query to check for duplicate entries
+    const querySnapshot = await getDocs(query(roitaiRef,
+      where("code", "==", form.code),
+      where("name", "==", form.name),
+      where("grade", "==", grade )
+    ));
+
+    // If duplicate entries are found, display validation error
+    if (!querySnapshot.empty) {
+      setValidationError("มีรายวิชานี้อยู่ในระบบแล้ว");
+      setTimeout(() => {
+        setValidationError(null);
+      }, 5000);
+      return;
+    }
+
+    // If no duplicates, proceed with saving the data
     setValidationError(null);
     setShowConfirmationModal(true);
     handleClose();
@@ -67,13 +118,15 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
   };
 
   const handleCreditChange = (e) => {
-    // ตรวจสอบว่าค่าที่ป้อนไม่เกิน 6
-    if (parseInt(e.target.value) <= 6) {
-      handleChange(e);
-      setCourseCredit(e.target.value);
+    // Convert the value to an integer
+    const creditValue = parseInt(e.target.value);
+  
+    // Check if the value is within the allowed range
+    if (creditValue >= 0 && creditValue <= 6) {
+      handleChange({ ...e, target: { ...e.target, value: creditValue } }); // Update the form state
     } else {
-      // แสดงข้อความแจ้งเตือนถ้าเกินค่าสูงสุด
-      alert('ค่าหน่วยกิตต้องไม่เกิน 6');
+      // Display an alert if the value is out of range
+      alert('ค่าหน่วยกิตต้องอยู่ในช่วง 0 ถึง 6');
     }
   };
 
@@ -172,7 +225,7 @@ const AddCourse = ({ handleChange, handleAddData, form }) => {
                 onChange={(selectedOption) => {
                   handleChange({ target: { name: 'type', value: selectedOption.value } }); // เรียกใช้ handleChange เพื่ออัปเดต form
                   setCourseType(selectedOption.value); // เรียกใช้ setCourseType เพื่ออัปเดต courseType
-                }} 
+                }}
                 value={selectedOption}
                 placeholder="- กรุณาเลือก -"
                 isSearchable={true}
