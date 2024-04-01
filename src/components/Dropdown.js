@@ -121,9 +121,21 @@ const Dropdown = ({ queryCourses }) => {
     }),
   };
 
+  const sortedTeachers = teachers.sort((a, b) => {
+    const nameA = a.firstname.toUpperCase(); // แปลงชื่อเป็นตัวพิมพ์ใหญ่เพื่อเปรียบเทียบ
+    const nameB = b.firstname.toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
+  
   const teacherOptions = [
     { value: "", label: "- กรุณาเลือก -", isDisabled: true }, // เพิ่มตัวเลือกนี้เป็นตัวแรก
-    ...teachers.map((teacher) => ({
+    ...sortedTeachers.map((teacher) => ({
       value: teacher.firstname + ' ' + teacher.lastname,
       label: teacher.firstname + ' ' + teacher.lastname,
     }))
