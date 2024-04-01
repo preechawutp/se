@@ -103,7 +103,7 @@ const Upload = () => {
     switch (uploadOption) {
       case "course":
         collectionRef = "course";
-        uniqueFields = ["code", "grade"];
+        uniqueFields = ["code", "grade", "credit", "nameTH", "name", "type"];
         break;
       case "teacher":
         collectionRef = "teacher";
