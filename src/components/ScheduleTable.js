@@ -28,6 +28,10 @@ const ScheduleTable = ({ onClickHandler }) => {
     const [dupType, setDupType] = useState([]);
     const [dupRoom, setDupRoom] = useState([]);
     const [dupSec, setDupSec] = useState([]);
+    const [pairDupType, setPairDupType] = useState([]);
+    const [pairDupRoom, setPairDupRoom] = useState([]);
+    const [pairDupSec, setPairDupSec] = useState([]);
+    const [pairDupCourse, setpairDupCourse] = useState([]);
     const selectedCourseRef = collection(db, 'ChooseSubject');
     const tableRef = useRef(null);
     const [validationError, setValidationError] = useState('');
@@ -118,22 +122,35 @@ const ScheduleTable = ({ onClickHandler }) => {
     };
 
     var dupCourse = []
+    var pair_dupCourse = []
     const checkDuplicatedTime = () => {
-        for (let i = 0; i < searchedCourse.length - 1; i++) {
-            if (searchedCourse[i].day === searchedCourse[i + 1].day) {
-                if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStart.split('-')[0] && searchedCourse[i + 1].TimeStart.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
-                    dupCourse.push(i + 1)
-                }
-                else if (searchedCourse[i].TimeStart.split('-')[0] <= searchedCourse[i + 1].TimeStop.split('-')[0] && searchedCourse[i + 1].TimeStop.split('-')[0] <= searchedCourse[i].TimeStop.split('-')[0]) {
-                    dupCourse.push(i + 1)
+        for (let i = 0; i < allCourse.length; i++) {
+            for (let j = 0; j < allCourse.length; j++) {
+                if (i !== j && !dupCourse.includes(i+1)) {
+                    const timeStart1 = allCourse[i].TimeStart.split("-")[0];
+                    const timeStop1 = allCourse[i].TimeStop.split("-")[0];
+                    const timeStart2 = allCourse[j].TimeStart.split("-")[0];
+                    const timeStop2 = allCourse[j].TimeStop.split("-")[0];
+                    if (
+                        (timeStart1 <= timeStart2 && timeStart2 <= timeStop1) ||
+                        (timeStart1 <= timeStop2 && timeStop2 <= timeStop1) ||
+                        (timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
+                        (timeStart2 <= timeStop1 && timeStop1 <= timeStop2)
+                    ) {
+                        dupCourse.push(i + 1)
+                        if (!pair_dupCourse.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                            pair_dupCourse.push([allCourse[i], allCourse[j]]);
+                        }
+                    }
                 }
             }
-
         }
         setDuplicateCourse(dupCourse)
+        setpairDupCourse(pair_dupCourse)
     };
 
     var duplicateTypes = [];
+    var pair_dupType = [];
     const checkSubjectType = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
@@ -160,37 +177,34 @@ const ScheduleTable = ({ onClickHandler }) => {
                                 if (allCourse[i].subjecttype === "วิชาแกน") {
                                     // Core courses of the same year should not clash
                                     duplicateTypes.push(allCourse[i].id);
+                                    if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                        pair_dupType.push([allCourse[i], allCourse[j]]);
+                                    }
                                 } else if (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ") {
                                     // Core courses should not clash with required elective courses
                                     duplicateTypes.push(allCourse[i].id);
+                                    if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                        pair_dupType.push([allCourse[i], allCourse[j]]);
+                                    }
                                 }
                             } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
-                                allCourse[j].subjecttype === "วิชาแกน"
-
+                                (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" && allCourse[j].subjecttype === "วิชาแกน") || 
+                                (allCourse[i].subjecttype === "วิชาแกน" && allCourse[j].subjecttype === "วิชาเฉพาะบังคับ")
                             ) {
                                 // Core courses can clash with elective courses
                                 duplicateTypes.push(allCourse[i].id);
-
+                                if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                    pair_dupType.push([allCourse[i], allCourse[j]]);
+                                }
                             } else if (
-                                allCourse[i].subjecttype === "วิชาแกน" &&
-                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
-
-                            ) {
-                                // Core courses can clash with elective courses
-                                duplicateTypes.push(allCourse[i].id);
-                            } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะเลือก" &&
-                                allCourse[j].subjecttype === "วิชาเฉพาะบังคับ"
+                                (allCourse[i].subjecttype === "วิชาเฉพาะเลือก" && allCourse[j].subjecttype === "วิชาเฉพาะบังคับ") ||
+                                (allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" && allCourse[j].subjecttype === "วิชาเฉพาะเลือก")
                             ) {
                                 // Required elective courses should not clash with core courses
                                 duplicateTypes.push(allCourse[i].id);
-                            } else if (
-                                allCourse[i].subjecttype === "วิชาเฉพาะบังคับ" &&
-                                allCourse[j].subjecttype === "วิชาเฉพาะเลือก"
-                            ) {
-                                // Required elective courses should not clash with core courses
-                                duplicateTypes.push(allCourse[i].id);
+                                if (!pair_dupType.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                    pair_dupType.push([allCourse[i], allCourse[j]]);
+                                }
                             }
                         }
                     }
@@ -198,10 +212,11 @@ const ScheduleTable = ({ onClickHandler }) => {
             }
         }
         setDupType(duplicateTypes);
+        setPairDupType(pair_dupType);
     };
 
-
     var duplicateRooms = [];
+    var pair_dupRoom = [];
     const checkRoomOverlap = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
@@ -220,15 +235,20 @@ const ScheduleTable = ({ onClickHandler }) => {
                             (timeStart2 <= timeStart1 && timeStart1 <= timeStop2) ||
                             (timeStart2 <= timeStop1 && timeStop1 <= timeStop2)) {
                             duplicateRooms.push(allCourse[i].room);
+                            if (!pair_dupRoom.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                                pair_dupRoom.push([allCourse[i], allCourse[j]]);
+                            }
                         }
                     }
                 }
             }
         }
         setDupRoom(duplicateRooms);
+        setPairDupRoom(pair_dupRoom);
     };
 
     var duplicateSec = [];
+    var pair_dupSec = [];
     const checkSecOverlap = () => {
         for (let i = 0; i < allCourse.length; i++) {
             for (let j = 0; j < allCourse.length; j++) {
@@ -239,12 +259,15 @@ const ScheduleTable = ({ onClickHandler }) => {
                     ) {
                         // If sections are the same for the same course, consider it as section clash
                         duplicateSec.push(allCourse[i].sec);
+                        if (!pair_dupSec.some(pair => pair[0] === allCourse[j] && pair[1] === allCourse[i])) {
+                            pair_dupSec.push([allCourse[i], allCourse[j]]);
+                        }
                     }
                 }
             }
         }
-
         setDupSec(duplicateSec);
+        setPairDupSec(pair_dupSec);
     };
 
     const changeColor = (course) => {
@@ -269,34 +292,60 @@ const ScheduleTable = ({ onClickHandler }) => {
 
 
     useEffect(() => {
+        var error_list = []
         let error = "";
-        if (duplicateCourse.length > 0) {
-            const course1 = searchedCourse[duplicateCourse[0]];
-            const course2 = searchedCourse[duplicateCourse[0] - 1];
-            if (course1 && course2) {
-                error = `เวลาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
-            }
-        } else if (dupType.length > 0) {
-            const course1 = allCourse.find(item => item.id === dupType[0]);
-            const course2 = allCourse.find(item => item.id === dupType[0] - 1);
-            if (course1 && course2) {
-                error = `วิชาชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
-            }
-        } else if (dupRoom.length > 0) {
-            const course1 = allCourse.find(item => item.room === dupRoom[0]);
-            const course2 = allCourse.find(item => item.room === dupRoom[0] - 1);
-            if (course1 && course2) {
-                error = `ห้องชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
-            }
-        } else if (dupSec.length > 0) {
-            const course1 = allCourse.find(item => item.sec === dupSec[0]);
-            const course2 = allCourse.find(item => item.sec === dupSec[0] - 1);
-            if (course1 && course2) {
-                error = `หมู่เรียนชน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) กับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+        for (let i = 0; i < pairDupCourse.length; i++) {
+            const course1 = pairDupCourse[i][0];
+            const course2 = pairDupCourse[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `เวลาวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
             }
         }
-        console.log(error)
-        setValidationError(error);
+
+        for (let i = 0; i < pairDupType.length; i++) {
+            const course1 = pairDupType[i][0];
+            const course2 = pairDupType[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `ประเภทวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
+            }
+        }
+
+        for (let i = 0; i < pairDupRoom.length; i++) {
+            const course1 = pairDupRoom[i][0];
+            const course2 = pairDupRoom[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `ห้องวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
+            }
+        }
+
+        for (let i = 0; i < pairDupSec.length; i++) {
+            const course1 = pairDupSec[i][0];
+            const course2 = pairDupSec[i][1];
+            if (searchedCourse != 0) {
+                if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
+                    if (course1 && course2) {
+                        error = `เซควิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                    }
+                    error_list.push(error)
+                }
+            }
+        }
+        setValidationError(error_list);
     }, [duplicateCourse, dupType, dupRoom, dupSec]); //1.ทำ forloop 2.เอา else ออก ให้เหลือ if 3.เเก้ฟังก์ชันให้หมดควรโชว์ทั้งหมดไม่ใช่โชว์เเค่2ตัวเช่นเวลาชน sec ชนต้องโชว์ทั้งหมด
 
 
@@ -441,11 +490,11 @@ const ScheduleTable = ({ onClickHandler }) => {
                         </tbody>
                     </table>
                 </div>
-                {validationError && (
-                    <Alert variant="danger" className="mt-3">
-                        {validationError}
+                {validationError && validationError.map((error, index) => (
+                    <Alert key={index} variant="danger" className="mt-3">
+                        {error}
                     </Alert>
-                )}
+                ))}
                 <div className="course-detail-table mt-3">
                     <h2>รายละเอียดรายวิชา</h2>
 
