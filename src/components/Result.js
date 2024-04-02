@@ -147,7 +147,7 @@
         <Navbar />
         <div className='container'>
           <div className="schedule-table-container mt-5">
-            <h2>ตารางสอน</h2>
+            <h2>ผลการจัดตาราง</h2>
             <div className='d-flex justify-content-between'>
               <Dropdown queryCourses={queryCourses} />
               <div className='d-flex justify-content-end'>
