@@ -290,7 +290,7 @@ const ScheduleTable = ({ onClickHandler }) => {
             if (searchedCourse != 0) {
                 if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
                     if (course1 && course2) {
-                        error = `เวลาวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                        error = `เวลา วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
                     }
                     error_list.push(error)
                 }
@@ -303,7 +303,7 @@ const ScheduleTable = ({ onClickHandler }) => {
             if (searchedCourse != 0) {
                 if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
                     if (course1 && course2) {
-                        error = `ประเภทวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                        error = `ประเภท วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
                     }
                     error_list.push(error)
                 }
@@ -316,7 +316,7 @@ const ScheduleTable = ({ onClickHandler }) => {
             if (searchedCourse != 0) {
                 if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
                     if (course1 && course2) {
-                        error = `ห้องวิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                        error = `ห้อง วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
                     }
                     error_list.push(error)
                 }
@@ -329,7 +329,7 @@ const ScheduleTable = ({ onClickHandler }) => {
             if (searchedCourse != 0) {
                 if (course1.teacher === searchedCourse[0].teacher || course2.teacher === searchedCourse[0].teacher) {
                     if (course1 && course2) {
-                        error = `เซควิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
+                        error = `หมู่เรียน วิชา ${course1.code} ${course1.name} (อาจารย์ ${course1.teacher}) ชนกับ ${course2.code} ${course2.name} (อาจารย์ ${course2.teacher})`;
                     }
                     error_list.push(error)
                 }
