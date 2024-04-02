@@ -117,7 +117,7 @@ const Course = ({ data, handleDeleteSelectedCourse, handleAddToTable }) => {
             onClick={async () => {
               await handleAddToTable(data);
               await copySelectedCourseToChooseSubject();
-              // await handleDeleteAllSelectedCourses();
+              await handleDeleteAllSelectedCourses();
               handleClose();
             }}
           >
